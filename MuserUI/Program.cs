@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace MuserUI
+namespace Tolltech.MuserUI
 {
     public class Program
     {

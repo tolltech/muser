@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace MuserUI.Pages
+namespace Tolltech.MuserUI.Pages
 {
     public class PrivacyModel : PageModel
     {
