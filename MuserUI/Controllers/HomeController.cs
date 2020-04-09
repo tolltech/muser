@@ -2,16 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tolltech.MuserUI.Models;
+using TolltechCore;
 
 namespace Tolltech.MuserUI.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IGuidFactory guidFactory;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IGuidFactory guidFactory)
         {
             _logger = logger;
+            this.guidFactory = guidFactory;
         }
 
         public IActionResult Index()
@@ -21,7 +24,7 @@ namespace Tolltech.MuserUI.Controllers
 
         public IActionResult Privacy()
         {
-            return View();
+            return View((object)guidFactory.Create().ToString());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

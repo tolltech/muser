@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TolltechCore;
 
 namespace Tolltech.MuserUI
 {
@@ -18,6 +19,8 @@ namespace Tolltech.MuserUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IoCResolver.Resolve((x, y) => services.AddTransient(x, y), "Tolltech");
+
             services.AddControllersWithViews();
         }
 
