@@ -3,3 +3,7 @@
 /MuserUI/obj/*
 /TolltechCore/bin/*
 /TolltechCore/obj/*
+/PostgreEF/bin/*
+/PostgreEF/obj/*
+/SqlEF/bin/*
+/SqlEF/obj/*
