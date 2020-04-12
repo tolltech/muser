@@ -3,7 +3,7 @@ using Tolltech.SqlEF;
 
 namespace Tolltech.PostgreEF.Integration
 {
-    public class PsqlDataContext : DataContextBase
+    public class PsqlDataContext<TSqlEntity> : DataContextBase<TSqlEntity> where TSqlEntity : class
     {
         private readonly string connectionString;
 

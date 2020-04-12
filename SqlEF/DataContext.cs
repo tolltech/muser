@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Tolltech.SqlEF
 {
-    public abstract class DataContextBase<T> : DbContext
+    public abstract class DataContextBase<T> : DbContext where T : class
     {
-        public DbSet<MediaDate> MediaDates { get; set; }
+        public DbSet<T> Table { get; set; }
 
         protected abstract void ConfigureOptionsBuilder(DbContextOptionsBuilder optionsBuilder);
 
@@ -15,20 +14,15 @@ namespace Tolltech.SqlEF
             ConfigureOptionsBuilder(optionsBuilder);
         }
 
-        public IQueryable<T> GetTable<T>() where T : class
+        public Task CreateAsync(params T[] data)
         {
-            return Set<T>();
-        }
-
-        public Task CreateAsync<T>(params T[] data) where T : class
-        {
-            Set<T>().AddRange(data);
+            Table.AddRange(data);
             return SaveChangesAsync();
         }
 
-        public Task DeleteAsync<T>(params T[] data) where T : class
+        public Task DeleteAsync(params T[] data)
         {
-            Set<T>().RemoveRange(data);
+            Table.RemoveRange(data);
             return SaveChangesAsync();
         }
 

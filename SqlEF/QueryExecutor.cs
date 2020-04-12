@@ -4,26 +4,26 @@ using Tolltech.SqlEF.Integration;
 
 namespace Tolltech.SqlEF
 {
-    public class QueryExecutor : IDisposable
+    public class QueryExecutor<TSqlHandler, TSqlEntity> : IDisposable where TSqlHandler : SqlHandlerBase<TSqlEntity> where TSqlEntity : class
     {
-        private readonly DataContextBase dataContext;
+        private readonly DataContextBase<TSqlEntity> dataContext;
         private readonly ISqlHandlerProvider sqlHandlerProvider;
 
-        public QueryExecutor(DataContextBase dataContext, ISqlHandlerProvider sqlHandlerProvider)
+        public QueryExecutor(DataContextBase<TSqlEntity> dataContext, ISqlHandlerProvider sqlHandlerProvider)
         {
             this.dataContext = dataContext;
             this.sqlHandlerProvider = sqlHandlerProvider;
         }
 
-        public Task ExecuteAsync<THandle>(Func<THandle, Task> query)
+        public Task ExecuteAsync(Func<TSqlHandler, Task> query)
         {
-            var handle = sqlHandlerProvider.Create<THandle>(dataContext);
+            var handle = sqlHandlerProvider.Create<TSqlHandler, TSqlEntity>(dataContext);
             return query(handle);
         }
 
-        public Task<TResult> ExecuteAsync<THandle, TResult>(Func<THandle, Task<TResult>> query)
+        public Task<TResult> ExecuteAsync<TResult>(Func<TSqlHandler, Task<TResult>> query)
         {
-            var handle = sqlHandlerProvider.Create<THandle>(dataContext);
+            var handle = sqlHandlerProvider.Create<TSqlHandler, TSqlEntity>(dataContext);
             return query(handle);
         }
 

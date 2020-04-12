@@ -12,9 +12,9 @@ namespace Tolltech.PostgreEF.Integration
             this.connectionString = connectionString;
         }
 
-        public DataContextBase Create()
+        public DataContextBase<TSqlEntity> Create<TSqlEntity>() where TSqlEntity : class
         {
-            return new PsqlDataContext(connectionString.Value);
+            return new PsqlDataContext<TSqlEntity>(connectionString.Value);
         }
     }
 }

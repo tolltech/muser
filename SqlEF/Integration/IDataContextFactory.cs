@@ -2,6 +2,6 @@
 {
     public interface IDataContextFactory
     {
-        DataContextBase Create();
+        DataContextBase<TSqlEntity> Create<TSqlEntity>() where TSqlEntity : class;
     }
 }

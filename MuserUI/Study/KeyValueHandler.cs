@@ -1,16 +1,16 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Tolltech.SqlEF;
+using Tolltech.SqlEF.Integration;
 
 namespace Tolltech.MuserUI.Study
 {
-    public class KeyValueHandler
+    public class KeyValueHandler : SqlHandlerBase<KeyValue>
     {
-        private readonly DataContextBase dataContext;
+        private readonly DataContextBase<KeyValue> dataContext;
 
-        public KeyValueHandler(DataContextBase dataContext)
+        public KeyValueHandler(DataContextBase<KeyValue> dataContext)
         {
             this.dataContext = dataContext;
         }
@@ -19,7 +19,7 @@ namespace Tolltech.MuserUI.Study
         [ItemCanBeNull]
         public Task<KeyValue> FindAsync([NotNull] string key)
         {
-            return dataContext.GetTable<KeyValue>().FirstOrDefaultAsync(x => x.Key == key);
+            return dataContext.Table.FirstOrDefaultAsync(x => x.Key == key);
         }
 
         [NotNull]

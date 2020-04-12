@@ -14,7 +14,7 @@ namespace Tolltech.MuserUI.Psql.Integration
             this.serviceProvider = serviceProvider;
         }
 
-        public TSqlHandler Create<TSqlHandler>(DataContextBase dataContext)
+        public TSqlHandler Create<TSqlHandler, TSqlEntity>(DataContextBase<TSqlEntity> dataContext) where TSqlEntity : class where TSqlHandler : SqlHandlerBase<TSqlEntity>
         {
             return (TSqlHandler) ActivatorUtilities.CreateInstance(serviceProvider, typeof(TSqlHandler), dataContext);
         }
