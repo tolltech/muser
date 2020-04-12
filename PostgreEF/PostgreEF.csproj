@@ -10,4 +10,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SqlEF\SqlEF.csproj" />
+  </ItemGroup>
+
 </Project>

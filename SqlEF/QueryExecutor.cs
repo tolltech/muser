@@ -1,33 +1,29 @@
 ﻿using System;
-using Ninject;
-using Ninject.Parameters;
+using System.Threading.Tasks;
+using Tolltech.SqlEF.Integration;
 
-namespace Tolltech.ThisCore.Sql
+namespace Tolltech.SqlEF
 {
-    public class QueryExecutor : IQueryExecutor
+    public class QueryExecutor : IDisposable
     {
-        private readonly IDataContext dataContext;
-        private readonly IKernel kernel;
+        private readonly DataContextBase dataContext;
+        private readonly ISqlHandlerProvider sqlHandlerProvider;
 
-        public QueryExecutor(IDataContext dataContext, IKernel kernel)
+        public QueryExecutor(DataContextBase dataContext, ISqlHandlerProvider sqlHandlerProvider)
         {
             this.dataContext = dataContext;
-            this.kernel = kernel;
+            this.sqlHandlerProvider = sqlHandlerProvider;
         }
 
-        public void Execute<THandle>(Action<THandle> query)
+        public Task ExecuteAsync<THandle>(Func<THandle, Task> query)
         {
-            //var type = kernel.Get<THandle>().GetType();
-            //var handle = (THandle)Activator.CreateInstance(type, dataContext);
-            var handle = kernel.Get<THandle>(new ConstructorArgument("dataContext", dataContext));
-            query(handle);
+            var handle = sqlHandlerProvider.Create<THandle>(dataContext);
+            return query(handle);
         }
 
-        public TResult Execute<THandle, TResult>(Func<THandle, TResult> query)
+        public Task<TResult> ExecuteAsync<THandle, TResult>(Func<THandle, Task<TResult>> query)
         {
-            //var type = kernel.Get<THandle>().GetType();
-            //var handle = (THandle)Activator.CreateInstance(type, dataContext);
-            var handle = kernel.Get<THandle>(new ConstructorArgument("dataContext", dataContext));
+            var handle = sqlHandlerProvider.Create<THandle>(dataContext);
             return query(handle);
         }
 

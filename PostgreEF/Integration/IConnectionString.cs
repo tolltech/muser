@@ -1,4 +1,4 @@
-﻿namespace Tolltech.ThisCore.Sql
+﻿namespace Tolltech.PostgreEF.Integration
 {
     public interface IConnectionString
     {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+@{
+    var dict = new[]
+        {
+           new { Method = "Ping", Body = "", Params = new object[]{}, Response = "string", QueryType = "GET" },
+           new { Method = "Find", Body = "", Params = new object[]{"string key"}, Response = "KeyValue", QueryType = "GET" },
+           new { Method = "Select", Body = "", Params = new object[]{"string[] keys (keys=key1&keys=key2...)"}, Response = "KeyValue[]", QueryType = "GET" },
+           new { Method = "Create", Body = "KeyValue", Params = new object[]{}, Response = "", QueryType = "POST" },
+           new { Method = "CreateAll", Body = "KeyValue[]", Params = new object[]{}, Response = "", QueryType = "POST" },
+           new { Method = "Update", Body = "", Params = new object[]{"key","value"}, Response = "", QueryType = "POST" },
+        };
+}
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+    <div>
+        @foreach (var d in dict)
+        {
+            <div>
+                @($"Url: /study/{d.Method}")
+            </div>
+             <div>
+                 @($"Type: {d.QueryType}")
+             </div>
+            <div>
+                @($"Body: {d.Body}")
+            </div>
+            <div>
+                @($"Response: {d.Response}")
+            </div>
+            <div>
+                @($"Params: {string.Join(",", d.Params)}")
+            </div>
+            <div>_________________________________________________</div>
+        }
+    </div>
+</body>
+</html>

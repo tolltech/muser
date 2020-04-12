@@ -1,4 +1,4 @@
-﻿namespace Tolltech.ThisCore.Sql
+﻿namespace Tolltech.SqlEF
 {
     public interface IQueryExecutorFactory
     {

@@ -7,3 +7,5 @@
 /PostgreEF/obj/*
 /SqlEF/bin/*
 /SqlEF/obj/*
+/Serialization/obj/*
+/Serialization/bin/*

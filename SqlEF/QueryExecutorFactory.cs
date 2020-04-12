@@ -1,28 +1,26 @@
-﻿using Ninject;
+﻿using Tolltech.SqlEF.Integration;
 
-namespace Tolltech.ThisCore.Sql
+namespace Tolltech.SqlEF
 {
     public class QueryExecutorFactory : IQueryExecutorFactory
     {
-        private readonly IConfiguration configuration;
-        private readonly IKernel kernel;
-        private readonly string defaultConectionString;
+        private readonly IDataContextFactory dataContextFactory;
+        private readonly ISqlHandlerProvider sqlHandlerProvider;
 
-        public QueryExecutorFactory(IConfiguration configuration, IKernel kernel)
+        public QueryExecutorFactory(IDataContextFactory dataContextFactory, ISqlHandlerProvider sqlHandlerProvider)
         {
-            this.configuration = configuration;
-            this.kernel = kernel;
-            defaultConectionString = configuration.Get(ConfigKeys.DbConnectionStringKey);
+            this.dataContextFactory = dataContextFactory;
+            this.sqlHandlerProvider = sqlHandlerProvider;
         }
 
         public QueryExecutor Create()
         {
-            return new QueryExecutor(new DataContextImpl(defaultConectionString), kernel);
+            return new QueryExecutor(dataContextFactory.Create(), sqlHandlerProvider);
         }
 
         public QueryExecutor Create(string connectionStringKey)
         {
-            return new QueryExecutor(new DataContextImpl(configuration.Get(connectionStringKey)), kernel);
+            return new QueryExecutor(dataContextFactory.Create(), sqlHandlerProvider);
         }
     }
 }
