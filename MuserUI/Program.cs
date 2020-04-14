@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +9,8 @@ namespace Tolltech.MuserUI
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine($"Start muser with args {string.Join(", ", args)}");
+
             CreateHostBuilder(args)
                 .Build()
                 .Run();
