@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Tolltech.SqlEF;
@@ -25,20 +26,20 @@ namespace Tolltech.MuserUI.Study
         [NotNull]
         public Task CreateAsync([NotNull] [ItemNotNull] params KeyValue[] keyValues)
         {
-            throw new System.NotImplementedException();
+            return dataContext.Table.AddRangeAsync(keyValues);
         }
 
         [NotNull]
         [ItemNotNull]
         public Task<KeyValue[]> SelectAsync([ItemNotNull] [NotNull] string[] keys)
         {
-            throw new System.NotImplementedException();
+            return dataContext.Table.Where(x => keys.Contains(x.Key)).ToArrayAsync();
         }
 
         [NotNull]
         public Task UpdateAsync([ItemNotNull] [NotNull] params KeyValue[] existed)
         {
-            throw new System.NotImplementedException();
+            return dataContext.UpdateAsync();
         }
     }
 }
