@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace Tolltech.Serialization
 {
-    public class XMLSerializer : IXmlSerialiazer
+    public class XMLSerializer : IXmlSerializer
     {
         private readonly ConcurrentDictionary<Type, XmlSerializer> serializers = new ConcurrentDictionary<Type, XmlSerializer>();
         private readonly XmlWriterSettings xmlWriterSettings;

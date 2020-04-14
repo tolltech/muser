@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Tolltech.MuserUI
@@ -7,14 +8,23 @@ namespace Tolltech.MuserUI
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args)
+                .Build()
+                .Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    var config = new ConfigurationBuilder()
+                        //.AddJsonFile("hosting.json", optional: true) //this is not needed, but could be useful
+                        .AddCommandLine(args)
+                        .Build();
+
+                    webBuilder
+                        .UseConfiguration(config)
+                        .UseStartup<Startup>();
                 });
     }
 }

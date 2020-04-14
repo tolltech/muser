@@ -17,16 +17,16 @@ namespace Tolltech.MuserUI.Controllers
     public class StudyController : Controller
     {
         private readonly IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory;
-        private readonly IXmlSerialiazer xmlSerialiazer;
+        private readonly IXmlSerializer xmlSerializer;
         private readonly IJsonSerializer jsonSerializer;
 
         private const string xmlContentType = "application/xml";
         private const string jsonContentType = "application/json";
 
-        public StudyController(IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory, IXmlSerialiazer xmlSerialiazer, IJsonSerializer jsonSerializer)
+        public StudyController(IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer)
         {
             this.queryExecutorFactory = queryExecutorFactory;
-            this.xmlSerialiazer = xmlSerialiazer;
+            this.xmlSerializer = xmlSerializer;
             this.jsonSerializer = jsonSerializer;
         }
 
@@ -91,7 +91,7 @@ namespace Tolltech.MuserUI.Controllers
         {
             using var queryExecutor = queryExecutorFactory.Create();
 
-            var existed = await queryExecutor.ExecuteAsync<KeyValue>(h => h.FindAsync(key)).ConfigureAwait(true);
+            var existed = await queryExecutor.ExecuteAsync(h => h.FindAsync(key)).ConfigureAwait(true);
             if (existed == null)
                 throw new HttpException((int)HttpStatusCode.BadRequest, $"Key {key} is not presented in store.");
             existed.Value = value;
@@ -142,7 +142,7 @@ namespace Tolltech.MuserUI.Controllers
 
                 var contentType = Request.ContentType;
                 return contentType == xmlContentType
-                    ? xmlSerialiazer.Deserialize<T>(body)
+                    ? xmlSerializer.Deserialize<T>(body)
                     : jsonSerializer.Deserialize<T>(body);
             }
             catch (Exception)
@@ -157,7 +157,7 @@ namespace Tolltech.MuserUI.Controllers
                 ? xmlContentType
                 : jsonContentType;
             var bytes = realContentType == xmlContentType
-                ? xmlSerialiazer.Serialize(response)
+                ? xmlSerializer.Serialize(response)
                 : jsonSerializer.Serialize(response);
             Response.Headers.Add("Content-Type", realContentType);
             return Response.Body.WriteAsync(bytes, 0, bytes.Length);

@@ -1,6 +1,6 @@
 ﻿namespace Tolltech.Serialization
 {
-    public interface IXmlSerialiazer
+    public interface IXmlSerializer
     {
         byte[] Serialize(object data);
         byte[] Serialize<T>(T data);
