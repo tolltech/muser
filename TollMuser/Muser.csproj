@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Tolltech.Muser</AssemblyName>
+    <RootNamespace>Tolltech.Muser</RootNamespace>
+  </PropertyGroup>
+
+</Project>
