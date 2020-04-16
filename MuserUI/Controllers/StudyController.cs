@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,6 +29,96 @@ namespace Tolltech.MuserUI.Controllers
             this.queryExecutorFactory = queryExecutorFactory;
             this.xmlSerializer = xmlSerializer;
             this.jsonSerializer = jsonSerializer;
+        }
+
+        public class Input
+        {
+            public int K { get; set; }
+            public decimal[] Sums { get; set; }
+            public int[] Muls { get; set; }
+        }
+
+        public class Output
+        {
+            public decimal SumResult { get; set; }
+            public int MulResult { get; set; }
+            public decimal[] SortedInputs { get; set; }
+        }
+
+        public void GetInputData()
+        {
+            WriteResponse(new Input
+            {
+                K = 10,
+                Muls = new[] { 1, 4 },
+                Sums = new[] { 1.01m, 2.02m }
+            });
+        }
+
+        [HttpGet]
+        public async Task Sleep(int milliseconds = 2000)
+        {
+            var sw = new Stopwatch();
+
+            sw.Start();
+            await Task.Delay(milliseconds).ConfigureAwait(true);
+            sw.Stop();
+
+            WriteResponse(sw.ElapsedMilliseconds);
+        }
+
+        public async Task WriteAnswer()
+        {
+            var answer = await GetFromBodyAsync<Output>().ConfigureAwait(true);
+        }
+
+        private static readonly Random random = new Random();
+        private Random Random => random ?? new Random();
+
+        public void RandomError(int probability)
+        {
+            ProcessErrorProbability(probability);
+        }
+
+        public void RandomError50()
+        {
+            ProcessErrorProbability(50);
+        }
+
+        public void RandomError90()
+        {
+            ProcessErrorProbability(90);
+        }
+
+        public void RandomError0()
+        {
+            ProcessErrorProbability(0);
+        }
+
+        public void RandomError10()
+        {
+            ProcessErrorProbability(10);
+        }
+
+        private void ProcessErrorProbability(int probability)
+        {
+            if (probability > 100)
+            {
+                probability = 100;
+            }
+
+            if (probability < 0)
+            {
+                probability = 0;
+            }
+
+            var chance = Random.Next(0, 100);
+            if (chance <= probability)
+            {
+                throw new HttpException(429, $"It's error with {probability}% probability!");
+            }
+
+            WriteResponse($"Ok! Error with {probability}% has not occured.");
         }
 
         public void Ping()
@@ -126,7 +217,6 @@ namespace Tolltech.MuserUI.Controllers
         //    filterContext.ExceptionHandled = true;
         //    ControllerContext.HttpContext.Response.TrySkipIisCustomErrors = true;
         //}
-
 
         private async Task<T> GetFromBodyAsync<T>()
         {
