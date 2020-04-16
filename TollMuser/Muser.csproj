@@ -6,4 +6,8 @@
     <RootNamespace>Tolltech.Muser</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\YandexClient\YandexClient.csproj" />
+  </ItemGroup>
+
 </Project>

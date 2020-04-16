@@ -64,7 +64,7 @@ namespace Tolltech.MuserUI.Controllers
             await Task.Delay(milliseconds).ConfigureAwait(true);
             sw.Stop();
 
-            WriteResponse(sw.ElapsedMilliseconds);
+            await WriteResponse(sw.ElapsedMilliseconds).ConfigureAwait(true);
         }
 
         public async Task WriteAnswer()
