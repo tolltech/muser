@@ -20,6 +20,7 @@ namespace Tolltech.MuserUI
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureContainer();
+            services.ConfigureAuthentication(Configuration);
 
             services.AddControllersWithViews();
         }
@@ -44,6 +45,7 @@ namespace Tolltech.MuserUI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
