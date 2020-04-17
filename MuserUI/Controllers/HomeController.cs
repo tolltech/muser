@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tolltech.MuserUI.Models;
@@ -22,6 +23,7 @@ namespace Tolltech.MuserUI.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Privacy()
         {
             return View((object)guidFactory.Create().ToString());
