@@ -1,23 +1,8 @@
-﻿using System;
+﻿using Tolltech.Musync.Domain;
 
-namespace Tolltech.Musync.Domain
+namespace Tolltech.Muser.Domain
 {
     public class VkAuthorizeException : AuthorizeException
-    {
-        
-    }
-
-    public class YaAuthorizeException : AuthorizeException
-    {
-
-    }
-
-    public class MuserAuthorizeException : AuthorizeException
-    {
-
-    }
-
-    public abstract class AuthorizeException : Exception
     {
         
     }
