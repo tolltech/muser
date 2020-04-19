@@ -10,6 +10,7 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "commandLineArgs": "--connectionString Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=tc_123456",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
