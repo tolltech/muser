@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Authentications;
 using Tolltech.MuserUI.Models;
 
@@ -13,10 +14,12 @@ namespace Tolltech.MuserUI.Controllers
     public class AccountController : BaseController
     {
         private readonly UserContext db;
+        private readonly ICryptoService cryptoService;
 
-        public AccountController(UserContext context)
+        public AccountController(UserContext context, ICryptoService cryptoService)
         {
             db = context;
+            this.cryptoService = cryptoService;
         }
 
         [HttpGet]
@@ -31,7 +34,9 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await db.Users.FirstOrDefaultAsync(u =>  u.Email == model.Email && u.Password == model.Password);
+                var hashPassword = cryptoService.EncryptSHA256(model.Password);
+                var user = await db.Users.FirstOrDefaultAsync(u =>
+                    u.Email == model.Email && u.Password == hashPassword);
                 if (user != null)
                 {
                     await Authenticate(model.Email).ConfigureAwait(true);
@@ -60,7 +65,8 @@ namespace Tolltech.MuserUI.Controllers
                 var user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email).ConfigureAwait(true);
                 if (user == null)
                 {
-                    var newUser = new User {Email = model.Email, Password = model.Password};
+                    var hashPassword = cryptoService.EncryptSHA256(model.Password);
+                    var newUser = new User {Email = model.Email, Password = hashPassword};
                     await db.Users.AddAsync(newUser).ConfigureAwait(true);
                     await db.SaveChangesAsync().ConfigureAwait(true);
 
@@ -81,8 +87,10 @@ namespace Tolltech.MuserUI.Controllers
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
             };
-            var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,  ClaimsIdentity.DefaultRoleClaimType);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id)).ConfigureAwait(false);
+            var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id))
+                .ConfigureAwait(false);
         }
 
         public async Task<IActionResult> Logout()
