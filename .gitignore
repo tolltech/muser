@@ -17,3 +17,5 @@
 /YandexClient/bin/*
 /YandexClient/obj/*
 /WebMuser.sln.DotSettings.user
+/.idea/.idea.WebMuser/.idea/*
+/.idea/*

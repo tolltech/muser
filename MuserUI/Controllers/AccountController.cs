@@ -12,7 +12,7 @@ namespace Tolltech.MuserUI.Controllers
 {
     public class AccountController : BaseController
     {
-        private UserContext db;
+        private readonly UserContext db;
 
         public AccountController(UserContext context)
         {
@@ -31,11 +31,10 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(u =>
-                    u.Email == model.Email && u.Password == model.Password);
+                var user = await db.Users.FirstOrDefaultAsync(u =>  u.Email == model.Email && u.Password == model.Password);
                 if (user != null)
                 {
-                    await Authenticate(model.Email);
+                    await Authenticate(model.Email).ConfigureAwait(true);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -58,14 +57,14 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                var user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email).ConfigureAwait(true);
                 if (user == null)
                 {
-                    // добавляем пользователя в бд
-                    db.Users.Add(new User {Email = model.Email, Password = model.Password});
-                    await db.SaveChangesAsync();
+                    var newUser = new User {Email = model.Email, Password = model.Password};
+                    await db.Users.AddAsync(newUser).ConfigureAwait(true);
+                    await db.SaveChangesAsync().ConfigureAwait(true);
 
-                    await Authenticate(model.Email); // аутентификация
+                    await Authenticate(model.Email).ConfigureAwait(true);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -78,21 +77,17 @@ namespace Tolltech.MuserUI.Controllers
 
         private async Task Authenticate(string userName)
         {
-            // создаем один claim
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
             };
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
-            // установка аутентификационных куки
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+            var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,  ClaimsIdentity.DefaultRoleClaimType);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id)).ConfigureAwait(false);
         }
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(true);
             return RedirectToAction("Login", "Account");
         }
     }
