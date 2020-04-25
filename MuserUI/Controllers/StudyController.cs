@@ -15,7 +15,7 @@ using Tolltech.SqlEF;
 namespace Tolltech.MuserUI.Controllers
 {
     [AllowAnonymous]
-    public class StudyController : Controller
+    public class StudyController : BaseController
     {
         private readonly IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory;
         private readonly IXmlSerializer xmlSerializer;

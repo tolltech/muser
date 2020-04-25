@@ -9,5 +9,8 @@ namespace Tolltech.Muser.Settings
 
         [CanBeNull]
         string Decrypt([NotNull] string src, [NotNull] string cryptoKey);
+        
+        [NotNull]
+        string EncryptSHA256([NotNull] string src);
     }
 }

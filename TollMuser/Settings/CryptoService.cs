@@ -56,5 +56,11 @@ namespace Tolltech.Muser.Settings
                 return null;
             }                        
         }
+
+        public string EncryptSHA256(string src)
+        {
+            var data = new SHA256Managed().ComputeHash(Encoding.UTF8.GetBytes(src));
+            return Encoding.UTF8.GetString(data);
+        }
     }
 }
