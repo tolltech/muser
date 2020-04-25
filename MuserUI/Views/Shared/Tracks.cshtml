@@ -1,0 +1,8 @@
+﻿@model Tolltech.MuserUI.Models.Sync.TracksModel
+<div>
+    @Html.ListBoxFor(x => x.Tracks, Model.Tracks.Select(x => new SelectListItem
+    {
+        Text = x.Artist + " - " + x.Title,
+        Value = Json.Serialize(x).ToString()
+    }), new{style= "max-width:500px;min-width:300px;height:500px;line-height:500px;" })
+</div>

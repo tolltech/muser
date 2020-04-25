@@ -18,14 +18,14 @@ namespace Tolltech.Muser.Settings
             this.cryptoService = cryptoService;
         }
 
-        public MuserAuthorization SafeGetAndCacheMuserAuthorization(string cryptoKey, Guid? userId = null)
+        public MuserAuthorization SafeGetAndCacheMuserAuthorization(Guid? userId = null)
         {
             return authorizations.TryGetValue(userId ?? Guid.Empty, out var authorization) 
                 ? authorization 
                 : null;
         }
 
-        public void SetMuserAuthorization(string cryptoKey, MuserAuthorization authorization, Guid? userId = null)
+        public void SetMuserAuthorization(MuserAuthorization authorization, Guid? userId = null)
         {
             authorizations.AddOrUpdate(userId ?? Guid.Empty, authorization, (guid, muserAuthorization) => authorization);
         }

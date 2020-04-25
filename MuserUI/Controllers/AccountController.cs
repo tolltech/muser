@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Authentications;
+using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Models;
 
 namespace Tolltech.MuserUI.Controllers
@@ -51,7 +54,7 @@ namespace Tolltech.MuserUI.Controllers
                     u.Email == model.Email && u.Password == hashPassword);
                 if (user != null)
                 {
-                    await Authenticate(model.Email).ConfigureAwait(true);
+                    await Authenticate(model.Email, user.Id).ConfigureAwait(true);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -78,11 +81,11 @@ namespace Tolltech.MuserUI.Controllers
                 if (user == null)
                 {
                     var hashPassword = cryptoService.EncryptSHA256(model.Password);
-                    var newUser = new User {Email = model.Email, Password = hashPassword};
+                    var newUser = new User {Email = model.Email, Password = hashPassword, Id = Guid.NewGuid() };
                     await db.Users.AddAsync(newUser).ConfigureAwait(true);
                     await db.SaveChangesAsync().ConfigureAwait(true);
 
-                    await Authenticate(model.Email).ConfigureAwait(true);
+                    await Authenticate(model.Email, newUser.Id).ConfigureAwait(true);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -93,11 +96,12 @@ namespace Tolltech.MuserUI.Controllers
             return View(model);
         }
 
-        private async Task Authenticate(string userName)
+        private async Task Authenticate(string userName, Guid userId)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, userName),
+                new Claim(Constants.UserIdClaim, userId.ToString()),
             };
             var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
