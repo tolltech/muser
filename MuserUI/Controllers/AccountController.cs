@@ -11,6 +11,7 @@ using Tolltech.MuserUI.Models;
 
 namespace Tolltech.MuserUI.Controllers
 {
+    [Route("account")]
     public class AccountController : BaseController
     {
         private readonly UserContext db;
@@ -22,13 +23,24 @@ namespace Tolltech.MuserUI.Controllers
             this.cryptoService = cryptoService;
         }
 
-        [HttpGet]
+        [HttpGet("")]
+        public IActionResult Index()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return View((object)HttpContext.User.Identity.Name);
+            }
+
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet("login")]
         public IActionResult Login()
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
@@ -50,13 +62,13 @@ namespace Tolltech.MuserUI.Controllers
             return View(model);
         }
 
-        [HttpGet]
+        [HttpGet("register")]
         public IActionResult Register()
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel model)
         {
@@ -93,6 +105,7 @@ namespace Tolltech.MuserUI.Controllers
                 .ConfigureAwait(false);
         }
 
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(true);

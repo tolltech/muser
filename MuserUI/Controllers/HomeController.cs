@@ -7,6 +7,7 @@ using TolltechCore;
 
 namespace Tolltech.MuserUI.Controllers
 {
+    [Route("")]
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
@@ -18,12 +19,14 @@ namespace Tolltech.MuserUI.Controllers
             this.guidFactory = guidFactory;
         }
 
+        [HttpGet("")]
         public IActionResult Index()
         {
             return View();
         }
 
         [Authorize]
+        [HttpGet("privacy")]
         public IActionResult Privacy()
         {
             return View((object)guidFactory.Create().ToString());
