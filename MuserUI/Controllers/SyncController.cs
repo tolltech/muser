@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.Muser.Domain;
 using Tolltech.Muser.Models;
@@ -9,6 +12,7 @@ using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Extensions;
 using Tolltech.MuserUI.Models.Sync;
 using Tolltech.MuserUI.Sync;
+using Tolltech.SqlEF;
 
 namespace Tolltech.MuserUI.Controllers
 {
@@ -16,6 +20,7 @@ namespace Tolltech.MuserUI.Controllers
     public class SyncController : BaseController
     {
         private readonly IImportResultLogger importResultLogger;
+        private readonly IQueryExecutorFactory queryExecutorFactory;
         private Guid UserId => SafeUserId.Value;
 
         private readonly IYandexService yandexService;
@@ -26,7 +31,8 @@ namespace Tolltech.MuserUI.Controllers
 
         public SyncController(IYandexService yandexService, IAuthorizationSettings authorizationSettings,
             IDomainService domainService, ITrackGetter trackGetter, IProgressBar progressBar,
-            IImportResultLogger importResultLogger)
+            IImportResultLogger importResultLogger, IQueryExecutorFactory queryExecutorFactory
+        )
         {
             this.yandexService = yandexService;
             this.authorizationSettings = authorizationSettings;
@@ -34,6 +40,7 @@ namespace Tolltech.MuserUI.Controllers
             this.trackGetter = trackGetter;
             this.progressBar = progressBar;
             this.importResultLogger = importResultLogger;
+            this.queryExecutorFactory = queryExecutorFactory;
         }
 
         [HttpGet("")]
@@ -125,6 +132,33 @@ namespace Tolltech.MuserUI.Controllers
         public ActionResult GetInputTracks(InputTracksModel inputTracks)
         {
             var sourceTracks = trackGetter.GetTracks(inputTracks.Text);
+            return PartialView("Tracks", sourceTracks.ToTracksModel());
+        }
+
+        [HttpPost("inputtracksfromfile")]
+        public async Task<ActionResult> GetInputTracksFromFile(IFormFile uploadedFile)
+        {
+            var memoryStream = new MemoryStream();
+            await uploadedFile.CopyToAsync(memoryStream).ConfigureAwait(true);
+
+            using var streamReader = new StreamReader(memoryStream, Encoding.UTF8);
+            var fileBody = await streamReader.ReadToEndAsync().ConfigureAwait(true);
+
+
+            var playlist = new PlaylistDbo
+            {
+                Id = Guid.NewGuid(),
+                Content = fileBody,
+                Date = DateTime.Now,
+                UserId = UserId,
+                Filename = uploadedFile.FileName,
+                Extension = new string(uploadedFile.FileName?.Reverse().TakeWhile(c => c != '.').Reverse().ToArray() ??
+                                       Array.Empty<char>())
+            };
+            using var queryExecutor = queryExecutorFactory.Create<PlaylistsHandler, PlaylistDbo>();
+            await queryExecutor.ExecuteAsync(f => f.CreateAsync(playlist)).ConfigureAwait(true);
+
+            var sourceTracks = trackGetter.GetTracks(fileBody);
             return PartialView("Tracks", sourceTracks.ToTracksModel());
         }
 
