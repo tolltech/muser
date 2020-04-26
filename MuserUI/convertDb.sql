@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users(
         email varchar(10000) NOT NULL,
         password varchar(10000) NOT NULL
         
-    )
+    );
 
 CREATE TABLE IF NOT EXISTS ImportResults(
     Id uuid NOT NULL primary key,
@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS ImportResults(
     CandidateTitle varchar NOT NULL,
     CandidateArtist varchar NOT NULL,
     Message varchar NOT NULL
-)
+);
