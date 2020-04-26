@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using log4net;
 using Tolltech.Muser.Models;
 using Tolltech.YandexClient;
 using Tolltech.YandexClient.ApiModels;
@@ -12,6 +13,7 @@ namespace Tolltech.Muser.Domain
     {
         private readonly IYandexService yandexService;
         private readonly IVkService vkService;
+        private static readonly ILog log = LogManager.GetLogger(typeof(DomainService));
 
         public DomainService(IYandexService yandexService, IVkService vkService)
         {
@@ -25,7 +27,7 @@ namespace Tolltech.Muser.Domain
             var vkTracks = await vkService.GetVkTracksUnauthorizedAsync(vkUserId).ConfigureAwait(false);
             var yaTracks = await yandexApi.GetTracksAsync(yaPlaylistId).ConfigureAwait(false);
 
-            //log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {vkTracks.Length} vkTracks");
+            log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {vkTracks.Length} vkTracks");
 
             return new SyncTracks(vkTracks, yaTracks).GetNewTracks();
         }
@@ -43,7 +45,7 @@ namespace Tolltech.Muser.Domain
             var notFoundCount = 0;
             var totalCount = trackToImport.Length;
 
-            //log.Info($"Start import {totalCount} tracks for user {userId}");
+            log.Info($"Start import {totalCount} tracks for user {userId}");
 
             var syncTracks = new SyncTracks(trackToImport, existentTracks);
             var newTracks = syncTracks.GetNewTracks();
@@ -58,7 +60,7 @@ namespace Tolltech.Muser.Domain
 
             foreach (var track in newTracks)
             {
-                //log.Info($"START process {track.Artist} - {track.Title}");
+                log.Info($"START process {track.Artist} - {track.Title}");
                 var importResult = new ImportResult(track.Artist, track.Title);
 
                 try
@@ -78,7 +80,7 @@ namespace Tolltech.Muser.Domain
                             Title = normalizeTitle
                         };
 
-                        //log.Info($"TRY found normalized {normalizeArtist} - {normalizeTitle}");
+                        log.Info($"TRY found normalized {normalizeArtist} - {normalizeTitle}");
                         yandexApiTracks = await yandexApi.SearchAsync($"{normalizeTitle} {normalizeArtist}")
                             .ConfigureAwait(false);
                     }
@@ -91,7 +93,7 @@ namespace Tolltech.Muser.Domain
                     {
                         ++notFoundCount;
 
-                        //log.Info($"SKIP Not found {track.Artist} - {track.Title} Notfound {notFoundCount}");
+                        log.Info($"SKIP Not found {track.Artist} - {track.Title} Notfound {notFoundCount}");
                         var foundedYaTrack = yandexApiTracks.FirstOrDefault();
                         var artistStr = foundedYaTrack?.ArtistsStr;
 
@@ -101,7 +103,7 @@ namespace Tolltech.Muser.Domain
                             Artist = artistStr,
                             Title = foundedYaTrack?.Title
                         };
-                        //log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
+                        log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
 
                         continue;
                     }
@@ -116,7 +118,7 @@ namespace Tolltech.Muser.Domain
                     if (foundTracks.Contains(trackHash))
                     {
                         importResult.ImportStatus = ImportStatus.AlreadyExists;
-                        //log.Info($"SKIP Already exists {track.Artist} - {track.Title} ({completeCount}/{totalCount})");
+                        log.Info($"SKIP Already exists {track.Artist} - {track.Title} ({completeCount}/{totalCount})");
                         continue;
                     }
                     else
@@ -136,7 +138,7 @@ namespace Tolltech.Muser.Domain
                 }
                 catch (YandexApiException ex)
                 {
-                    //log.Info($"ERROR YandexApiError {ex.Message}");
+                    log.Info($"ERROR YandexApiError {ex.Message}");
                     importResult.ImportStatus = ImportStatus.Error;
                     importResult.Message = $"Error: {ex.Message}. StackTrace: {ex.StackTrace}";
                 }
@@ -144,7 +146,7 @@ namespace Tolltech.Muser.Domain
                 {
                     result.Add(importResult);
                     percentsComplete?.Invoke((++completeCount, totalCount));
-                    //log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
+                    log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
                 }
             }
 

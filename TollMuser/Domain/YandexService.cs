@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using log4net;
 using Tolltech.Muser.Settings;
 using Tolltech.Musync.Domain;
 using Tolltech.Serialization;
@@ -12,7 +13,7 @@ namespace Tolltech.Muser.Domain
 {
     public class YandexService : IYandexService
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(YandexService));
+        private static readonly ILog log = LogManager.GetLogger(typeof(YandexService));
 
         private readonly IAuthorizationSettings authorizationSettings;
         private readonly IJsonSerializer serializer;
@@ -32,7 +33,7 @@ namespace Tolltech.Muser.Domain
             {
                 await InnerGetClientAsync(login, password).ConfigureAwait(false);
             }
-            catch (YaAuthorizeException e)
+            catch (YaAuthorizeException)
             {
                 return false;
             }
@@ -69,7 +70,7 @@ namespace Tolltech.Muser.Domain
             var login = authorizationSettings.GetCachedMuserAuthorization(userId)?.YaLogin;
             var password = authorizationSettings.GetCachedMuserAuthorization(userId)?.YaPassword;
 
-            //log.Info($"Try to create yandex client for user {userId} and login {login}");
+            log.Info($"Try to create yandex client for user {userId} and login {login}");
 
             return InnerGetClientAsync(login, password);
         }
@@ -82,7 +83,7 @@ namespace Tolltech.Muser.Domain
             {
                 var authorizationInfo = await yandexCredentials.GetAuthorizationInfoAsync().ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
