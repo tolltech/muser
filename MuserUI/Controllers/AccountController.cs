@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tolltech.Muser.Settings;
@@ -15,6 +15,7 @@ using Tolltech.MuserUI.Models;
 namespace Tolltech.MuserUI.Controllers
 {
     [Route("account")]
+    [AllowAnonymous]
     public class AccountController : BaseController
     {
         private readonly UserContext db;
@@ -110,6 +111,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpPost("logout")]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(true);

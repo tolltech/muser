@@ -20,12 +20,19 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            return View();
+            if (SafeUserId.HasValue)
+            {
+                return RedirectToAction("Index","Sync");
+            }
+            else
+            {
+                return View();
+            } 
         }
 
-        [Authorize]
         [HttpGet("privacy")]
         public IActionResult Privacy()
         {

@@ -1,50 +1,9 @@
-﻿@using Tolltech.MuserUI.Common
-@using Tolltech.MuserUI.Extensions
-@using Tolltech.MuserUI.Models.Sync
-@{
+﻿@{
     ViewBag.Title = "Tollmuser";
 }
-<table>
-    <tr>
-        <td style="width: 10%">
-            InputPlaylists
-        </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td style="width: 10%;">
-            @await Html.PartialAsync("YaAuthorize",new AuthorizeForm { Login = Context.Request.FindCookies(Constants.YaLoginCookie) ?? string.Empty })
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-            <div id="yaPlaylists">
-                @await Html.PartialAsync("YaPlaylists",new YaPlaylists())
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div id="vkTracks">
-                @await Html.PartialAsync("Tracks",new TracksModel())
-            </div>
-        </td>
-        <td></td>
-        <td>
-            <div>
-                <input id="syncButton" type="button" value="Показать новые треки" disabled="disabled" class="importButtons" />
-                <input id="importButton" type="button" value="Импорт" disabled="disabled" class="importButtons" />
-            </div>
-        </td>
-        <td></td>
-        <td>
-            <div id="yaTracks">
-                @await Html.PartialAsync("Tracks",new TracksModel())
-            </div>
-        </td>
-    </tr>
-</table>
+
+<h1>@ViewData["Title"]</h1>
+
+<span>
+    <a href="@Url.Action("Index","Account")">Авторизуйтесь</a><span>, чтобы воспользоваться сайтом</span>
+</span> 

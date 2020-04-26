@@ -35,6 +35,12 @@ namespace Tolltech.MuserUI.Controllers
             this.importResultLogger = importResultLogger;
         }
 
+        [HttpGet("")]
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         [HttpGet("yatracks")]
         public async Task<ActionResult> GetYaTracks(string yaPlaylistId)
         {
@@ -114,7 +120,7 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("newvktracks")]
         public async Task<ActionResult> GetNewVkTracks(string audioStr, string yaPlaylistId)
         {
             var audioUrl = trackGetter.GetAudioUrl(audioStr);
@@ -124,7 +130,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("import")]
         public async Task<ActionResult> ImportTracks(TrackImportForm tracksForm)
         {
             var trackToImport = tracksForm.Tracks.Tracks
