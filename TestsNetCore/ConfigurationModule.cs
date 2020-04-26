@@ -7,7 +7,7 @@ namespace Tolltech.TestsNetCore
     {
         public override void Load()
         {
-            IoCResolver.Resolve((@interface, implementation) => this.Bind(@interface).To(implementation), "Tolltech");
+            IoCResolver.Resolve((@interface, implementation) => this.Bind(@interface).To(implementation), null, "Tolltech");
         }
     }
 }

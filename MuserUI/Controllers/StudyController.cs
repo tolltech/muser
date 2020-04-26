@@ -17,14 +17,14 @@ namespace Tolltech.MuserUI.Controllers
     [AllowAnonymous]
     public class StudyController : BaseController
     {
-        private readonly IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory;
+        private readonly IQueryExecutorFactory queryExecutorFactory;
         private readonly IXmlSerializer xmlSerializer;
         private readonly IJsonSerializer jsonSerializer;
 
         private const string xmlContentType = "application/xml";
         private const string jsonContentType = "application/json";
 
-        public StudyController(IQueryExecutorFactory<KeyValueHandler, KeyValue> queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer)
+        public StudyController(IQueryExecutorFactory queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer)
         {
             this.queryExecutorFactory = queryExecutorFactory;
             this.xmlSerializer = xmlSerializer;
@@ -134,7 +134,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet]
         public async Task Find(string key)
         {
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue>();
 
             var keyValue = await queryExecutor.ExecuteAsync(h => h.FindAsync(key)).ConfigureAwait(true);
             await WriteResponse(keyValue).ConfigureAwait(true);
@@ -143,7 +143,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet]
         public async Task SelectAsync(string[] keys)
         {
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue> ();
 
             var keyValue = await queryExecutor.ExecuteAsync(h => h.SelectAsync(keys)).ConfigureAwait(true);
             await WriteResponse(keyValue).ConfigureAwait(true);
@@ -153,7 +153,7 @@ namespace Tolltech.MuserUI.Controllers
         public async Task Create()
         {
             var keyValue = await GetFromBodyAsync<KeyValue>().ConfigureAwait(true);
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue> ();
 
             if (await queryExecutor.ExecuteAsync(h => h.FindAsync(keyValue.Key)).ConfigureAwait(true) != null)
                 throw new HttpException((int)HttpStatusCode.BadRequest,
@@ -165,7 +165,7 @@ namespace Tolltech.MuserUI.Controllers
         public async Task CreateAll()
         {
             var keyValues = await GetFromBodyAsync<KeyValue[]>().ConfigureAwait(true);
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue> ();
 
             foreach (var keyValue in keyValues)
             {
@@ -180,7 +180,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost]
         public async Task Update(string key, string value)
         {
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue> ();
 
             var existed = await queryExecutor.ExecuteAsync(h => h.FindAsync(key)).ConfigureAwait(true);
             if (existed == null)

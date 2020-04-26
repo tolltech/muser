@@ -8,9 +8,9 @@ namespace Tolltech.MuserUI.Sync
 {
     public class ImportResultLogger : IImportResultLogger
     {
-        private readonly IQueryExecutorFactory<ImportResultHandler, ImportResultDbo> queryExecutorFactory;
+        private readonly IQueryExecutorFactory queryExecutorFactory;
 
-        public ImportResultLogger(IQueryExecutorFactory<ImportResultHandler,ImportResultDbo> queryExecutorFactory)
+        public ImportResultLogger(IQueryExecutorFactory queryExecutorFactory)
         {
             this.queryExecutorFactory = queryExecutorFactory;
         }
@@ -35,7 +35,7 @@ namespace Tolltech.MuserUI.Sync
                 Status = x.ImportStatus
             }).ToArray();
 
-            using var queryExecutor = queryExecutorFactory.Create();
+            using var queryExecutor = queryExecutorFactory.Create<ImportResultHandler, ImportResultDbo>();
             return queryExecutor.ExecuteAsync(x => x.CreateAsync(importResults));
         }
     }

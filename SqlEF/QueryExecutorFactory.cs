@@ -2,7 +2,7 @@
 
 namespace Tolltech.SqlEF
 {
-    public class QueryExecutorFactory<TSqlHandler, TSqlEntity> : IQueryExecutorFactory<TSqlHandler, TSqlEntity> where TSqlEntity : class where TSqlHandler : SqlHandlerBase<TSqlEntity>
+    public class QueryExecutorFactory : IQueryExecutorFactory
     {
         private readonly IDataContextFactory dataContextFactory;
         private readonly ISqlHandlerProvider sqlHandlerProvider;
@@ -13,9 +13,11 @@ namespace Tolltech.SqlEF
             this.sqlHandlerProvider = sqlHandlerProvider;
         }
 
-        public QueryExecutor<TSqlHandler, TSqlEntity> Create()
+        public QueryExecutor<TSqlHandler, TSqlEntity> Create<TSqlHandler, TSqlEntity>() where TSqlEntity : class
+            where TSqlHandler : SqlHandlerBase<TSqlEntity>
         {
-            return new QueryExecutor<TSqlHandler, TSqlEntity>(dataContextFactory.Create<TSqlEntity>(), sqlHandlerProvider);
+            return new QueryExecutor<TSqlHandler, TSqlEntity>(dataContextFactory.Create<TSqlEntity>(),
+                sqlHandlerProvider);
         }
     }
 }

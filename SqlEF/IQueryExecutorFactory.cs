@@ -2,8 +2,8 @@
 
 namespace Tolltech.SqlEF
 {
-    public interface IQueryExecutorFactory<TSqlHandler, TSqlEntity> where TSqlEntity : class where TSqlHandler : SqlHandlerBase<TSqlEntity>
+    public interface IQueryExecutorFactory
     {
-        QueryExecutor<TSqlHandler, TSqlEntity> Create();
+        QueryExecutor<TSqlHandler, TSqlEntity> Create<TSqlHandler, TSqlEntity>() where TSqlEntity : class where TSqlHandler : SqlHandlerBase<TSqlEntity>;
     }
 }
