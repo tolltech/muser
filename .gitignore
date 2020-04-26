@@ -19,3 +19,5 @@
 /WebMuser.sln.DotSettings.user
 /.idea/.idea.WebMuser/.idea/*
 /.idea/*
+/MuserUI/node_modules/*
+/node_modules/*

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Tolltech.YandexClient.ApiModels
@@ -25,5 +26,10 @@ namespace Tolltech.YandexClient.ApiModels
 
         [JsonProperty("albums")]
         public Album[] Albums { get; set; }
+
+        public string ArtistsStr
+        {
+            get { return string.Join(", ", Artists?.Select(x => x.Name).ToArray() ?? Array.Empty<string>()); }
+        }
     }
 }

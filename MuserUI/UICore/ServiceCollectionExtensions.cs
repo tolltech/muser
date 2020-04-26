@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tolltech.MuserUI.Authentications;
-using Tolltech.MuserUI.Study;
-using Tolltech.SqlEF;
+using Tolltech.YandexClient;
+using Tolltech.YandexClient.Authorizations;
 using TolltechCore;
 
 namespace Tolltech.MuserUI.UICore
@@ -13,11 +15,17 @@ namespace Tolltech.MuserUI.UICore
     {
         public static void ConfigureContainer(this IServiceCollection serviceCollection)
         {
-            serviceCollection
-                .AddSingleton<IQueryExecutorFactory<KeyValueHandler, KeyValue>,
-                    QueryExecutorFactory<KeyValueHandler, KeyValue>>();
+            //serviceCollection
+            //    .AddSingleton<IQueryExecutorFactory<KeyValueHandler, KeyValue>,
+            //        QueryExecutorFactory<KeyValueHandler, KeyValue>>();
 
-            IoCResolver.Resolve((x, y) => serviceCollection.AddSingleton(x, y), "Tolltech");
+            var ignoreTypes = new HashSet<Type>
+            {
+                typeof(IYandexMusicClient),
+                typeof(IYandexCredentials),
+            };
+
+            IoCResolver.Resolve((x, y) => serviceCollection.AddSingleton(x, y), ignoreTypes, "Tolltech");
         }
         
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)

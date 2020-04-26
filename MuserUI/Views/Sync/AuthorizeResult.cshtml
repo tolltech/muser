@@ -1,0 +1,10 @@
+﻿@model Tolltech.MuserUI.Models.Sync.AuthorizeResult
+
+@if (!Model.Success)
+{
+    <label style="color: red">Ошибка авторизации</label>
+}
+else
+{
+    <label>Ok!</label>
+}

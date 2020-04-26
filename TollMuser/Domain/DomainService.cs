@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using log4net;
 using Tolltech.Muser.Models;
 using Tolltech.YandexClient;
 using Tolltech.YandexClient.ApiModels;
@@ -12,6 +13,7 @@ namespace Tolltech.Muser.Domain
     {
         private readonly IYandexService yandexService;
         private readonly IVkService vkService;
+        private static readonly ILog log = LogManager.GetLogger(typeof(DomainService));
 
         public DomainService(IYandexService yandexService, IVkService vkService)
         {
@@ -25,17 +27,17 @@ namespace Tolltech.Muser.Domain
             var vkTracks = await vkService.GetVkTracksUnauthorizedAsync(vkUserId).ConfigureAwait(false);
             var yaTracks = await yandexApi.GetTracksAsync(yaPlaylistId).ConfigureAwait(false);
 
-            //log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {vkTracks.Length} vkTracks");
+            log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {vkTracks.Length} vkTracks");
 
             return new SyncTracks(vkTracks, yaTracks).GetNewTracks();
         }
 
-        public async Task ImportTracksAsync(VkTrack[] trackToImport, string playlistId, Guid? userId,
+        public async Task<ImportResult[]> ImportTracksAsync(VkTrack[] trackToImport, string playlistId, Guid? userId,
             Action<(int Processed, int Total)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
-
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
+            
             var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
             var foundTracks = new HashSet<(string Id, string AlbumId)>(existentTracksHash);
 
@@ -43,23 +45,44 @@ namespace Tolltech.Muser.Domain
             var notFoundCount = 0;
             var totalCount = trackToImport.Length;
 
-            //log.Info($"Start import {totalCount} tracks for user {userId}");
+            log.Info($"Start import {totalCount} tracks for user {userId}");
 
-            foreach (var track in trackToImport)
+            var syncTracks = new SyncTracks(trackToImport, existentTracks);
+            var newTracks = syncTracks.GetNewTracks();
+            var alreadyExistentTracks = trackToImport.Except(newTracks).Select(x=> new ImportResult(x.Artist, x.Title)
             {
+                ImportStatus = ImportStatus.AlreadyExists,
+                Message = "This track should not be in this request",                                
+            });
+
+            var result = new List<ImportResult>(trackToImport.Length);
+            result.AddRange(alreadyExistentTracks);
+
+            foreach (var track in newTracks)
+            {
+                log.Info($"START process {track.Artist} - {track.Title}");
+                var importResult = new ImportResult(track.Artist, track.Title);
+
                 try
                 {
-                    //log.Info($"START process {track.Artist} - {track.Title}");
-
                     var titleNormalizeForYandex = track.Title.NormalizeForYandex();
                     var artistNormalizeForYandex = track.Artist.NormalizeForYandex();
-                    var yandexApiTracks = await yandexApi.SearchAsync($"{titleNormalizeForYandex} {artistNormalizeForYandex}").ConfigureAwait(false);
+                    var yandexApiTracks = await yandexApi
+                        .SearchAsync($"{titleNormalizeForYandex} {artistNormalizeForYandex}").ConfigureAwait(false);
                     if (yandexApiTracks.Length == 0)
                     {
                         var normalizeTitle = titleNormalizeForYandex.NormalizeTrackInfo();
                         var normalizeArtist = artistNormalizeForYandex.NormalizeTrackInfo();
-                        //log.Info($"TRY found normalized {normalizeArtist} - {normalizeTitle}");
-                        yandexApiTracks = await yandexApi.SearchAsync($"{normalizeTitle} {normalizeArtist}").ConfigureAwait(false);
+
+                        importResult.NormalizedTrack = new ImportingTrack
+                        {
+                            Artist = normalizeArtist,
+                            Title = normalizeTitle
+                        };
+
+                        log.Info($"TRY found normalized {normalizeArtist} - {normalizeTitle}");
+                        yandexApiTracks = await yandexApi.SearchAsync($"{normalizeTitle} {normalizeArtist}")
+                            .ConfigureAwait(false);
                     }
 
                     var yaTracks = new YandexTracks(yandexApiTracks);
@@ -70,17 +93,32 @@ namespace Tolltech.Muser.Domain
                     {
                         ++notFoundCount;
 
-                        //log.Info($"SKIP Not found {track.Artist} - {track.Title} Notfound {notFoundCount}");
+                        log.Info($"SKIP Not found {track.Artist} - {track.Title} Notfound {notFoundCount}");
                         var foundedYaTrack = yandexApiTracks.FirstOrDefault();
-                        var artistStr = string.Join(", ", foundedYaTrack?.Artists.Select(x => x.Name) ?? Enumerable.Empty<string>());
-                        //log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
+                        var artistStr = foundedYaTrack?.ArtistsStr;
+
+                        importResult.ImportStatus = ImportStatus.NotFound;
+                        importResult.Candidate = new ImportingTrack
+                        {
+                            Artist = artistStr,
+                            Title = foundedYaTrack?.Title
+                        };
+                        log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
+
                         continue;
                     }
+
+                    importResult.Candidate = new ImportingTrack
+                    {
+                        Artist = yaTrack.ArtistsStr,
+                        Title = yaTrack.Title
+                    };
 
                     var trackHash = (Id: yaTrack.Id, AlbumId: yaTrack.Albums.First().Id);
                     if (foundTracks.Contains(trackHash))
                     {
-                        //log.Info($"SKIP Already exists {track.Artist} - {track.Title} ({completeCount}/{totalCount})");
+                        importResult.ImportStatus = ImportStatus.AlreadyExists;
+                        log.Info($"SKIP Already exists {track.Artist} - {track.Title} ({completeCount}/{totalCount})");
                         continue;
                     }
                     else
@@ -94,18 +132,25 @@ namespace Tolltech.Muser.Domain
                     var trackToChange = new TrackToChange {Id = trackHash.Id, AlbumId = trackHash.AlbumId};
                     await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, trackToChange).ConfigureAwait(false);
 
+                    importResult.ImportStatus = ImportStatus.Ok;
+
                     await Task.Delay(200).ConfigureAwait(false);
                 }
                 catch (YandexApiException ex)
                 {
-                    //log.Info($"ERROR YandexApiError {ex.Message}");
+                    log.Info($"ERROR YandexApiError {ex.Message}");
+                    importResult.ImportStatus = ImportStatus.Error;
+                    importResult.Message = $"Error: {ex.Message}. StackTrace: {ex.StackTrace}";
                 }
                 finally
                 {
+                    result.Add(importResult);
                     percentsComplete?.Invoke((++completeCount, totalCount));
-                    //log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
+                    log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
                 }
             }
+
+            return result.ToArray();
         }
     }
 }

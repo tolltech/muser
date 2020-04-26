@@ -1,0 +1,24 @@
+﻿@model Tolltech.MuserUI.Models.Sync.AuthorizeForm
+
+<form asp-action="AuthorizeYa" asp-controller="Sync"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="replace"
+      data-ajax-success="$('#yaPlaylistForm').submit()"
+      data-ajax-failure="YaFail()"
+      data-ajax-update="#yaPlaylists">
+
+    <fieldset>
+        <legend>Авторизация Яндекс</legend>
+        <div>
+            @Html.LabelFor(m => m.Login, "Логин")
+            @Html.TextBoxFor(m => m.Login)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.Pass, "Пароль")
+            @Html.PasswordFor(m => m.Pass)
+        </div>
+        <input type="submit" value="Авторизовать" class="btn btn-outline-dark"/>
+        <input type="button" value="Разлогиниться" id="unAuthorizeButton" onclick='UnauthorizeYa("@Url.Action("UnauthorizeYa", "Sync")")' class="btn btn-outline-dark"/>
+    </fieldset>
+</form>

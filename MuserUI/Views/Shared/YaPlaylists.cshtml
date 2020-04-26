@@ -1,0 +1,10 @@
+﻿@model Tolltech.MuserUI.Models.Sync.YaPlaylists
+<form id="yaPlaylistForm" asp-action="GetYaTracks" asp-controller="Sync"
+      data-ajax="true"
+      data-ajax-method="GET"
+      data-ajax-mode="replace"
+      data-ajax-success="YaSuccess(data)"
+      data-ajax-failure="YaFail()"
+      data-ajax-update="#yaTracks">
+    @Html.DropDownList("yaPlaylistId", Model.Playlists.Select(x => new SelectListItem {Value = x.Id, Text = x.Title, Selected = x.Title == "Vk"}), new {id = "yaPlaylists"})
+</form>

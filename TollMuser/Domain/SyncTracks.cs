@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using log4net;
 using Tolltech.Muser.Models;
 
 namespace Tolltech.Muser.Domain
@@ -8,6 +9,7 @@ namespace Tolltech.Muser.Domain
         private readonly VkTrack[] vkTracks;
 
         private readonly YandexTracks yandexTracks;
+        private static readonly ILog log = LogManager.GetLogger(typeof(SyncTracks));
 
         public SyncTracks(VkTrack[] vkTracks, YandexClient.ApiModels.Track[] yaTracks)
         {
@@ -21,7 +23,7 @@ namespace Tolltech.Muser.Domain
                 .Where(x => yandexTracks.FindEqualTrack(x) == null)
                 .ToArray();
 
-            //log.Info($"Found {newTracks.Length} new tracks");
+            log.Info($"Found {newTracks.Length} new tracks");
 
             return newTracks;
         }
