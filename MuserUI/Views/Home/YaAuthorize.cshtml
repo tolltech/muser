@@ -7,20 +7,18 @@
       data-ajax-success="$('#yaPlaylistForm').submit()"
       data-ajax-failure="YaFail()"
       data-ajax-update="#yaPlaylists">
-   
+
     <fieldset>
         <legend>Авторизация Яндекс</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.Login,"Логин")
-                @Html.TextBoxFor(m => m.Login)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Pass,"Пароль")
-                @Html.PasswordFor(m => m.Pass)
-            </li>
-        </ol>
-        <input type="submit" value="Авторизовать" />
-        <input type="button" value="Разлогиниться" id="unAuthorizeButton" onclick='UnauthorizeYa("@Url.Action("UnauthorizeYa", "Sync")")' />
+        <div>
+            @Html.LabelFor(m => m.Login, "Логин")
+            @Html.TextBoxFor(m => m.Login)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.Pass, "Пароль")
+            @Html.PasswordFor(m => m.Pass)
+        </div>
+        <input type="submit" value="Авторизовать" class="btn btn-outline-dark"/>
+        <input type="button" value="Разлогиниться" id="unAuthorizeButton" onclick='UnauthorizeYa("@Url.Action("UnauthorizeYa", "Sync")")' class="btn btn-outline-dark"/>
     </fieldset>
 </form>
