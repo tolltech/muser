@@ -49,7 +49,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
     <script type="text/javascript">
-        SyncControl('@Url.Action("GetNewVkTracks", "Sync")','@Url.Action("ImportTracks", "Sync")');
+        SyncControl('@Url.Action("GetNewTracks", "Sync")','@Url.Action("ImportTracks", "Sync")');
     </script>
 </body>
 </html>

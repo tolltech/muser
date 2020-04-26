@@ -6,20 +6,20 @@ namespace Tolltech.Muser.Domain
 {
     public class SyncTracks
     {
-        private readonly VkTrack[] vkTracks;
+        private readonly NormalizedTrack[] normalizedTracks;
 
         private readonly YandexTracks yandexTracks;
         private static readonly ILog log = LogManager.GetLogger(typeof(SyncTracks));
 
-        public SyncTracks(VkTrack[] vkTracks, YandexClient.ApiModels.Track[] yaTracks)
+        public SyncTracks(NormalizedTrack[] normalizedTracks, YandexClient.ApiModels.Track[] yaTracks)
         {
-            this.vkTracks = vkTracks;
+            this.normalizedTracks = normalizedTracks;
             yandexTracks = new YandexTracks(yaTracks);
         }
 
-        public VkTrack[] GetNewTracks()
+        public NormalizedTrack[] GetNewTracks()
         {
-            var newTracks = vkTracks
+            var newTracks = normalizedTracks
                 .Where(x => yandexTracks.FindEqualTrack(x) == null)
                 .ToArray();
 

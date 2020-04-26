@@ -12,27 +12,28 @@ namespace Tolltech.Muser.Domain
     public class DomainService : IDomainService
     {
         private readonly IYandexService yandexService;
-        private readonly IVkService vkService;
+        private readonly INormalizedTrackService normalizedTrackService;
         private static readonly ILog log = LogManager.GetLogger(typeof(DomainService));
 
-        public DomainService(IYandexService yandexService, IVkService vkService)
+        public DomainService(IYandexService yandexService, INormalizedTrackService normalizedTrackService)
         {
             this.yandexService = yandexService;
-            this.vkService = vkService;
+            this.normalizedTrackService = normalizedTrackService;
         }
 
-        public async Task<VkTrack[]> GetNewVkTracksUnauthorizedAsync(string yaPlaylistId, Guid? userId, string vkUserId)
+        public async Task<NormalizedTrack[]> GetNewTracksAsync(string yaPlaylistId, Guid? userId,
+            SourceTrack[] inputTracks)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
-            var vkTracks = await vkService.GetVkTracksUnauthorizedAsync(vkUserId).ConfigureAwait(false);
+            var normalizedTracks = normalizedTrackService.GetNormalizedTracks(inputTracks);
             var yaTracks = await yandexApi.GetTracksAsync(yaPlaylistId).ConfigureAwait(false);
 
-            log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {vkTracks.Length} vkTracks");
+            log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {normalizedTracks.Length} vkTracks");
 
-            return new SyncTracks(vkTracks, yaTracks).GetNewTracks();
+            return new SyncTracks(normalizedTracks, yaTracks).GetNewTracks();
         }
 
-        public async Task<ImportResult[]> ImportTracksAsync(VkTrack[] trackToImport, string playlistId, Guid? userId,
+        public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid? userId,
             Action<(int Processed, int Total)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);

@@ -4,7 +4,7 @@ using Tolltech.Muser.Domain;
 
 namespace Tolltech.Muser.Models
 {
-    public class VkTrack
+    public class NormalizedTrack
     {
         public string Artist { get; set; }
         public string Title { get; set; }

@@ -27,7 +27,7 @@ namespace Tolltech.MuserUI.Common
         }
 
         [NotNull]
-        public static TracksModel ToTracksModel([NotNull] this VkTrack[] tracks)
+        public static TracksModel ToTracksModel([NotNull] this NormalizedTrack[] tracks)
         {
             return new TracksModel
             {
@@ -50,6 +50,21 @@ namespace Tolltech.MuserUI.Common
                     .Select(x => new TrackModel
                     {
                         Artist = x.Artists.Select(y => y.Name).JoinToString(),
+                        Title = x.Title
+                    })
+                    .ToList()
+            };
+        }
+
+        [NotNull]
+        public static TracksModel ToTracksModel([NotNull] this SourceTrack[] tracks)
+        {
+            return new TracksModel
+            {
+                Tracks = tracks
+                    .Select(x => new TrackModel
+                    {
+                        Artist = x.Artist,
                         Title = x.Title
                     })
                     .ToList()

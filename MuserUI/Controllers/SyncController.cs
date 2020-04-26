@@ -120,13 +120,19 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        [HttpGet("newvktracks")]
-        public async Task<ActionResult> GetNewVkTracks(string audioStr, string yaPlaylistId)
+        [HttpGet("newtracks")]
+        public async Task<ActionResult> GetNewTracks(string audioStr, string yaPlaylistId)
         {
-            var audioUrl = trackGetter.GetAudioUrl(audioStr);
-            var tracks = await domainService.GetNewVkTracksUnauthorizedAsync(yaPlaylistId, UserId, audioUrl)
-                .ConfigureAwait(true);
+            var inputTracks = trackGetter.GetTracks(audioStr);
+            var tracks = await domainService.GetNewTracksAsync(yaPlaylistId, UserId, inputTracks).ConfigureAwait(true);
             return PartialView("Tracks", tracks.ToTracksModel());
+        }
+        
+        [HttpGet("inputtracks")]
+        public ActionResult GetInputTracks(InputTracksModel inputTracks)
+        {
+            var sourceTracks = trackGetter.GetTracks(inputTracks.Text);
+            return PartialView("Tracks", sourceTracks.ToTracksModel());
         }
 
 
@@ -134,7 +140,7 @@ namespace Tolltech.MuserUI.Controllers
         public async Task<ActionResult> ImportTracks(TrackImportForm tracksForm)
         {
             var trackToImport = tracksForm.Tracks.Tracks
-                .Select(x => new VkTrack
+                .Select(x => new NormalizedTrack
                 {
                     Artist = x.Artist,
                     Title = x.Title,

@@ -16,12 +16,12 @@ namespace Tolltech.Muser.Domain
         }
 
         [CanBeNull]
-        public Track FindEqualTrack(VkTrack vkTrack)
+        public Track FindEqualTrack(NormalizedTrack normalizedTrack)
         {
             return tracks.FirstOrDefault(yaTrack =>
                 yaTrack.Albums.Length > 0
-                && BrutteEquals(yaTrack.Title, vkTrack.Title)
-                && yaTrack.Artists.Any(y => vkTrack.AllArtists.Any(v =>
+                && BrutteEquals(yaTrack.Title, normalizedTrack.Title)
+                && yaTrack.Artists.Any(y => normalizedTrack.AllArtists.Any(v =>
                 {
                     var yLower = y.Name.ToLowerInvariant();
                     var vLower = v.ToLowerInvariant();

@@ -9,23 +9,23 @@ namespace Tolltech.TestsNetCore.Domain
     public class YandexTracksTest : TestBase
     {
         [Test, TestCaseSource(nameof(TestCases))]
-        public void TestGetTracks(VkTrack vkTrack, Track yaTrack, bool expected, string msg = null)
+        public void TestGetTracks(NormalizedTrack normalizedTrack, Track yaTrack, bool expected, string msg = null)
         {
-            var track = new YandexTracks(new[] {yaTrack}).FindEqualTrack(vkTrack);
+            var track = new YandexTracks(new[] {yaTrack}).FindEqualTrack(normalizedTrack);
             if (expected)
             {
-                Assert.AreEqual(yaTrack, track, GetMessage(vkTrack, yaTrack, msg));
+                Assert.AreEqual(yaTrack, track, GetMessage(normalizedTrack, yaTrack, msg));
             }
             else
             {
-                Assert.AreNotEqual(yaTrack, track, GetMessage(vkTrack, yaTrack, msg));
+                Assert.AreNotEqual(yaTrack, track, GetMessage(normalizedTrack, yaTrack, msg));
             }
         }
 
-        private string GetMessage(VkTrack vkTrack, Track yaTrack, string msg)
+        private string GetMessage(NormalizedTrack normalizedTrack, Track yaTrack, string msg)
         {
             return
-                $"#{msg}: {vkTrack.Artist}-{vkTrack.Title} vs {string.Join(", ", yaTrack.Artists.Select(x => x.Name))}-{yaTrack.Title}";
+                $"#{msg}: {normalizedTrack.Artist}-{normalizedTrack.Title} vs {string.Join(", ", yaTrack.Artists.Select(x => x.Name))}-{yaTrack.Title}";
         }
 
         static readonly object[] TestCases =
@@ -48,7 +48,7 @@ namespace Tolltech.TestsNetCore.Domain
             new object[] {CreateVkTrack("title", "artist"), CreateYaTrack(null, "artist"), false, "12"},
         };
 
-        static VkTrack CreateVkTrack(string title, string artist) => new VkTrack {Artist = artist, Title = title};
+        static NormalizedTrack CreateVkTrack(string title, string artist) => new NormalizedTrack {Artist = artist, Title = title};
 
         static Track CreateYaTrack(string title, params string[] artists) => new Track
         {

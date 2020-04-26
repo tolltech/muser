@@ -9,14 +9,14 @@ namespace Tolltech.TestsNetCore.Domain
         [Test, TestCaseSource(nameof(TestCases))]
         public void TestArtists(string artist, string[] expected)
         {
-            CollectionAssert.AreEqual(expected, new VkTrack {Artist = artist}.Artists);
-            CollectionAssert.AreEqual(expected, new VkTrack {Artist = artist}.NormalizedArtists);
+            CollectionAssert.AreEqual(expected, new NormalizedTrack {Artist = artist}.Artists);
+            CollectionAssert.AreEqual(expected, new NormalizedTrack {Artist = artist}.NormalizedArtists);
         }
 
         [Test, TestCaseSource(nameof(TestCasesForNormalize))]
         public void TestWithNormalizedArtists(string artist, string[] expected)
         {
-            CollectionAssert.AreEqual(expected, new VkTrack {Artist = artist}.AllArtists);
+            CollectionAssert.AreEqual(expected, new NormalizedTrack {Artist = artist}.AllArtists);
         }
 
         private static readonly object[] TestCases =

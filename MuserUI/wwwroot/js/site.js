@@ -1,11 +1,11 @@
 ﻿function SyncControl(getNewTracksUrl, importTracksUrl) {
     $('#syncButton').click(function() {
-        var audioStr = $("#vkAudioStr").val();
+        var audioStr = $("#inputAudioStr").val();
         var yaPlaylistId = $('#yaPlaylists').find(':selected').val();
         $.ajax({
             'type': 'GET',
             'data': 'audioStr=' + audioStr + '&' + 'yaPlaylistId=' + yaPlaylistId,
-            'success': function(data) { $('#vkTracks').html(data) },
+            'success': function(data) { $('#inputTracks').html(data) },
             'error': function() {},
             'url': getNewTracksUrl,
             'cache': false
@@ -15,9 +15,9 @@
     $('#importButton').click(function() {
         var yaPlaylistId = $('#yaPlaylists').find(':selected').val();
 
-        var selectdTracks = $("#vkTracks").find('select').find(':selected');
+        var selectdTracks = $("#inputTracks").find('select').find(':selected');
         if (selectdTracks.length == 0) {
-            selectdTracks = $("#vkTracks").find('select').find('option');
+            selectdTracks = $("#inputTracks").find('select').find('option');
         }
 
         var tracks = [];
@@ -49,18 +49,18 @@
     });
 };
 
-var vkSuccess = false;
+var inputSuccess = false;
 var yaSuccess = false;
 
-function VkSuccess(data) {
-    $('#vkTracks').html(data);
-    vkSuccess = true;
+function InputSuccess(data) {
+    $('#inputTracks').html(data);
+    inputSuccess = true;
     ToggleButtons();
 }
 
-function VkFail() {
-    $('#vkTracks select').html('');
-    vkSuccess = false;
+function InputFail() {
+    $('#inputTracks select').html('');
+    inputSuccess = false;
     ToggleButtons();
 }
 
@@ -90,7 +90,7 @@ function UnauthorizeYa(url) {
 function ToggleButtons() {
     var importButton = $('.importButtons');
 
-    if (!vkSuccess || !yaSuccess) {
+    if (!inputSuccess || !yaSuccess) {
         importButton.attr('disabled', 'disabled');
         return;
     }
