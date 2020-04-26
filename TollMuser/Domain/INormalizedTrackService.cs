@@ -7,6 +7,6 @@ namespace Tolltech.Muser.Domain
     {
         [ItemNotNull]
         [NotNull]
-        NormalizedTrack[] GetNormalizedTracks(SourceTrack[] tracks);
+        NormalizedTrack[] GetNormalizedTracks([ItemNotNull] [NotNull] SourceTrack[] tracks);
     }
 }

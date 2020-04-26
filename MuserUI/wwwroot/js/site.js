@@ -1,10 +1,32 @@
-﻿function SyncControl(getNewTracksUrl, importTracksUrl) {
+﻿function GetTrackForm() {
+    var yaPlaylistId = $('#yaPlaylists').find(':selected').val();
+
+    var selectdTracks = $("#inputTracks").find('select').find(':selected');
+    if (selectdTracks.length == 0) {
+        selectdTracks = $("#inputTracks").find('select').find('option');
+    }
+
+    var tracks = [];
+    for (var i = 0; i < selectdTracks.length; ++i) {
+        var data = $(selectdTracks[i]).attr('value');
+        tracks.push(JSON.parse(data));
+    }
+
+    return {
+        Tracks: {
+            Tracks: tracks
+        },
+        YaPlaylistId: yaPlaylistId
+    };
+}
+
+function SyncControl(getNewTracksUrl, importTracksUrl) {
     $('#syncButton').click(function() {
-        var audioStr = $("#inputAudioStr").val();
-        var yaPlaylistId = $('#yaPlaylists').find(':selected').val();
+        var tracksForm = GetTrackForm();
         $.ajax({
-            'type': 'GET',
-            'data': 'audioStr=' + audioStr + '&' + 'yaPlaylistId=' + yaPlaylistId,
+            'type': 'POST',
+            'contentType': 'application/json; charset=utf-8',
+            'data': JSON.stringify(tracksForm),
             'success': function(data) { $('#inputTracks').html(data) },
             'error': function() {},
             'url': getNewTracksUrl,
@@ -13,34 +35,15 @@
     });
 
     $('#importButton').click(function() {
-        var yaPlaylistId = $('#yaPlaylists').find(':selected').val();
-
-        var selectdTracks = $("#inputTracks").find('select').find(':selected');
-        if (selectdTracks.length == 0) {
-            selectdTracks = $("#inputTracks").find('select').find('option');
-        }
-
-        var tracks = [];
-        for (var i = 0; i < selectdTracks.length; ++i) {
-            var data = $(selectdTracks[i]).attr('value');
-            tracks.push(JSON.parse(data));
-        }
-
-        var tracksForm = {
-            Tracks: {
-                Tracks: tracks
-            },
-            YaPlaylistId: yaPlaylistId
-        };
-
+        var tracksForm = GetTrackForm();
         $.ajax({
             'type': 'POST',
-            'data': JSON.stringify({ 'tracksForm': tracksForm }),
+            'contentType': 'application/json; charset=utf-8',
+            'data': JSON.stringify(tracksForm),
             'success': function() { /*progressbar*/ },
             'error': function() {},
             'url': importTracksUrl,
             'cache': false,
-            'contentType': 'application/json; charset=UTF-8'
         });
     });
 

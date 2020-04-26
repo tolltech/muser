@@ -1,4 +1,5 @@
-﻿using Tolltech.Muser.Models;
+﻿using System.Linq;
+using Tolltech.Muser.Models;
 
 namespace Tolltech.Muser.Domain
 {
@@ -6,7 +7,13 @@ namespace Tolltech.Muser.Domain
     {
         public NormalizedTrack[] GetNormalizedTracks(SourceTrack[] tracks)
         {
-            throw new System.NotImplementedException();
+            return tracks
+                .Select(x => new NormalizedTrack
+                {
+                    Title = x.Title,
+                    Artist = x.Artist
+                })
+                .ToArray();
         }
     }
 }

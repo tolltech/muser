@@ -25,7 +25,8 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IProgressBar progressBar;
 
         public SyncController(IYandexService yandexService, IAuthorizationSettings authorizationSettings,
-            IDomainService domainService, ITrackGetter trackGetter, IProgressBar progressBar, IImportResultLogger importResultLogger)
+            IDomainService domainService, ITrackGetter trackGetter, IProgressBar progressBar,
+            IImportResultLogger importResultLogger)
         {
             this.yandexService = yandexService;
             this.authorizationSettings = authorizationSettings;
@@ -120,14 +121,6 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        [HttpGet("newtracks")]
-        public async Task<ActionResult> GetNewTracks(string audioStr, string yaPlaylistId)
-        {
-            var inputTracks = trackGetter.GetTracks(audioStr);
-            var tracks = await domainService.GetNewTracksAsync(yaPlaylistId, UserId, inputTracks).ConfigureAwait(true);
-            return PartialView("Tracks", tracks.ToTracksModel());
-        }
-        
         [HttpGet("inputtracks")]
         public ActionResult GetInputTracks(InputTracksModel inputTracks)
         {
@@ -135,9 +128,18 @@ namespace Tolltech.MuserUI.Controllers
             return PartialView("Tracks", sourceTracks.ToTracksModel());
         }
 
+        [HttpPost("newtracks")]
+        public async Task<ActionResult> GetNewTracks()
+        {
+            var tracksForm = await GetFromBodyAsync<TrackImportForm>().ConfigureAwait(true);
+            var inputTracks = tracksForm.Tracks.ToTracksModel();
+            var tracks = await domainService.GetNewTracksAsync(tracksForm.YaPlaylistId, UserId, inputTracks)
+                .ConfigureAwait(true);
+            return PartialView("Tracks", tracks.ToTracksModel());
+        }
 
         [HttpPost("import")]
-        public async Task<ActionResult> ImportTracks(TrackImportForm tracksForm)
+        public async Task<ActionResult> ImportTracks([FromBody] TrackImportForm tracksForm)
         {
             var trackToImport = tracksForm.Tracks.Tracks
                 .Select(x => new NormalizedTrack
