@@ -13,7 +13,7 @@
         <td></td>
         <td></td>
         <td style="width: 10%;">
-            @Html.PartialAsync("YaAuthorize",new AuthorizeForm { Login = Context.Request.FindCookies(Constants.YaLoginCookie) ?? string.Empty })
+            @await Html.PartialAsync("YaAuthorize",new AuthorizeForm { Login = Context.Request.FindCookies(Constants.YaLoginCookie) ?? string.Empty })
         </td>
     </tr>
     <tr>
@@ -23,14 +23,14 @@
         <td></td>
         <td>
             <div id="yaPlaylists">
-                @Html.PartialAsync("YaPlaylists",new YaPlaylists())
+                @await Html.PartialAsync("YaPlaylists",new YaPlaylists())
             </div>
         </td>
     </tr>
     <tr>
         <td>
             <div id="vkTracks">
-                @Html.PartialAsync("Tracks",new TracksModel())
+                @await Html.PartialAsync("Tracks",new TracksModel())
             </div>
         </td>
         <td></td>
@@ -43,7 +43,7 @@
         <td></td>
         <td>
             <div id="yaTracks">
-                @Html.PartialAsync("Tracks",new TracksModel())
+                @await Html.PartialAsync("Tracks",new TracksModel())
             </div>
         </td>
     </tr>
