@@ -128,7 +128,7 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        [HttpGet("inputtracks")]
+        [HttpPost("inputtracks")]
         public ActionResult GetInputTracks(InputTracksModel inputTracks)
         {
             var sourceTracks = trackGetter.GetTracks(inputTracks.Text);
@@ -138,12 +138,10 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost("inputtracksfromfile")]
         public async Task<ActionResult> GetInputTracksFromFile(IFormFile uploadedFile)
         {
-            var memoryStream = new MemoryStream();
+            await using var memoryStream = new MemoryStream();
             await uploadedFile.CopyToAsync(memoryStream).ConfigureAwait(true);
 
-            using var streamReader = new StreamReader(memoryStream, Encoding.UTF8);
-            var fileBody = await streamReader.ReadToEndAsync().ConfigureAwait(true);
-
+            var fileBody = Encoding.UTF8.GetString(memoryStream.ToArray());
 
             var playlist = new PlaylistDbo
             {
