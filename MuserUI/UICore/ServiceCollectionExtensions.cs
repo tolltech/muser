@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tolltech.Muser.Domain;
 using Tolltech.MuserUI.Authentications;
 using Tolltech.YandexClient;
 using Tolltech.YandexClient.Authorizations;
@@ -23,6 +24,7 @@ namespace Tolltech.MuserUI.UICore
             {
                 typeof(IYandexMusicClient),
                 typeof(IYandexCredentials),
+                typeof(ISpecialTrackGetter),
             };
 
             IoCResolver.Resolve((x, y) => serviceCollection.AddSingleton(x, y), ignoreTypes, "Tolltech");

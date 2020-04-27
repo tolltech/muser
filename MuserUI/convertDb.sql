@@ -28,3 +28,12 @@ CREATE TABLE IF NOT EXISTS ImportResults(
     CandidateArtist varchar NOT NULL,
     Message varchar NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS playlists(
+    Id uuid NOT NULL primary key,
+    UserId uuid NOT NULL,
+    Content varchar NOT NULL,
+    Filename varchar NOT NULL,
+    Extension varchar NOT NULL,
+    Date timestamp NOT NULL
+);
