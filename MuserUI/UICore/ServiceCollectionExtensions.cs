@@ -39,7 +39,7 @@ namespace Tolltech.MuserUI.UICore
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/account/login");
                 });
             services.AddControllersWithViews();
         }
