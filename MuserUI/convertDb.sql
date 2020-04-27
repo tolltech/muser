@@ -37,3 +37,10 @@ CREATE TABLE IF NOT EXISTS playlists(
     Extension varchar NOT NULL,
     Date timestamp NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS tempsessions(
+    Id uuid NOT NULL primary key,
+    UserId uuid NOT NULL,
+    Text varchar NOT NULL,
+    Date timestamp NOT NULL
+);

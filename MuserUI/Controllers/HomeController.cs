@@ -8,6 +8,7 @@ using TolltechCore;
 namespace Tolltech.MuserUI.Controllers
 {
     [Route("")]
+    [Authorize]
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;

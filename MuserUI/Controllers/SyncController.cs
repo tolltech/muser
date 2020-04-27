@@ -130,6 +130,14 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
+        [HttpPost("inputtracksexternal")]
+        [AllowAnonymous]
+        public ActionResult GetInputTracks([FromBody] TrackImportForm tracksForm)
+        {
+            var sourceTracks = trackGetter.GetTracks(inputTracks.Text);
+            return PartialView("Tracks", sourceTracks.ToTracksModel());
+        }
+
         [HttpPost("inputtracks")]
         public ActionResult GetInputTracks(InputTracksModel inputTracks)
         {
