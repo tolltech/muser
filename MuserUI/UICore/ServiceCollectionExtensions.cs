@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tolltech.Muser.Domain;
 using Tolltech.MuserUI.Authentications;
+using Tolltech.MuserUI.Common;
 using Tolltech.YandexClient;
 using Tolltech.YandexClient.Authorizations;
 using TolltechCore;
@@ -42,6 +43,21 @@ namespace Tolltech.MuserUI.UICore
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/account/login");
                 });
             services.AddControllersWithViews();
+        }
+        
+        public static void ConfigureCors(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(Constants.MuserCorsPolicy,
+                    builder =>
+                    {
+                        builder.WithOrigins("https://vk.com",
+                            "https://www.shazam.com/")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
         }
     }
 }

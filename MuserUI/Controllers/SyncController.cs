@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.Muser.Domain;
@@ -137,6 +138,7 @@ namespace Tolltech.MuserUI.Controllers
 
         [HttpPost("inputtracksexternal")]
         [AllowAnonymous]
+        [EnableCors(Constants.MuserCorsPolicy)]
         public async Task<string> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
         {
             var sessionId = Guid.NewGuid();
