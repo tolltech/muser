@@ -137,20 +137,20 @@ namespace Tolltech.MuserUI.Controllers
 
         [HttpPost("inputtracksexternal")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
+        public async Task<Guid> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
         {
             var sessionId = Guid.NewGuid();
             var sessionDbo = new TempSessionDbo
             {
                 UserId = SafeUserId,
-                Text = inputTracks.Text,
+                Text = inputTracks?.Text ?? string.Empty,
                 Date = DateTime.UtcNow,
                 Id = sessionId
             };
 
             using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
             await queryExecutor.ExecuteAsync(x=>x.CreateAsync(sessionDbo)).ConfigureAwait(true);
-            return RedirectToAction("Index", new {sessionId = sessionId});
+            return sessionId;
         }
 
         [HttpPost("inputtracks")]
