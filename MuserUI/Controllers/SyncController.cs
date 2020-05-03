@@ -14,6 +14,7 @@ using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Extensions;
 using Tolltech.MuserUI.Models.Sync;
 using Tolltech.MuserUI.Sync;
+using Tolltech.Serialization;
 using Tolltech.SqlEF;
 
 namespace Tolltech.MuserUI.Controllers
@@ -24,6 +25,7 @@ namespace Tolltech.MuserUI.Controllers
     {
         private readonly IImportResultLogger importResultLogger;
         private readonly IQueryExecutorFactory queryExecutorFactory;
+        private readonly IJsonSerializer jsonSerializer;
         private Guid UserId => SafeUserId.Value;
 
         private readonly IYandexService yandexService;
@@ -34,7 +36,8 @@ namespace Tolltech.MuserUI.Controllers
 
         public SyncController(IYandexService yandexService, IAuthorizationSettings authorizationSettings,
             IDomainService domainService, ITrackGetter trackGetter, IProgressBar progressBar,
-            IImportResultLogger importResultLogger, IQueryExecutorFactory queryExecutorFactory
+            IImportResultLogger importResultLogger, IQueryExecutorFactory queryExecutorFactory,
+            IJsonSerializer jsonSerializer
         )
         {
             this.yandexService = yandexService;
@@ -44,6 +47,7 @@ namespace Tolltech.MuserUI.Controllers
             this.progressBar = progressBar;
             this.importResultLogger = importResultLogger;
             this.queryExecutorFactory = queryExecutorFactory;
+            this.jsonSerializer = jsonSerializer;
         }
 
         [HttpGet("")]
@@ -139,7 +143,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost("inputtracksexternal")]
         [AllowAnonymous]
         [EnableCors(Constants.MuserCorsPolicy)]
-        public async Task<string> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
+        public async Task<JsonResult> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
         {
             var sessionId = Guid.NewGuid();
             var sessionDbo = new TempSessionDbo
@@ -152,7 +156,9 @@ namespace Tolltech.MuserUI.Controllers
 
             using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
             await queryExecutor.ExecuteAsync(x => x.CreateAsync(sessionDbo)).ConfigureAwait(true);
-            return Url.Action("Index", new {sessionId = sessionId});
+            var url = Url.Action("Index", new {sessionId = sessionId});
+
+            return Json(new {Url = url});
         }
 
         [HttpPost("inputtracks")]
