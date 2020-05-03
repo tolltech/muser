@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS playlists(
 
 CREATE TABLE IF NOT EXISTS tempsessions(
     Id uuid NOT NULL primary key,
-    UserId uuid NOT NULL,
+    UserId uuid NULL,
     Text varchar NOT NULL,
     Date timestamp NOT NULL
 );
