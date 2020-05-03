@@ -7,16 +7,16 @@ namespace Tolltech.MuserUI.Sync
     [Table("tempsessions")]
     public class TempSessionDbo
     {
-        [Column("Id", TypeName = "uuid"), Key, Required]
+        [Column("id", TypeName = "uuid"), Key, Required]
         public Guid Id { get; set; }
 
-        [Column("Text", TypeName = "varchar"), ConcurrencyCheck, Required(AllowEmptyStrings = true)]
+        [Column("text", TypeName = "varchar"), ConcurrencyCheck, Required(AllowEmptyStrings = true)]
         public string Text { get; set; }
 
-        [Column("Date", TypeName = "timestamp"), Required]
+        [Column("date", TypeName = "timestamp"), Required]
         public DateTime Date { get; set; }
 
-        [Column("UserId", TypeName = "uuid"), ConcurrencyCheck]
+        [Column("userid", TypeName = "uuid"), ConcurrencyCheck]
         public Guid? UserId { get; set; }
     }
 }

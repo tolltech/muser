@@ -5,43 +5,43 @@ using Tolltech.Muser.Models;
 
 namespace Tolltech.MuserUI.Sync
 {
-    [Table("ImportResults")]
+    [Table("importresults")]
     public class ImportResultDbo
     {
-        [Column("Id", TypeName = "uuid"), Key, Required]
+        [Column("id", TypeName = "uuid"), Key, Required]
         public Guid Id { get; set; }
 
-        [Column("SessionId", TypeName = "uuid"), Required]
+        [Column("sessionid", TypeName = "uuid"), Required]
         public Guid SessionId { get; set; }
 
-        [Column("UserId", TypeName = "uuid"), Required]
+        [Column("userid", TypeName = "uuid"), Required]
         public Guid UserId { get; set; }
 
-        [Column("Status", TypeName = "int"), Required]
+        [Column("status", TypeName = "int"), Required]
         public ImportStatus Status { get; set; }
 
-        [Column("Date", TypeName = "timestamp"), Required]
+        [Column("date", TypeName = "timestamp"), Required]
         public DateTime Date { get; set; }
 
-        [Column("Title", TypeName = "varchar"), Required]
+        [Column("title", TypeName = "varchar"), Required]
         public string Title { get; set; }
 
-        [Column("Artist", TypeName = "varchar"), Required]
+        [Column("artist", TypeName = "varchar"), Required]
         public string Artist { get; set; }
 
-        [Column("NormalizedTitle", TypeName = "varchar"), Required]
+        [Column("normalizedtitle", TypeName = "varchar"), Required]
         public string NormalizedTitle { get; set; }
 
-        [Column("NormalizedArtist", TypeName = "varchar"), Required]
+        [Column("normalizedartist", TypeName = "varchar"), Required]
         public string NormalizedArtist { get; set; }
 
-        [Column("CandidateTitle", TypeName = "varchar"), Required]
+        [Column("candidatetitle", TypeName = "varchar"), Required]
         public string CandidateTitle { get; set; }
 
-        [Column("CandidateArtist", TypeName = "varchar"), Required]
+        [Column("candidateartist", TypeName = "varchar"), Required]
         public string CandidateArtist { get; set; }
 
-        [Column("Message", TypeName = "varchar"), Required]
+        [Column("message", TypeName = "varchar"), Required]
         public string Message { get; set; }
     }
 }

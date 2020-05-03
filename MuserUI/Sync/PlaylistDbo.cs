@@ -7,22 +7,22 @@ namespace Tolltech.MuserUI.Sync
     [Table("playlists")]
     public class PlaylistDbo
     {
-        [Column("Id", TypeName = "uuid"), Key, Required]
+        [Column("id", TypeName = "uuid"), Key, Required]
         public Guid Id { get; set; }
 
-        [Column("UserId", TypeName = "uuid"), Required]
+        [Column("userid", TypeName = "uuid"), Required]
         public Guid UserId { get; set; }
 
-        [Column("Content", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
+        [Column("content", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
         public string Content { get; set; }
 
-        [Column("Filename", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
+        [Column("filename", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
         public string Filename { get; set; }
 
-        [Column("Extension", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
+        [Column("extension", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
         public string Extension { get; set; }
 
-        [Column("Date", TypeName = "timestamp"), Required]
+        [Column("date", TypeName = "timestamp"), Required]
         public DateTime Date { get; set; }
     }
 }
