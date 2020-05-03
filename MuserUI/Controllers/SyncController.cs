@@ -149,7 +149,7 @@ namespace Tolltech.MuserUI.Controllers
             };
 
             using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
-            await queryExecutor.ExecuteAsync(x=>x.CreateAsync(sessionDbo)).ConfigureAwait(true);
+            await queryExecutor.ExecuteAsync(x => x.CreateAsync(sessionDbo)).ConfigureAwait(true);
             return sessionId;
         }
 

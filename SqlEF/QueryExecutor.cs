@@ -15,16 +15,19 @@ namespace Tolltech.SqlEF
             this.sqlHandlerProvider = sqlHandlerProvider;
         }
 
-        public Task ExecuteAsync(Func<TSqlHandler, Task> query)
+        public async Task ExecuteAsync(Func<TSqlHandler, Task> query)
         {
             var handle = sqlHandlerProvider.Create<TSqlHandler, TSqlEntity>(dataContext);
-            return query(handle);
+            await query(handle).ConfigureAwait(false);
+            await dataContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public Task<TResult> ExecuteAsync<TResult>(Func<TSqlHandler, Task<TResult>> query)
+        public async Task<TResult> ExecuteAsync<TResult>(Func<TSqlHandler, Task<TResult>> query)
         {
             var handle = sqlHandlerProvider.Create<TSqlHandler, TSqlEntity>(dataContext);
-            return query(handle);
+            var result = await query(handle).ConfigureAwait(false);
+            await dataContext.SaveChangesAsync().ConfigureAwait(false);
+            return result;
         }
 
         public void Dispose()
