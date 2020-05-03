@@ -32,16 +32,19 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                return View((object)HttpContext.User.Identity.Name);
+                return View((object) HttpContext.User.Identity.Name);
             }
 
             return RedirectToAction("Login");
         }
 
         [HttpGet("login")]
-        public IActionResult Login(Guid? sessionId)
+        public IActionResult Login(Guid? sessionId, string returnUrl)
         {
-            return View();
+            return View(new LoginModel
+            {
+                ReturnUrl = returnUrl
+            });
         }
 
         [HttpPost("login")]
@@ -57,7 +60,9 @@ namespace Tolltech.MuserUI.Controllers
                 {
                     await Authenticate(model.Email, user.Id).ConfigureAwait(true);
 
-                    return RedirectToAction("Index", "Home");
+                    return model.ReturnUrl.IsNullOrWhitespace() 
+                        ? (IActionResult) RedirectToAction("Index", "Home")
+                        : Redirect(model.ReturnUrl);
                 }
 
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
@@ -82,7 +87,7 @@ namespace Tolltech.MuserUI.Controllers
                 if (user == null)
                 {
                     var hashPassword = cryptoService.EncryptSHA256(model.Password);
-                    var newUser = new User {Email = model.Email, Password = hashPassword, Id = Guid.NewGuid() };
+                    var newUser = new User {Email = model.Email, Password = hashPassword, Id = Guid.NewGuid()};
                     await db.Users.AddAsync(newUser).ConfigureAwait(true);
                     await db.SaveChangesAsync().ConfigureAwait(true);
 
