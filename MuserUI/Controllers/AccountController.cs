@@ -39,7 +39,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login(Guid? sessionId)
         {
             return View();
         }

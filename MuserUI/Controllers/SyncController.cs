@@ -46,8 +46,13 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult Index()
+        public ActionResult Index(Guid? sessionId)
         {
+            if (!sessionId.HasValue)
+            {
+                return View();
+            }
+
             return View();
         }
 
@@ -128,6 +133,24 @@ namespace Tolltech.MuserUI.Controllers
                     })
                     .ToArray()
             });
+        }
+
+        [HttpPost("inputtracksexternal")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
+        {
+            var sessionId = Guid.NewGuid();
+            var sessionDbo = new TempSessionDbo
+            {
+                UserId = SafeUserId,
+                Text = inputTracks.Text,
+                Date = DateTime.UtcNow,
+                Id = sessionId
+            };
+
+            using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
+            await queryExecutor.ExecuteAsync(x=>x.CreateAsync(sessionDbo)).ConfigureAwait(true);
+            return RedirectToAction("Index", new {sessionId = sessionId});
         }
 
         [HttpPost("inputtracks")]
