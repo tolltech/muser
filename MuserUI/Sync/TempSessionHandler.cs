@@ -23,9 +23,9 @@ namespace Tolltech.MuserUI.Sync
         }
 
         [NotNull]
-        public Task<TempSessionDbo> ReadAsync(Guid id, Guid userId)
+        public Task<TempSessionDbo> FindAsync(Guid id, Guid userId)
         {
-            return dataContext.Table.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+            return dataContext.Table.FirstOrDefaultAsync(x => x.Id == id && (!x.UserId.HasValue || x.UserId == userId));
         }
     }
 }

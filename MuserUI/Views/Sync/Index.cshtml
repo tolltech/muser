@@ -4,6 +4,8 @@
 @{
     ViewBag.Title = "Tollmuser";
 }
+
+@model TracksModel
 <table>
     <tr>
         <td>
@@ -36,7 +38,7 @@
     <tr>
         <td>
             <div id="inputTracks">
-                @await Html.PartialAsync("Tracks", new TracksModel())
+                @await Html.PartialAsync("Tracks", Model ?? new TracksModel())
             </div>
         </td>
         <td></td>

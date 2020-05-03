@@ -51,14 +51,22 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult Index(Guid? sessionId)
+        public async Task<ActionResult> Index(Guid? sessionId)
         {
             if (!sessionId.HasValue)
             {
                 return View();
             }
 
-            return View();
+            using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
+            var savedTracks = await queryExecutor.ExecuteAsync(x => x.FindAsync(sessionId.Value, UserId)).ConfigureAwait(true);
+            if (savedTracks?.Text.IsNullOrWhitespace() ?? true)
+            {
+                return View();
+            }
+
+            var sourceTracks = trackGetter.GetTracks(savedTracks.Text);
+            return View(sourceTracks.ToTracksModel());
         }
 
         [HttpGet("yatracks")]
@@ -143,7 +151,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost("inputtracksexternal")]
         [AllowAnonymous]
         [EnableCors(Constants.MuserCorsPolicy)]
-        public async Task<JsonResult> GetInputTracksExternal([FromBody]ExternalInputTracksModel inputTracks)
+        public async Task<JsonResult> GetInputTracksExternal([FromBody] ExternalInputTracksModel inputTracks)
         {
             var sessionId = Guid.NewGuid();
             var sessionDbo = new TempSessionDbo
