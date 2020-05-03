@@ -143,8 +143,10 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost("inputtracksexternal")]
         [AllowAnonymous]
         [EnableCors(Constants.MuserCorsPolicy)]
-        public async Task<JsonResult> GetInputTracksExternal([FromBody] InputTracksModel inputTracks)
+        public async Task<JsonResult> GetInputTracksExternal()
         {
+            var inputTracks = await GetFromBodyAsync<ExternalInputTracksModel>().ConfigureAwait(true);
+
             var sessionId = Guid.NewGuid();
             var sessionDbo = new TempSessionDbo
             {
