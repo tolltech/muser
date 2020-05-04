@@ -13,6 +13,9 @@ namespace Tolltech.MuserUI.Controllers
     {
         protected Guid? SafeUserId => Request.HttpContext.User.FindFirst(x => x.Type == Constants.UserIdClaim)?.Value.SafeToGuid();
 
+        // ReSharper disable once PossibleInvalidOperationException
+        protected Guid UserId => SafeUserId.Value;
+
         protected async Task<T> GetFromBodyAsync<T>()
         {
             using var streamReader = new StreamReader(Request.Body);

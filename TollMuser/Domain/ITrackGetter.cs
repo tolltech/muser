@@ -5,6 +5,8 @@ namespace Tolltech.Muser.Domain
 {
     public interface ITrackGetter
     {
-        [NotNull] [ItemNotNull] SourceTrack[] GetTracks([CanBeNull] string source);
+        [NotNull]
+        [ItemNotNull]
+        SourceTrack[] GetTracks([CanBeNull] string source);
     }
 }

@@ -1,0 +1,23 @@
+﻿@using Tolltech.MuserUI.Models.Sync
+@{
+    ViewBag.Title = "TollMuser.Загрузка треков";
+}
+
+@model InputTracksModel
+<div class="common">
+    <form id="tracksInputForm" asp-action="GetInputTracks" asp-controller="SyncWizard" method="post">
+        <div>
+            @Html.TextAreaFor(x => x.Text, new {id = "inputAudioStr", style = "width:100%"})
+        </div>
+        <input type="submit" value="Распарсить треки" class="btn btn-outline-dark"/>
+    </form>
+</div>
+<div class="common">
+    <label style="font-size: 30px;">или</label>
+</div>
+<div class="common">
+    <form asp-action="GetInputTracksFromFile" asp-controller="SyncWizard" method="post" enctype="multipart/form-data">
+        <input type="file" name="uploadedFile"/>
+        <input type="submit" value="Загрузить из файла" class="btn btn-outline-dark"/>
+    </form>
+</div>

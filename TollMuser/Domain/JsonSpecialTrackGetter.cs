@@ -43,5 +43,18 @@ namespace Tolltech.Muser.Domain
                 return false;
             }
         }
+
+        public string SerializeTracks(SourceTrack[] tracks)
+        {
+            var trackJson = tracks
+                .Select(x => new TrackJson
+                {
+                    Song = x.Title,
+                    Artist = x.Artist
+                })
+                .ToArray();
+
+            return jsonSerializer.SerializeToString(trackJson);
+        }
     }
 }

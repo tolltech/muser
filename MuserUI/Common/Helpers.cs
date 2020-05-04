@@ -70,9 +70,37 @@ namespace Tolltech.MuserUI.Common
                     .ToList()
             };
         }
+        
+        [NotNull]
+        public static TracksWizardModel ToTracksWizardModel([NotNull] this SourceTrack[] tracks)
+        {
+            return new TracksWizardModel
+            {
+                Tracks = tracks
+                    .Select(x => new TrackModel
+                    {
+                        Artist = x.Artist,
+                        Title = x.Title
+                    })
+                    .ToArray()
+            };
+        }
 
         [NotNull]
         public static SourceTrack[] ToTracksModel(this TracksModel tracks)
+        {
+            return tracks?.Tracks?
+                .Select(x =>
+                    new SourceTrack
+                    {
+                        Title = x.Title,
+                        Artist = x.Artist
+                    })
+                .ToArray() ?? Array.Empty<SourceTrack>();
+        }
+        
+        [NotNull]
+        public static SourceTrack[] ToTracksWizardModel(this TracksWizardModel tracks)
         {
             return tracks?.Tracks?
                 .Select(x =>

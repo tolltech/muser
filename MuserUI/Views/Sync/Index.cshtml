@@ -56,3 +56,9 @@
         </td>
     </tr>
 </table>
+
+@section Scripts{
+    <script type="text/javascript">
+        SyncControl('@Url.Action("GetNewTracks", "Sync")','@Url.Action("ImportTracks", "Sync")');
+    </script>
+}

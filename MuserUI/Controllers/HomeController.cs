@@ -26,7 +26,7 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (SafeUserId.HasValue)
             {
-                return RedirectToAction("Index","Sync");
+                return RedirectToAction("Index","SyncWizard");
             }
             else
             {

@@ -1,0 +1,49 @@
+﻿@using Tolltech.MuserUI.Models.Sync
+@{
+    ViewBag.Title = "TollMuser.Загрузка треков";
+}
+
+@model TracksWizardModel
+
+<div class="common">
+    <form method="post" asp-controller="SyncWizard" asp-action="SaveTracks" id="saveSessionForm">
+        <div id="inputTracksDiv">
+            @Html.ListBox("tracks", Model.Tracks.Select(x => new SelectListItem {Text = x.Artist + " - " + x.Title, Value = Json.Serialize(x).ToString()}), new {@class = "track-list"})
+        </div>
+        <input id="sessionInputHidden" type="hidden" name="tracksJson"/>
+        <input id="saveSessionButton" type="button" value="Перейти к импорту" class="btn btn-outline-dark"/>
+    </form>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        function GetTrackForm() {
+            var selectedTracks = $("#inputTracksDiv").find('select').find(':selected');
+            if (selectedTracks.length == 0) {
+                selectedTracks = $("#inputTracksDiv").find('select').find('option');
+            }
+
+            var tracks = [];
+            for (var i = 0; i < selectedTracks.length; ++i) {
+                var data = $(selectedTracks[i]).attr('value');
+                tracks.push(JSON.parse(data));
+            }
+
+            return {
+                Tracks: tracks
+            };
+        }
+
+        $(document).ready(function() {
+            $('#saveSessionButton').click(function() {
+                    var form = GetTrackForm();
+                    $('#sessionInputHidden').val(JSON.stringify(form));
+                    $('#saveSessionForm').submit();
+                }
+            );
+        });
+
+
+    </script>
+}

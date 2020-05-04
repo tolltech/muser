@@ -19,11 +19,11 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Пользователь</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Сменить пользователя</a>
                         </li>
-                        <li class="nav-item">
+                        @*<li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Бесполезная страница</a>
-                        </li>
+                        </li>*@
                     </ul>
                 </div>
             </div>
@@ -47,9 +47,6 @@
     <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
-    <script type="text/javascript">
-        SyncControl('@Url.Action("GetNewTracks", "Sync")','@Url.Action("ImportTracks", "Sync")');
-    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
