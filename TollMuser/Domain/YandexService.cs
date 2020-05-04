@@ -58,7 +58,7 @@ namespace Tolltech.Muser.Domain
 
             if (client == null)
             {
-                throw new VkAuthorizeException();
+                throw new YaAuthorizeException();
             }
 
             return client;

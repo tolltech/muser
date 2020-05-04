@@ -132,11 +132,15 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet("yaauthorize")]
         public ActionResult YandexAuthorize(Guid sessionId)
         {
-            return View();
+            var yandexCookie = Request.FindCookies(Constants.YaLoginCookie);
+            return View(new YandexAuthorizeForm
+            {
+                Login = yandexCookie
+            });
         }
 
         [HttpPost("yaauthorize")]
-        public async Task<ActionResult> YandexAuthorize(AuthorizeForm authorizeForm, Guid sessionId)
+        public async Task<ActionResult> YandexAuthorize(YandexAuthorizeForm authorizeForm, Guid sessionId)
         {
             var success = await yandexService.CheckCredentialsAsync(authorizeForm.Login, authorizeForm.Pass)
                 .ConfigureAwait(true);
@@ -145,7 +149,8 @@ namespace Tolltech.MuserUI.Controllers
 
             if (!success)
             {
-                return PartialView("AuthorizeResult", new AuthorizeResult {Success = false});
+                return View("YandexAuthorize",
+                    new YandexAuthorizeForm {Login = authorizeForm.Login, AuthFailed = true});
             }
 
             var authInfo = authorizationSettings.GetCachedMuserAuthorization(UserId);

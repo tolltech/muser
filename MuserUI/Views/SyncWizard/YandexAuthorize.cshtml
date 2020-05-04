@@ -1,0 +1,25 @@
+﻿@model Tolltech.MuserUI.Models.SyncWizard.YandexAuthorizeForm
+
+<form asp-action="YandexAuthorize" asp-controller="SyncWizard"
+      method="post">
+
+    <fieldset>
+        <legend>Авторизация Яндекс</legend>
+        <div>
+            @Html.LabelFor(m => m.Login,"Логин")
+            @Html.TextBoxFor(m => m.Login)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.Pass,"Пароль")
+            @Html.PasswordFor(m => m.Pass)
+        </div>
+        @if(Model.AuthFailed) {
+        <div>
+            <label style="color: red">Неверные логин или пароль</label>
+        </div>
+        }
+        
+        @Html.Hidden("sessionId", Context.Request.Query["sessionId"])
+        <input type="submit" value="Авторизовать" class="btn btn-outline-dark" />
+    </fieldset>
+</form>
