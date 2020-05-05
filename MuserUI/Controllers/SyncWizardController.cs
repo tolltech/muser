@@ -230,7 +230,7 @@ namespace Tolltech.MuserUI.Controllers
             var progressId = Guid.NewGuid();
 
 #pragma warning disable 4014
-            RunImport(progressId, trackToImport, yaPlayListId, sessionId);
+            RunImport(progressId, trackToImport, yaPlayListId, sessionId, UserId);
 #pragma warning restore 4014
 
             var cnt = 0;
@@ -251,8 +251,7 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
-            Guid sessionId)
+        private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId, Guid sessionId, Guid userId)
         {
             void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
             {
@@ -263,6 +262,9 @@ namespace Tolltech.MuserUI.Controllers
                     Processed = tuple.Processed
                 };
 
+                currentProgress.Total = tuple.Total;
+                currentProgress.Processed = tuple.Processed;
+
                 var importResult = tuple.importResult;
                 if (importResult.ImportStatus == ImportStatus.Error || importResult.ImportStatus == ImportStatus.NotFound)
                 {
@@ -272,9 +274,9 @@ namespace Tolltech.MuserUI.Controllers
                 progressBar.UpdateProgressModel(currentProgress);
             }
 
-            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, UpdateProgress).ConfigureAwait(false);
+            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, userId, UpdateProgress).ConfigureAwait(false);
 
-            await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(false);
+            await importResultLogger.WriteImportLogsAsync(results, userId, sessionId).ConfigureAwait(false);
         }
 
         [HttpGet("progress")]
