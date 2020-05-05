@@ -9,3 +9,19 @@
     </span>
     <input type="hidden" value="@Model.Left" id="leftProgressInput">
 </div>
+
+@if (Model.Errors.Count > 0)
+{
+    <div class="common">
+        <label>Не удалось импортировать</label>
+    </div>
+    foreach (var error in Model.Errors)
+    {
+        <span>
+            <label>@error.Track?.Artist</label>
+            <label> - </label>
+            <label>@error.Track?.Title</label>
+            <input type="hidden" value="@error.Message"/>
+        </span>
+    }
+}

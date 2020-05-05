@@ -7,8 +7,7 @@ namespace Tolltech.MuserUI.Sync
     public interface IProgressBar
     {
         [CanBeNull]
-        ProgressModel GetProgressModel(Guid progressId);
-
+        ProgressModel FindProgressModel(Guid progressId);
         void UpdateProgressModel([NotNull]ProgressModel progress);
     }
 }

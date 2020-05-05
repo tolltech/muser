@@ -42,22 +42,26 @@ namespace Tolltech.Muser.Domain
             var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
             var foundTracks = new HashSet<(string Id, string AlbumId)>(existentTracksHash);
 
-            var completeCount = 0;
-            var notFoundCount = 0;
             var totalCount = trackToImport.Length;
 
             log.Info($"Start import {totalCount} tracks for user {userId}");
 
             var syncTracks = new SyncTracks(trackToImport, existentTracks);
             var newTracks = syncTracks.GetNewTracks();
-            var alreadyExistentTracks = trackToImport.Except(newTracks).Select(x=> new ImportResult(x.Artist, x.Title)
-            {
-                ImportStatus = ImportStatus.AlreadyExists,
-                Message = "This track should not be in this request",                                
-            });
+
+            var alreadyExistentTracks = trackToImport
+                .Except(newTracks)
+                .Select(x => new ImportResult(x.Artist, x.Title)
+                {
+                    ImportStatus = ImportStatus.AlreadyExists,
+                    Message = "This track should not be in this request",
+                })
+                .ToArray();
 
             var result = new List<ImportResult>(trackToImport.Length);
             result.AddRange(alreadyExistentTracks);
+            var notFoundCount = 0;
+            var completeCount = alreadyExistentTracks.Length;
 
             foreach (var track in newTracks)
             {

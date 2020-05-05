@@ -8,9 +8,14 @@ namespace Tolltech.MuserUI.Sync
     {
         private static readonly ConcurrentDictionary<Guid, ProgressModel> progressDict = new ConcurrentDictionary<Guid, ProgressModel>();
 
-        public ProgressModel GetProgressModel(Guid progressId)
+        public ProgressModel FindProgressModel(Guid progressId)
         {
             return progressDict.TryGetValue(progressId, out var result) ? result : null;
+        }
+
+        public ProgressModel ReadProgressModel(Guid progressId)
+        {
+            return progressDict.TryGetValue(progressId, out var result) ? result : throw new Exception($"There is no progressModel.");
         }
 
         public void UpdateProgressModel(ProgressModel progress)
