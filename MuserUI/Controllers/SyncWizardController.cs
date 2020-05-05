@@ -277,8 +277,11 @@ namespace Tolltech.MuserUI.Controllers
                 {
                     currentProgress.Errors.Add((
                         new TrackModel
-                            {Title = importResult.ImportingTrack.Title, Artist = importResult.ImportingTrack.Artist},
-                        importResult.Message));
+                        {
+                            Title = importResult.ImportingTrack?.Title ?? string.Empty, 
+                            Artist = importResult.ImportingTrack?.Artist ?? string.Empty
+                        },
+                        $"{importResult.ImportStatus} - {importResult.Message}"));
                 }
 
                 progressBar.UpdateProgressModel(currentProgress);
