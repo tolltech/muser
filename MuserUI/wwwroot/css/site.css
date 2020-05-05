@@ -77,4 +77,5 @@ div.common {
 .track-list {
     display: inline-block;
     height: 75vh;
+    max-width: 500px;
 }
