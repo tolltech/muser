@@ -41,6 +41,8 @@ namespace Tolltech.YandexClient.Authorizations
 
         private AuthorizationInfo authorizationInfo;
 
+        public string Login => login;
+
         public async Task<AuthorizationInfo> GetAuthorizationInfoAsync()
         {
             if (authorizationInfo != null)

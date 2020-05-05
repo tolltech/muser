@@ -1,0 +1,10 @@
+﻿@model Tolltech.MuserUI.Models.Sync.ProgressModel
+
+<div>
+    <span>
+        <label>@Model.Processed</label>
+        <label>/</label>
+        <label>@Model.Total</label>
+    </span>
+    <input type="hidden" value="@Model.Left" id="leftProgressInput">
+</div>

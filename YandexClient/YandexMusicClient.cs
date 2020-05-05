@@ -23,6 +23,8 @@ namespace Tolltech.YandexClient
             this.serializer = serializer;
         }
 
+        public string Login => yandexCredentials.Login;
+
         public async Task<Playlist[]> GetPlaylistsAsync(string userId)
         {
             var authorizationInfo = await yandexCredentials.GetAuthorizationInfoAsync().ConfigureAwait(false);

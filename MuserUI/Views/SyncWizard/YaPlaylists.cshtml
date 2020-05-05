@@ -1,0 +1,14 @@
+﻿@model Tolltech.MuserUI.Models.SyncWizard.YaPlaylistsForm
+@{
+    ViewBag.Title = "TollMuser.Выбор плейлиста";
+}
+
+<form id="yaPlaylistForm" asp-action="ImportTracks" asp-controller="SyncWizard" method="post">
+    <fieldset>
+        <legend>Выберите плейлист</legend>
+        @Html.DropDownListFor(x => x.SelectedPlaylistId, Model.Playlists.Select(x => new SelectListItem {Value = x.Id, Text = x.Title, Selected = x.Id == Model.SelectedPlaylistId}), new {id = "yaPlaylists"})
+        @Html.Hidden("sessionId", Context.Request.Query["sessionId"])
+        @Html.HiddenFor(x => x.Login)
+        <input type="submit" value="Импортировать" class="btn btn-outline-dark"/>
+    </fieldset>
+</form>

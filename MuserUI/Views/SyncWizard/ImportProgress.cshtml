@@ -1,0 +1,49 @@
+﻿@model Tolltech.MuserUI.Models.SyncWizard.ProgressWithUrlModel
+
+@{
+    ViewBag.Title = "TollMuser.Импорт";
+    Layout = "_Layout";
+}
+
+<div id="importProgressDiv">
+    @await Html.PartialAsync("ImportProgressPartial", Model.Progress)
+</div>
+<div id="errorDiv" style="display: none">
+    <label style="color: red">Что-то пошло не так</label>
+</div>
+<div style="display: none">
+    <a href="@Model.YandexPlaylistUrl">Проверить плейлист</a>
+</div>
+
+<form asp-action="GetImportProgress" asp-controller="SyncWizard"
+      data-ajax="true"
+      data-ajax-method="GET"
+      data-ajax-mode="replace"
+      data-ajax-update="#importProgressDiv"
+      data-ajax-success="ProgressIteration()"
+      data-ajax-failure="ProgressFail()"
+      id="getProgressForm">
+
+    <input type="hidden" value="@Model.Progress.Id" name="progressId"/>
+</form>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#getProgressForm').submit();
+        });
+
+        function ProgressIteration() {
+            $('#errorDiv').hide();
+            var left = $('#leftProgressInput').val();
+            if (left > 0) {
+                $('#getProgressForm').submit();
+            }
+        };
+
+        function ProgressFail() {
+            $('#errorDiv').show();
+            $('#getProgressForm').submit();
+        };
+    </script>
+}

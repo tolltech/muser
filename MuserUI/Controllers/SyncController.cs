@@ -19,7 +19,7 @@ using Tolltech.SqlEF;
 namespace Tolltech.MuserUI.Controllers
 {
     [Authorize]
-    [Route("sync")]
+    [Route("oldsync")]
     public class SyncController : BaseController
     {
         private readonly IImportResultLogger importResultLogger;
@@ -219,11 +219,11 @@ namespace Tolltech.MuserUI.Controllers
                 progressBar.UpdateProgressModel(new ProgressModel
                 {
                     Id = progressId,
-                    Proecssed = tuple.Processed,
+                    Processed = tuple.Processed,
                     Total = tuple.Total
                 })).ConfigureAwait(true);
 
-            await importResultLogger.WriteImportLogsAsync(results, UserId).ConfigureAwait(true);
+            await importResultLogger.WriteImportLogsAsync(results, UserId, null).ConfigureAwait(true);
 
             return PartialView("Progress", progressBar.GetProgressModel(progressId));
         }

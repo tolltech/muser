@@ -15,16 +15,16 @@ namespace Tolltech.MuserUI.Sync
             this.queryExecutorFactory = queryExecutorFactory;
         }
 
-        public Task WriteImportLogsAsync(ImportResult[] results, Guid userId)
+        public Task WriteImportLogsAsync(ImportResult[] results, Guid userId, Guid? sessionId)
         {
             var now = DateTime.Now;
-            var sessionId = Guid.NewGuid();
+            sessionId ??= Guid.NewGuid();
             var importResults = results.Select(x => new ImportResultDbo
             {
                 Id = Guid.NewGuid(),
                 Date = now,
                 UserId = userId,
-                SessionId = sessionId,
+                SessionId = sessionId.Value,
                 Title = x.ImportingTrack.Title,
                 Artist = x.ImportingTrack.Artist,
                 CandidateArtist = x.Candidate?.Artist ?? string.Empty,

@@ -3,8 +3,10 @@ using Tolltech.YandexClient.Authorizations;
 
 namespace Tolltech.TestsNetCore
 {
-    public class TestYandexredentials : IYandexCredentials
+    public class TestYandexCredentials : IYandexCredentials
     {
+        public string Login => string.Empty;
+
         public Task<AuthorizationInfo> GetAuthorizationInfoAsync()
         {
             return Task.FromResult(new AuthorizationInfo

@@ -6,6 +6,8 @@ namespace Tolltech.YandexClient
 {
     public interface IYandexMusicClient
     {
+        string Login { get; }
+
         [ItemNotNull]
         [NotNull]
         Task<Playlist[]> GetPlaylistsAsync([CanBeNull] string userId = null);

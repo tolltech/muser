@@ -1,5 +1,9 @@
 ﻿@model Tolltech.MuserUI.Models.SyncWizard.YandexAuthorizeForm
 
+@{
+    ViewBag.Title = "TollMuser.Авторизация яндекс";
+}
+
 <form asp-action="YandexAuthorize" asp-controller="SyncWizard"
       method="post">
 
@@ -18,8 +22,8 @@
             <label style="color: red">Неверные логин или пароль</label>
         </div>
         }
-        
-        @Html.Hidden("sessionId", Context.Request.Query["sessionId"])
+
+        @Html.Hidden("sessionId",Context.Request.Query["sessionId"])
         <input type="submit" value="Авторизовать" class="btn btn-outline-dark" />
     </fieldset>
 </form>

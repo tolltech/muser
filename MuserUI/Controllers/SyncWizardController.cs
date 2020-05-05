@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.Muser.Domain;
+using Tolltech.Muser.Models;
 using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Extensions;
@@ -20,7 +21,7 @@ using Tolltech.SqlEF;
 namespace Tolltech.MuserUI.Controllers
 {
     [Authorize]
-    [Route("syncwizzard")]
+    [Route("sync")]
     public class SyncWizardController : BaseController
     {
         private readonly ITempSessionService tempSessionService;
@@ -30,12 +31,18 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IAuthorizationSettings authorizationSettings;
         private readonly IJsonSerializer jsonSerializer;
         private readonly IJsonTrackGetter jsonTrackGetter;
+        private readonly IDomainService domainService;
+        private readonly IProgressBar progressBar;
+        private readonly IImportResultLogger importResultLogger;
 
         public SyncWizardController(ITempSessionService tempSessionService, ITrackGetter trackGetter,
             IQueryExecutorFactory queryExecutorFactory,
             IYandexService yandexService, IAuthorizationSettings authorizationSettings,
             IJsonSerializer jsonSerializer,
-            IJsonTrackGetter jsonTrackGetter)
+            IJsonTrackGetter jsonTrackGetter,
+            IDomainService domainService,
+            IProgressBar progressBar,
+            IImportResultLogger importResultLogger)
         {
             this.tempSessionService = tempSessionService;
             this.trackGetter = trackGetter;
@@ -44,6 +51,9 @@ namespace Tolltech.MuserUI.Controllers
             this.authorizationSettings = authorizationSettings;
             this.jsonSerializer = jsonSerializer;
             this.jsonTrackGetter = jsonTrackGetter;
+            this.domainService = domainService;
+            this.progressBar = progressBar;
+            this.importResultLogger = importResultLogger;
         }
 
         [HttpGet("")]
@@ -54,7 +64,8 @@ namespace Tolltech.MuserUI.Controllers
                 return View();
             }
 
-            var tracksText = await tempSessionService.FindSessionTextAsync(sessionId.Value, UserId).ConfigureAwait(true);
+            var tracksText =
+                await tempSessionService.FindSessionTextAsync(sessionId.Value, UserId).ConfigureAwait(true);
 
             if (tracksText?.IsNullOrWhitespace() ?? true)
             {
@@ -180,7 +191,7 @@ namespace Tolltech.MuserUI.Controllers
 
             var playlists = await client.GetPlaylistsAsync().ConfigureAwait(true);
 
-            return PartialView("YaPlaylists", new YaPlaylists
+            return View("YaPlaylists", new YaPlaylistsForm
             {
                 Playlists = playlists
                     .Select(x => new YaPlaylist
@@ -188,8 +199,56 @@ namespace Tolltech.MuserUI.Controllers
                         Title = x.Title,
                         Id = x.Id
                     })
-                    .ToArray()
+                    .ToArray(),
+                SelectedPlaylistId = playlists.FirstOrDefault(x => x.Title.ToLower() == "vk")?.Id,
+                Login = client.Login
             });
+        }
+
+        [HttpPost("import")]
+        public async Task<ActionResult> ImportTracks(YaPlaylistsForm yaPlaylists, Guid sessionId)
+        {
+            var yaPlayListId = yaPlaylists.SelectedPlaylistId;
+
+            if (yaPlayListId.IsNullOrWhitespace())
+            {
+                return RedirectToAction("GetYaPlaylists", new {sessionId = sessionId});
+            }
+
+            var tracksText = await tempSessionService.FindSessionTextAsync(sessionId, UserId).ConfigureAwait(true);
+            var sourceTracks = trackGetter.GetTracks(tracksText);
+
+            var trackToImport = sourceTracks
+                .Select(x => new NormalizedTrack
+                {
+                    Artist = x.Artist,
+                    Title = x.Title,
+                })
+                .Reverse()
+                .ToArray();
+
+            var progressId = Guid.NewGuid();
+            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, tuple =>
+                progressBar.UpdateProgressModel(new ProgressModel
+                {
+                    Id = progressId,
+                    Processed = tuple.Processed,
+                    Total = tuple.Total
+                })).ConfigureAwait(true);
+
+            await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(true);
+
+            return View("ImportProgress", new ProgressWithUrlModel
+            {
+                Progress = progressBar.GetProgressModel(progressId),
+                YandexPlaylistUrl = $"https://music.yandex.ru/users/{yaPlaylists.Login}/playlists/{yaPlayListId}"
+            });
+        }
+
+        [HttpGet("progress")]
+        public ActionResult GetImportProgress(Guid progressId)
+        {
+            return PartialView("ImportProgressPartial", progressBar.GetProgressModel(progressId));
         }
     }
 }
