@@ -251,7 +251,8 @@ namespace Tolltech.MuserUI.Controllers
             });
         }
 
-        private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId, Guid sessionId, Guid userId)
+        private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
+            Guid sessionId, Guid userId)
         {
             void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
             {
@@ -266,15 +267,21 @@ namespace Tolltech.MuserUI.Controllers
                 currentProgress.Processed = tuple.Processed;
 
                 var importResult = tuple.importResult;
-                if (importResult.ImportStatus == ImportStatus.Error || importResult.ImportStatus == ImportStatus.NotFound)
+                if (importResult.ImportStatus == ImportStatus.Error ||
+                    importResult.ImportStatus == ImportStatus.NotFound)
                 {
-                    currentProgress.Errors.Add((new TrackModel {Title = importResult.ImportingTrack?.Title ?? string.Empty, Artist = importResult.ImportingTrack?.Artist ?? string.Empty}, $"{importResult.ImportStatus} - {importResult.Message}"));
+                    currentProgress.Errors.Add((new TrackModel
+                    {
+                        Title = importResult.ImportingTrack?.Title ?? string.Empty,
+                        Artist = importResult.ImportingTrack?.Artist ?? string.Empty
+                    }, $"{jsonSerializer.SerializeToString(new {importResult.ImportStatus, importResult.Message})}"));
                 }
 
                 progressBar.UpdateProgressModel(currentProgress);
             }
 
-            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, userId, UpdateProgress).ConfigureAwait(false);
+            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, userId, UpdateProgress)
+                .ConfigureAwait(false);
 
             await importResultLogger.WriteImportLogsAsync(results, userId, sessionId).ConfigureAwait(false);
         }

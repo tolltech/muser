@@ -15,15 +15,11 @@
     <div class="common">
         <label style="color: red">Не удалось импортировать</label>
     </div>
-    foreach (var error in Model.Errors)
-    {
-        <div>
-            <span>
-                <label>@error.Track?.Artist</label>
-                <label> - </label>
-                <label>@error.Track?.Title</label>
-                <input type="hidden" value="@error.Message"/>
-            </span>
-        </div>
-    }
+
+    <select multiple class="track-list">
+        @foreach (var error in Model.Errors)
+        {
+            <option selected value="@error.Message">@error.Track?.Artist - @error.Track?.Title</option>
+        }
+    </select>
 }
