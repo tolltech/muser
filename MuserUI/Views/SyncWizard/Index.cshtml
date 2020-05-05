@@ -9,15 +9,28 @@
         <div>
             @Html.TextAreaFor(x => x.Text, new {id = "inputAudioStr", style = "width:100%"})
         </div>
-        <input type="submit" value="Распарсить треки" class="btn btn-outline-dark"/>
+        <span>
+            <input type="submit" value="Распарсить треки" class="btn btn-outline-dark"/>
+            <label title="Загрузите плейлист вида
+Артист1 - Песня1
+Артист2 - Песня2">[?]</label>
+        </span>
     </form>
 </div>
 <div class="common">
     <label style="font-size: 30px;">или</label>
 </div>
 <div class="common">
+    <a href="https://chrome.google.com/webstore/detail/tollmuser/enfnbgckehleomocfbehndiiabgapllc?hl=ru">
+        <input type="button" value="Поставьте расширение для Chrome" class="btn btn-outline-dark" />
+    </a>
+</div>
+<div class="common">
+    <label style="font-size: 30px;">или</label>
+</div>
+<div class="common">
     <form asp-action="GetInputTracksFromFile" asp-controller="SyncWizard" method="post" enctype="multipart/form-data">
-        <input type="file" name="uploadedFile"/>
-        <input type="submit" value="Загрузить из файла" class="btn btn-outline-dark"/>
+        <input type="file" name="uploadedFile" />
+        <input type="submit" value="Загрузить из файла" class="btn btn-outline-dark" />
     </form>
 </div>
