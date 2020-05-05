@@ -17,11 +17,13 @@
     </div>
     foreach (var error in Model.Errors)
     {
-        <span>
-            <label>@error.Track?.Artist</label>
-            <label> - </label>
-            <label>@error.Track?.Title</label>
-            <input type="hidden" value="@error.Message"/>
-        </span>
+        <div>
+            <span>
+                <label>@error.Track?.Artist</label>
+                <label> - </label>
+                <label>@error.Track?.Title</label>
+                <input type="hidden" value="@error.Message"/>
+            </span>
+        </div>
     }
 }
