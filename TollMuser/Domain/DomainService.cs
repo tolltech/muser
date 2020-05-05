@@ -34,7 +34,7 @@ namespace Tolltech.Muser.Domain
         }
 
         public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid? userId,
-            Action<(int Processed, int Total)> percentsComplete = null)
+            Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
@@ -42,22 +42,26 @@ namespace Tolltech.Muser.Domain
             var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
             var foundTracks = new HashSet<(string Id, string AlbumId)>(existentTracksHash);
 
-            var completeCount = 0;
-            var notFoundCount = 0;
             var totalCount = trackToImport.Length;
 
             log.Info($"Start import {totalCount} tracks for user {userId}");
 
             var syncTracks = new SyncTracks(trackToImport, existentTracks);
             var newTracks = syncTracks.GetNewTracks();
-            var alreadyExistentTracks = trackToImport.Except(newTracks).Select(x=> new ImportResult(x.Artist, x.Title)
-            {
-                ImportStatus = ImportStatus.AlreadyExists,
-                Message = "This track should not be in this request",                                
-            });
+
+            var alreadyExistentTracks = trackToImport
+                .Except(newTracks)
+                .Select(x => new ImportResult(x.Artist, x.Title)
+                {
+                    ImportStatus = ImportStatus.AlreadyExists,
+                    Message = "This track should not be in this request",
+                })
+                .ToArray();
 
             var result = new List<ImportResult>(trackToImport.Length);
             result.AddRange(alreadyExistentTracks);
+            var notFoundCount = 0;
+            var completeCount = alreadyExistentTracks.Length;
 
             foreach (var track in newTracks)
             {
@@ -146,7 +150,7 @@ namespace Tolltech.Muser.Domain
                 finally
                 {
                     result.Add(importResult);
-                    percentsComplete?.Invoke((++completeCount, totalCount));
+                    percentsComplete?.Invoke((++completeCount, totalCount, importResult));
                     log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
                 }
             }

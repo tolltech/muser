@@ -234,18 +234,18 @@ namespace Tolltech.MuserUI.Controllers
 #pragma warning restore 4014
 
             var cnt = 0;
-            while (progressBar.GetProgressModel(progressId) == null && cnt < 300)
+            while (progressBar.FindProgressModel(progressId) == null && cnt < 300)
             {
                 await Task.Delay(100).ConfigureAwait(true);
                 ++cnt;
             }
 
             var loginChars = yaPlaylists.Login?.TakeWhile(c => c != '@').ToArray();
-            var yaPlaylistsLogin =  new string(loginChars ?? Array.Empty<char>());
+            var yaPlaylistsLogin = new string(loginChars ?? Array.Empty<char>());
 
             return View("ImportProgress", new ProgressWithUrlModel
             {
-                Progress = progressBar.GetProgressModel(progressId) ??
+                Progress = progressBar.FindProgressModel(progressId) ??
                            new ProgressModel {Id = progressId, Processed = 0, Total = 0},
                 YandexPlaylistUrl = $"https://music.yandex.ru/users/{yaPlaylistsLogin}/playlists/{yaPlayListId}"
             });
@@ -255,12 +255,34 @@ namespace Tolltech.MuserUI.Controllers
             Guid sessionId)
         {
             var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, tuple =>
-                progressBar.UpdateProgressModel(new ProgressModel
+            {
+                var currentProgress = progressBar.FindProgressModel(progressId);
+
+                if (currentProgress == null)
                 {
-                    Id = progressId,
-                    Processed = tuple.Processed,
-                    Total = tuple.Total
-                })).ConfigureAwait(false);
+                    currentProgress = new ProgressModel
+                    {
+                        Total = tuple.Total,
+                        Processed = tuple.Processed
+                    };
+                }
+
+                var importResult = tuple.importResult;
+                if (importResult.ImportStatus == ImportStatus.AlreadyExists)
+                {
+                    currentProgress.Skipped++;
+                }
+                else if (importResult.ImportStatus == ImportStatus.Error
+                         || importResult.ImportStatus == ImportStatus.NotFound)
+                {
+                    currentProgress.Errors.Add((
+                        new TrackModel
+                            {Title = importResult.ImportingTrack.Title, Artist = importResult.ImportingTrack.Artist},
+                        importResult.Message));
+                }
+
+                progressBar.UpdateProgressModel(currentProgress);
+            }).ConfigureAwait(false);
 
             await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(false);
         }
@@ -268,7 +290,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet("progress")]
         public ActionResult GetImportProgress(Guid progressId)
         {
-            return PartialView("ImportProgressPartial", progressBar.GetProgressModel(progressId));
+            return PartialView("ImportProgressPartial", progressBar.FindProgressModel(progressId));
         }
     }
 }

@@ -225,7 +225,7 @@ namespace Tolltech.MuserUI.Controllers
 
             await importResultLogger.WriteImportLogsAsync(results, UserId, null).ConfigureAwait(true);
 
-            return PartialView("Progress", progressBar.GetProgressModel(progressId));
+            return PartialView("Progress", progressBar.FindProgressModel(progressId));
         }
     }
 }
