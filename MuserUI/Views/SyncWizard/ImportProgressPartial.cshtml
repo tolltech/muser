@@ -13,7 +13,7 @@
 @if (Model.Errors.Count > 0)
 {
     <div class="common">
-        <label>Не удалось импортировать</label>
+        <label style="color: red">Не удалось импортировать</label>
     </div>
     foreach (var error in Model.Errors)
     {
