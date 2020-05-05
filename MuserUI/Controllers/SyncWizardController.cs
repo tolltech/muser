@@ -228,21 +228,41 @@ namespace Tolltech.MuserUI.Controllers
                 .ToArray();
 
             var progressId = Guid.NewGuid();
+
+#pragma warning disable 4014
+            RunImport(progressId, trackToImport, yaPlayListId, sessionId);
+#pragma warning restore 4014
+
+            var cnt = 0;
+            while (progressBar.GetProgressModel(progressId) == null && cnt < 300)
+            {
+                await Task.Delay(100).ConfigureAwait(true);
+                ++cnt;
+            }
+
+            var loginChars = yaPlaylists.Login?.TakeWhile(c => c != '@').ToArray();
+            var yaPlaylistsLogin =  new string(loginChars ?? Array.Empty<char>());
+
+            return View("ImportProgress", new ProgressWithUrlModel
+            {
+                Progress = progressBar.GetProgressModel(progressId) ??
+                           new ProgressModel {Id = progressId, Processed = 0, Total = 0},
+                YandexPlaylistUrl = $"https://music.yandex.ru/users/{yaPlaylistsLogin}/playlists/{yaPlayListId}"
+            });
+        }
+
+        private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
+            Guid sessionId)
+        {
             var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, tuple =>
                 progressBar.UpdateProgressModel(new ProgressModel
                 {
                     Id = progressId,
                     Processed = tuple.Processed,
                     Total = tuple.Total
-                })).ConfigureAwait(true);
+                })).ConfigureAwait(false);
 
-            await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(true);
-
-            return View("ImportProgress", new ProgressWithUrlModel
-            {
-                Progress = progressBar.GetProgressModel(progressId),
-                YandexPlaylistUrl = $"https://music.yandex.ru/users/{yaPlaylists.Login}/playlists/{yaPlayListId}"
-            });
+            await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(false);
         }
 
         [HttpGet("progress")]

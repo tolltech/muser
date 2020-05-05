@@ -24,7 +24,7 @@ namespace Tolltech.MuserUI.Sync
             };
 
             using var queryExecutor = queryExecutorFactory.Create<TempSessionHandler, TempSessionDbo>();
-            await  queryExecutor.ExecuteAsync(x => x.CreateAsync(sessionDbo)).ConfigureAwait(false);
+            await queryExecutor.ExecuteAsync(x => x.CreateAsync(sessionDbo)).ConfigureAwait(false);
         }
 
         public async Task<string> FindSessionTextAsync(Guid sessionId, Guid userId)

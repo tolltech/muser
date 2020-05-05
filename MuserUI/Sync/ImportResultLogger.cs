@@ -15,7 +15,7 @@ namespace Tolltech.MuserUI.Sync
             this.queryExecutorFactory = queryExecutorFactory;
         }
 
-        public Task WriteImportLogsAsync(ImportResult[] results, Guid userId, Guid? sessionId)
+        public async Task WriteImportLogsAsync(ImportResult[] results, Guid userId, Guid? sessionId)
         {
             var now = DateTime.Now;
             sessionId ??= Guid.NewGuid();
@@ -36,7 +36,7 @@ namespace Tolltech.MuserUI.Sync
             }).ToArray();
 
             using var queryExecutor = queryExecutorFactory.Create<ImportResultHandler, ImportResultDbo>();
-            return queryExecutor.ExecuteAsync(x => x.CreateAsync(importResults));
+            await queryExecutor.ExecuteAsync(x => x.CreateAsync(importResults)).ConfigureAwait(false);
         }
     }
 }

@@ -11,7 +11,7 @@
 <div id="errorDiv" style="display: none">
     <label style="color: red">Что-то пошло не так</label>
 </div>
-<div style="display: none">
+<div  id="playListLinkDiv" style="display: none">
     <a href="@Model.YandexPlaylistUrl">Проверить плейлист</a>
 </div>
 
@@ -37,7 +37,9 @@
             $('#errorDiv').hide();
             var left = $('#leftProgressInput').val();
             if (left > 0) {
-                $('#getProgressForm').submit();
+                setTimeout(() => $('#getProgressForm').submit(), 100);
+            } else {
+                $('#playListLinkDiv').show();
             }
         };
 

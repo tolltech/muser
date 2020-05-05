@@ -8,6 +8,6 @@ namespace Tolltech.MuserUI.Models.Sync
         public int Total { get; set; }
         public int Processed { get; set; }
         public int Left => Total - Processed;
-        public string SuccessUrl { get; set; }
+        public bool Initial { get; set; }
     }
 }
