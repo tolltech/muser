@@ -9,5 +9,7 @@ namespace Tolltech.MuserUI.Models.Sync
         public int Processed { get; set; }
         public int Left => Total - Processed;
         public bool Initial { get; set; }
+        public int Skipped { get; set; }
+        public TrackModel[] Errors { get; set; }
     }
 }

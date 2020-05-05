@@ -34,7 +34,7 @@ namespace Tolltech.Muser.Domain
         }
 
         public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid? userId,
-            Action<(int Processed, int Total)> percentsComplete = null)
+            Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
@@ -146,7 +146,7 @@ namespace Tolltech.Muser.Domain
                 finally
                 {
                     result.Add(importResult);
-                    percentsComplete?.Invoke((++completeCount, totalCount));
+                    percentsComplete?.Invoke((++completeCount, totalCount, importResult));
                     log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
                 }
             }
