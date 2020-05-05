@@ -254,38 +254,25 @@ namespace Tolltech.MuserUI.Controllers
         private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
             Guid sessionId)
         {
-            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, tuple =>
+            void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
             {
-                var currentProgress = progressBar.FindProgressModel(progressId);
-
-                if (currentProgress == null)
+                var currentProgress = progressBar.FindProgressModel(progressId) ?? new ProgressModel
                 {
-                    currentProgress = new ProgressModel
-                    {
-                        Total = tuple.Total,
-                        Processed = tuple.Processed
-                    };
-                }
+                    Id = progressId,
+                    Total = tuple.Total,
+                    Processed = tuple.Processed
+                };
 
                 var importResult = tuple.importResult;
-                if (importResult.ImportStatus == ImportStatus.AlreadyExists)
+                if (importResult.ImportStatus == ImportStatus.Error || importResult.ImportStatus == ImportStatus.NotFound)
                 {
-                    currentProgress.Skipped++;
-                }
-                else if (importResult.ImportStatus == ImportStatus.Error
-                         || importResult.ImportStatus == ImportStatus.NotFound)
-                {
-                    currentProgress.Errors.Add((
-                        new TrackModel
-                        {
-                            Title = importResult.ImportingTrack?.Title ?? string.Empty, 
-                            Artist = importResult.ImportingTrack?.Artist ?? string.Empty
-                        },
-                        $"{importResult.ImportStatus} - {importResult.Message}"));
+                    currentProgress.Errors.Add((new TrackModel {Title = importResult.ImportingTrack?.Title ?? string.Empty, Artist = importResult.ImportingTrack?.Artist ?? string.Empty}, $"{importResult.ImportStatus} - {importResult.Message}"));
                 }
 
                 progressBar.UpdateProgressModel(currentProgress);
-            }).ConfigureAwait(false);
+            }
+
+            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, UserId, UpdateProgress).ConfigureAwait(false);
 
             await importResultLogger.WriteImportLogsAsync(results, UserId, sessionId).ConfigureAwait(false);
         }
