@@ -28,17 +28,19 @@ namespace Tolltech.Muser.Domain
             var normalizedTracks = normalizedTrackService.GetNormalizedTracks(inputTracks);
             var yaTracks = await yandexApi.GetTracksAsync(yaPlaylistId).ConfigureAwait(false);
 
-            log.Info($"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {normalizedTracks.Length} vkTracks");
+            log.Info(
+                $"Found {yaTracks.Length} yaTracks from playlist {yaPlaylistId} and {normalizedTracks.Length} vkTracks");
 
             return new SyncTracks(normalizedTracks, yaTracks).GetNewTracks();
         }
 
-        public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid? userId,
+        public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId,
+            Guid? userId,
             Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
-            
+
             var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
             var foundTracks = new HashSet<(string Id, string AlbumId)>(existentTracksHash);
 
@@ -51,7 +53,7 @@ namespace Tolltech.Muser.Domain
 
             var alreadyExistentTracks = trackToImport
                 .Except(newTracks)
-                .Select(x => new ImportResult(x.Artist, x.Title)
+                .Select(x => new ImportResult(x.Artist, x.Title, playlistId)
                 {
                     ImportStatus = ImportStatus.AlreadyExists,
                     Message = "This track should not be in this request",
@@ -66,7 +68,7 @@ namespace Tolltech.Muser.Domain
             foreach (var track in newTracks)
             {
                 log.Info($"START process {track.Artist} - {track.Title}");
-                var importResult = new ImportResult(track.Artist, track.Title);
+                var importResult = new ImportResult(track.Artist, track.Title, playlistId);
 
                 try
                 {
@@ -112,7 +114,8 @@ namespace Tolltech.Muser.Domain
                         importResult.CandidateTrackId = foundedYaTrack?.Id;
                         importResult.CandidateAlbumId = foundedYaTrack?.Albums?.FirstOrDefault()?.Id;
 
-                        log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
+                        log.Info(
+                            $"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
 
                         continue;
                     }
@@ -163,6 +166,24 @@ namespace Tolltech.Muser.Domain
             }
 
             return result.ToArray();
+        }
+
+        public async Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid? userId)
+        {
+            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+
+            var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
+
+            var existentTrackHashes = new HashSet<(string, string)>(existentTracks
+                .SelectMany(track =>
+                    track.Albums
+                        .Select(album => (track.Id, album.Id))));
+
+            var newTracks = trackToImport.Where(x => !existentTrackHashes.Contains((x.Id, x.AlbumId))).ToArray();
+
+            var playlists = await yandexApi.GetPlaylistsAsync().ConfigureAwait(false);
+            var revision = playlists.FirstOrDefault(x => x.Id == playlistId)?.Revision;
+            await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, newTracks).ConfigureAwait(false);
         }
     }
 }

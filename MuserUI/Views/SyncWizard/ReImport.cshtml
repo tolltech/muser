@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "TollMuser.Ошибки импорта";
+}
+
+@model Tolltech.MuserUI.Models.SyncWizard.ReImportModel
+
+<div id="linkToPlaylistDiv">
+    @await Html.PartialAsync("LinkToPlaylist", Model.PlaylistUrl)
+</div>
+
+<form id="yaPlaylistForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
+    <fieldset>
+        <legend>Выберите треки, если мы нашли их верно</legend>
+        <table class="even-odd table-padding">
+            <tr>
+                <td>Искали</td>
+                <td>Нашли</td>
+            </tr>
+            @for (var i = 0; i < Model.Tracks.Length; i++)
+            {
+                <tr>
+                    <td>
+                        <label>@Model.Tracks[i].InputArtist - @Model.Tracks[i].InputTitle</label>
+                    </td>
+                    <td>
+                        @if (Model.Tracks[i].Disabled)
+                        {
+                            @Html.CheckBoxFor(x => x.Tracks[i].Selected, new
+                            {
+                                disabled = "disabled"
+                            })
+                        }
+                        else
+                        {
+                            @Html.CheckBoxFor(x => x.Tracks[i].Selected)
+                        }
+                        <label asp-for="@Model.Tracks[i].Selected">@Model.Tracks[i].Artist - @Model.Tracks[i].Title</label>
+                        @Html.HiddenFor(x => x.Tracks[i].TrackId)
+                        @Html.HiddenFor(x => x.Tracks[i].AlbumId)
+                        @Html.HiddenFor(x => x.Tracks[i].Id)
+                    </td>
+                </tr>
+            }
+        </table>
+        @Html.HiddenFor(x => x.SessionId)
+        @Html.HiddenFor(x => x.PlaylistId)
+        <input type="submit" value="Импортировать" class="btn btn-outline-dark"/>
+    </fieldset>
+</form>

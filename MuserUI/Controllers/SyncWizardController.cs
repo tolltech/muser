@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,7 @@ using Tolltech.MuserUI.Models.SyncWizard;
 using Tolltech.MuserUI.Sync;
 using Tolltech.Serialization;
 using Tolltech.SqlEF;
+using Tolltech.YandexClient.ApiModels;
 
 namespace Tolltech.MuserUI.Controllers
 {
@@ -240,15 +242,20 @@ namespace Tolltech.MuserUI.Controllers
                 ++cnt;
             }
 
-            var loginChars = yaPlaylists.Login?.TakeWhile(c => c != '@').ToArray();
-            var yaPlaylistsLogin = new string(loginChars ?? Array.Empty<char>());
-
             return View("ImportProgress", new ProgressWithUrlModel
             {
                 Progress = progressBar.FindProgressModel(progressId) ??
                            new ProgressModel {Id = progressId, Processed = 0, Total = 0},
-                YandexPlaylistUrl = $"https://music.yandex.ru/users/{yaPlaylistsLogin}/playlists/{yaPlayListId}"
+                YandexPlaylistUrl = GetPlaylistUrl(yaPlaylists.Login, yaPlayListId),
+                SessionId = sessionId
             });
+        }
+
+        private static string GetPlaylistUrl([CanBeNull] string yandexEmail, string yaPlaylistId)
+        {
+            var loginChars = yandexEmail?.TakeWhile(c => c != '@').ToArray();
+            var yaPlaylistsLogin = new string(loginChars ?? Array.Empty<char>());
+            return $"https://music.yandex.ru/users/{yaPlaylistsLogin}/playlists/{yaPlaylistId}";
         }
 
         private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
@@ -290,6 +297,67 @@ namespace Tolltech.MuserUI.Controllers
         public ActionResult GetImportProgress(Guid progressId)
         {
             return PartialView("ImportProgressPartial", progressBar.FindProgressModel(progressId));
+        }
+
+        [HttpGet("reimport")]
+        public async Task<ActionResult> ReImport(Guid sessionId)
+        {
+            if (!authorizationSettings.UserAuthorized(UserId))
+            {
+                return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
+            }
+
+            var importResults = await importResultLogger
+                .SelectAsync(sessionId, UserId, ImportStatus.NotFound, ImportStatus.Error).ConfigureAwait(true);
+            var errors = importResults
+                .Select(x => new ReImportTrack
+                {
+                    Artist = x.CandidateArtist,
+                    Title = x.CandidateTitle,
+                    TrackId = x.CandidateTrackId,
+                    AlbumId = x.CandidateAlbumId,
+                    Selected = false,
+                    InputArtist = x.Artist,
+                    InputTitle = x.Title,
+                    Id = x.Id,
+                    Disabled = x.CandidateAlbumId.IsNullOrWhitespace() || x.CandidateAlbumId.IsNullOrWhitespace()
+                })
+                .ToArray();
+
+            var playlistId = importResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
+            return View(new ReImportModel
+            {
+                Tracks = errors,
+                SessionId = sessionId,
+                PlaylistId = playlistId,
+                PlaylistUrl = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin, playlistId)
+            });
+        }
+
+        [HttpPost("reimport")]
+        public async Task<ActionResult> ReImport(ReImportModel reImportModel)
+        {
+            if (!authorizationSettings.UserAuthorized(UserId))
+            {
+                return RedirectToAction("YandexAuthorize", new {sessionId = reImportModel.SessionId});
+            }
+
+            var selected = reImportModel.Tracks.Where(x => x.Selected).ToArray();
+            var trackToChange = selected
+                .Select(x => new TrackToChange
+                {
+                    AlbumId = x.AlbumId,
+                    Id = x.TrackId
+                })
+                .ToArray();
+            await domainService.ImportTracksAsync(trackToChange, reImportModel.PlaylistId, UserId).ConfigureAwait(true);
+
+            await importResultLogger.UpdateManualApprovingAsync(selected.Select(x => x.Id).ToArray())
+                .ConfigureAwait(true);
+
+            var url = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin,
+                reImportModel.PlaylistId);
+            return RedirectToAction("ReImport", new {sessionId = reImportModel.SessionId});
         }
     }
 }

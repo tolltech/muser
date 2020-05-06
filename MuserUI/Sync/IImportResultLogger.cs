@@ -9,5 +9,12 @@ namespace Tolltech.MuserUI.Sync
     {
         [NotNull]
         Task WriteImportLogsAsync([ItemNotNull] [NotNull] ImportResult[] results, Guid userId, Guid? sessionId);
+
+        [NotNull]
+        [ItemNotNull]
+        Task<ImportResultDbo[]> SelectAsync(Guid sessionId, Guid userId, params ImportStatus[] statuses);
+
+        [NotNull]
+        Task UpdateManualApprovingAsync([NotNull] Guid[] ids);
     }
 }

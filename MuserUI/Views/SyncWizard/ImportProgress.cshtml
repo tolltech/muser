@@ -10,6 +10,11 @@
 </div>
 <div id="playListLinkDiv" style="display: none">
     <a href="@Model.YandexPlaylistUrl">Проверить плейлист</a>
+    <div>
+        <a href="@Url.Action("ReImport", new {sessionId = Model.SessionId})">
+            <input type="button" value="Доимпортировать" class="btn btn-outline-dark"/>
+        </a>
+    </div>
 </div>
 
 <div id="importProgressDiv">
@@ -25,7 +30,7 @@
       data-ajax-failure="ProgressFail()"
       id="getProgressForm">
 
-    <input type="hidden" value="@Model.Progress.Id" name="progressId" />
+    <input type="hidden" value="@Model.Progress.Id" name="progressId"/>
 </form>
 
 @section Scripts{
@@ -36,9 +41,9 @@
 
         function ProgressIteration() {
             $('#errorDiv').hide();
-            var left=$('#leftProgressInput').val();
-            if(left>0) {
-                setTimeout(() => $('#getProgressForm').submit(),100);
+            var left = $('#leftProgressInput').val();
+            if (left > 0) {
+                setTimeout(() => $('#getProgressForm').submit(), 100);
             } else {
                 $('#playListLinkDiv').show();
             }

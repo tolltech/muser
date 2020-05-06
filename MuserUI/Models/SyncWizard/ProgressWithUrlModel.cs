@@ -1,4 +1,5 @@
-﻿using Tolltech.MuserUI.Models.Sync;
+﻿using System;
+using Tolltech.MuserUI.Models.Sync;
 
 namespace Tolltech.MuserUI.Models.SyncWizard
 {
@@ -6,5 +7,6 @@ namespace Tolltech.MuserUI.Models.SyncWizard
     {
         public ProgressModel Progress { get; set; }
         public string YandexPlaylistUrl { get; set; }
+        public Guid SessionId { get; set; }
     }
 }

@@ -79,3 +79,12 @@ div.common {
     height: 75vh;
     max-width: 500px;
 }
+
+
+table.even-odd tr:nth-child(even) {
+    background: #e5e5e5
+}
+
+table.table-padding td {
+    padding: 5px;
+}

@@ -52,5 +52,8 @@ namespace Tolltech.MuserUI.Sync
 
         [Column("approvedmanual", TypeName = "boolean"), Required]
         public bool ApprovedManual { get; set; }
+
+        [Column("playlistid", TypeName = "varchar")]
+        public string PlaylistId { get; set; }
     }
 }

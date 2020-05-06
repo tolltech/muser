@@ -52,3 +52,4 @@ CREATE INDEX IF NOT EXISTS importresults_date on ImportResults (Date);
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS approvedmanual boolean default false;
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatealbumid varchar NULL;
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatetrackid varchar NULL;
+ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS playlistid varchar NULL;
