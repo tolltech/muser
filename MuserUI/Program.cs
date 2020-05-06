@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,8 @@ namespace Tolltech.MuserUI
 {
     public class Program
     {
+        private static readonly log4net.ILog log = LogManager.GetLogger(typeof(Program));  
+
         public static void Main(string[] args)
         {
             Console.WriteLine($"Start muser with args {string.Join(", ", args)}");
@@ -19,6 +22,9 @@ namespace Tolltech.MuserUI
             var repo = log4net.LogManager.CreateRepository(Assembly.GetEntryAssembly(),
                 typeof(log4net.Repository.Hierarchy.Hierarchy));
             log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
+
+
+            log.Info("Log configured");
 
             CreateHostBuilder(args)
                 .Build()
