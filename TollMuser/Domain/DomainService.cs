@@ -181,9 +181,27 @@ namespace Tolltech.Muser.Domain
 
             var newTracks = trackToImport.Where(x => !existentTrackHashes.Contains((x.Id, x.AlbumId))).ToArray();
 
+            if (newTracks.Length == 0)
+            {
+                return;
+            }
+
             var playlists = await yandexApi.GetPlaylistsAsync().ConfigureAwait(false);
             var revision = playlists.FirstOrDefault(x => x.Id == playlistId)?.Revision;
             await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, newTracks).ConfigureAwait(false);
+        }
+
+        public async Task<YandexTrack[]> GetExistentTracksAsync(Guid userId, string playlistId)
+        {
+            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+            var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
+            return existentTracks.SelectMany(track => track.Albums.Select(album => new YandexTrack
+            {
+                Id = track.Id,
+                Title = track.Title,
+                AlbumId = album.Id,
+                Artists = track.Artists.Select(x => x.Name).ToArray()
+            })).ToArray();
         }
     }
 }

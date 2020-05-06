@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -309,7 +310,14 @@ namespace Tolltech.MuserUI.Controllers
 
             var importResults = await importResultLogger
                 .SelectAsync(sessionId, UserId, ImportStatus.NotFound, ImportStatus.Error).ConfigureAwait(true);
+
+            var playlistId = importResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
+
+            var existentTracks = await domainService.GetExistentTracksAsync(UserId, playlistId).ConfigureAwait(true);
+            var existentTrackHashes = new HashSet<(string, string)>(existentTracks.Select(x => (x.Id, x.AlbumId)));
+
             var errors = importResults
+                .Where(x => !existentTrackHashes.Contains((x.CandidateTrackId, x.CandidateAlbumId)))
                 .Select(x => new ReImportTrack
                 {
                     Artist = x.CandidateArtist,
@@ -324,7 +332,6 @@ namespace Tolltech.MuserUI.Controllers
                 })
                 .ToArray();
 
-            var playlistId = importResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
             return View(new ReImportModel
             {
                 Tracks = errors,

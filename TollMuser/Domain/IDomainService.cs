@@ -14,6 +14,11 @@ namespace Tolltech.Muser.Domain
         Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid? userId = null,
             Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null);
 
-        [NotNull] Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid? userId);
+        [NotNull]
+        Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid? userId);
+
+        [ItemNotNull]
+        [NotNull]
+        Task<YandexTrack[]> GetExistentTracksAsync(Guid userId, string playlistId);
     }
 }
