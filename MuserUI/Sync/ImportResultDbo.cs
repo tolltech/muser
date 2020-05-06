@@ -41,7 +41,16 @@ namespace Tolltech.MuserUI.Sync
         [Column("candidateartist", TypeName = "varchar"), Required]
         public string CandidateArtist { get; set; }
 
+        [Column("candidatetrackid", TypeName = "varchar")]
+        public string CandidateTrackId { get; set; }
+
+        [Column("candidatealbumid", TypeName = "varchar")]
+        public string CandidateAlbumId { get; set; }
+
         [Column("message", TypeName = "varchar"), Required]
         public string Message { get; set; }
+
+        [Column("approvedmanual", TypeName = "boolean"), Required]
+        public bool ApprovedManual { get; set; }
     }
 }

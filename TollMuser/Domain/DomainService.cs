@@ -108,6 +108,10 @@ namespace Tolltech.Muser.Domain
                             Artist = artistStr,
                             Title = foundedYaTrack?.Title
                         };
+
+                        importResult.CandidateTrackId = foundedYaTrack?.Id;
+                        importResult.CandidateAlbumId = foundedYaTrack?.Albums?.FirstOrDefault()?.Id;
+
                         log.Info($"BUT found {artistStr} - {foundedYaTrack?.Title}\r\n{track.Artist}---{track.Title};{artistStr}---{foundedYaTrack?.Title}");
 
                         continue;
@@ -118,6 +122,9 @@ namespace Tolltech.Muser.Domain
                         Artist = yaTrack.ArtistsStr,
                         Title = yaTrack.Title
                     };
+
+                    importResult.CandidateTrackId = yaTrack.Id;
+                    importResult.CandidateAlbumId = yaTrack.Albums?.FirstOrDefault()?.Id;
 
                     var trackHash = (Id: yaTrack.Id, AlbumId: yaTrack.Albums.First().Id);
                     if (foundTracks.Contains(trackHash))

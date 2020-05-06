@@ -32,7 +32,10 @@ namespace Tolltech.MuserUI.Sync
                 NormalizedArtist = x.NormalizedTrack?.Artist ?? string.Empty,
                 NormalizedTitle = x.NormalizedTrack?.Title ?? string.Empty,
                 Message = x.Message ?? string.Empty,
-                Status = x.ImportStatus
+                Status = x.ImportStatus,
+                ApprovedManual = false,
+                CandidateAlbumId = x.CandidateAlbumId,
+                CandidateTrackId = x.CandidateTrackId
             }).ToArray();
 
             using var queryExecutor = queryExecutorFactory.Create<ImportResultHandler, ImportResultDbo>();

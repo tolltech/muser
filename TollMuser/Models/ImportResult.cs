@@ -20,5 +20,9 @@
         public ImportingTrack NormalizedTrack { get; set; }
 
         public ImportingTrack Candidate { get; set; }
+
+        public string CandidateTrackId { get; set; }
+
+        public string CandidateAlbumId { get; set; }
     }
 }

@@ -48,3 +48,7 @@ CREATE TABLE IF NOT EXISTS tempsessions(
 CREATE INDEX IF NOT EXISTS importresults_sessionid on ImportResults (SessionId);
 CREATE INDEX IF NOT EXISTS importresults_userid on ImportResults (UserId);
 CREATE INDEX IF NOT EXISTS importresults_date on ImportResults (Date);
+
+ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS approvedmanual boolean default false;
+ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatealbumid varchar NULL;
+ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatetrackid varchar NULL;
