@@ -297,7 +297,14 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet("progress")]
         public ActionResult GetImportProgress(Guid progressId)
         {
-            return PartialView("ImportProgressPartial", progressBar.FindProgressModel(progressId));
+            var progressModel = progressBar.FindProgressModel(progressId);
+            return PartialView("ImportProgressPartial", new ProgressModel
+            {
+                Total = progressModel.Total,
+                Processed = progressModel.Processed,
+                Errors = progressModel.Errors.ToList(),
+                Id = progressModel.Id
+            });
         }
 
         [HttpGet("reimport")]
@@ -349,7 +356,7 @@ namespace Tolltech.MuserUI.Controllers
                 return RedirectToAction("YandexAuthorize", new {sessionId = reImportModel.SessionId});
             }
 
-            var selected = reImportModel.Tracks.Where(x => x.Selected).ToArray();
+            var selected = reImportModel?.Tracks?.Where(x => x.Selected).ToArray() ?? Array.Empty<ReImportTrack>();
             var trackToChange = selected
                 .Select(x => new TrackToChange
                 {
