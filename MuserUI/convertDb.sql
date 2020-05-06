@@ -44,3 +44,7 @@ CREATE TABLE IF NOT EXISTS tempsessions(
     Text varchar NOT NULL,
     Date timestamp NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS importresults_sessionid on ImportResults (SessionId);
+CREATE INDEX IF NOT EXISTS importresults_userid on ImportResults (UserId);
+CREATE INDEX IF NOT EXISTS importresults_date on ImportResults (Date);
