@@ -1,4 +1,5 @@
-﻿@model Tolltech.MuserUI.Models.RegisterModel
+﻿@using Tolltech.MuserUI.Common
+@model Tolltech.MuserUI.Models.RegisterModel
 
 <h2>Регистрация</h2>
 
@@ -21,8 +22,13 @@
             <span asp-validation-for="ConfirmPassword" />
         </div>
         <div>
-            <input type="hidden" asp-for="ReturnUrl"/>
+            <input type="hidden" asp-for="ReturnUrl" />
         </div>
+        @if(!Model.ErrorMessage.IsNullOrWhitespace()) {
+        <div>
+            <label style="color: red">@Model.ErrorMessage</label>
+        </div>
+        }
         <div>
             <input type="submit" value="Регистрация" class="btn btn-outline-dark" />
         </div>

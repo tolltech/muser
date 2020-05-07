@@ -1,4 +1,5 @@
-﻿@model Tolltech.MuserUI.Models.LoginModel
+﻿@using Tolltech.MuserUI.Common
+@model Tolltech.MuserUI.Models.LoginModel
 
 <h2>Вход на сайт</h2>
 
@@ -20,6 +21,11 @@
         <div class="form-group">
             <input type="hidden" asp-for="ReturnUrl"/>
         </div>
+        @if(!Model.ErrorMessage.IsNullOrWhitespace()) {
+            <div>
+                <label style="color: red">@Model.ErrorMessage</label>
+            </div>
+        }
         <div class="form-group">
             <input type="submit" value="Войти" class="btn btn-outline-dark"/>
         </div>

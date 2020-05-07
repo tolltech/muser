@@ -16,5 +16,7 @@ namespace Tolltech.MuserUI.Models
         public string ConfirmPassword { get; set; }
 
         public string ReturnUrl { get; set; }
+
+        public string ErrorMessage { get; set; }
     }
 }

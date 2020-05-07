@@ -58,6 +58,7 @@ namespace Tolltech.MuserUI.Controllers
             {
                 if (captcha.IsForbid(Guid.Empty, model.Email))
                 {
+                    model.ErrorMessage = "Превышено число попыток, попробуйте позже";
                     ModelState.AddModelError("", "Превышено число попыток, попробуйте позже");
                     return View(model);
                 }
@@ -76,6 +77,7 @@ namespace Tolltech.MuserUI.Controllers
 
                 captcha.IncrementForbid(Guid.Empty, model.Email);
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                model.ErrorMessage = "Некорректные логин и(или) пароль";
             }
 
             return View(model);
@@ -108,7 +110,10 @@ namespace Tolltech.MuserUI.Controllers
                         : Redirect(model.ReturnUrl);
                 }
                 else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                {
+                    model.ErrorMessage = "Такой пользователь уже есть";
+                    ModelState.AddModelError("", "Такой пользователь уже есть");
+                }
             }
 
             return View(model);
