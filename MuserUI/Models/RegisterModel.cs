@@ -5,6 +5,7 @@ namespace Tolltech.MuserUI.Models
     public class RegisterModel
     {
         [Required(ErrorMessage = "Не указан Email")]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Не указан пароль")]
