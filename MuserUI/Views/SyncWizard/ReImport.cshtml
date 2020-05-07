@@ -25,11 +25,14 @@
                     <td>
                         @if (Model.Tracks[i].Disabled)
                         {
-                            <input type="checkbox" id="@Model.Tracks[i].Id" asp-for="@Model.Tracks[i].Selected" value="@Model.Tracks[i].Selected" checked="@Model.Tracks[i].Selected" disabled="disabled"/>
+                            @Html.CheckBoxFor(x => x.Tracks[i].Selected, new
+                            {
+                                disabled = "disabled"
+                            })
                         }
                         else
                         {
-                            <input type="checkbox" id="@Model.Tracks[i].Id" asp-for="@Model.Tracks[i].Selected" value="@Model.Tracks[i].Selected" checked="@Model.Tracks[i].Selected" />
+                            @Html.CheckBoxFor(x => x.Tracks[i].Selected)
                         }
                         <label asp-for="@Model.Tracks[i].Selected">@Model.Tracks[i].Artist - @Model.Tracks[i].Title</label>
                         @Html.HiddenFor(x => x.Tracks[i].TrackId)
