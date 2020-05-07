@@ -8,7 +8,7 @@
     @await Html.PartialAsync("LinkToPlaylist", Model.PlaylistUrl)
 </div>
 
-<form id="yaPlaylistForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
+<form id="reImportForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
     <fieldset>
         <legend>Выберите треки, если мы нашли их верно</legend>
         <table class="even-odd table-padding">
@@ -25,14 +25,11 @@
                     <td>
                         @if (Model.Tracks[i].Disabled)
                         {
-                            @Html.CheckBoxFor(x => x.Tracks[i].Selected, new
-                            {
-                                disabled = "disabled"
-                            })
+                            <input type="checkbox" id="@Model.Tracks[i].Id" asp-for="@Model.Tracks[i].Selected" value="@Model.Tracks[i].Selected" checked="@Model.Tracks[i].Selected" disabled="disabled"/>
                         }
                         else
                         {
-                            @Html.CheckBoxFor(x => x.Tracks[i].Selected)
+                            <input type="checkbox" id="@Model.Tracks[i].Id" asp-for="@Model.Tracks[i].Selected" value="@Model.Tracks[i].Selected" checked="@Model.Tracks[i].Selected" />
                         }
                         <label asp-for="@Model.Tracks[i].Selected">@Model.Tracks[i].Artist - @Model.Tracks[i].Title</label>
                         @Html.HiddenFor(x => x.Tracks[i].TrackId)
