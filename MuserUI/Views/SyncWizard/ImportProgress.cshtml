@@ -12,7 +12,7 @@
     <a href="@Model.YandexPlaylistUrl">Проверить плейлист</a>
     <div>
         <a href="@Url.Action("ReImport", new {sessionId = Model.SessionId})">
-            <input type="button" value="Доимпортировать" class="btn btn-outline-dark"/>
+            <input id="toReimportButton" type="button" value="Доимпортировать" class="btn btn-outline-dark"/>
         </a>
     </div>
 </div>
@@ -46,6 +46,7 @@
                 setTimeout(() => $('#getProgressForm').submit(), 100);
             } else {
                 $('#playListLinkDiv').show();
+                $('#toReimportButton').click();
             }
         };
 

@@ -324,15 +324,18 @@ namespace Tolltech.MuserUI.Controllers
                 return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
             }
 
-            var importResults = await importResultLogger
-                .SelectAsync(sessionId, UserId, ImportStatus.NotFound, ImportStatus.Error).ConfigureAwait(true);
+            var allImportResults = await importResultLogger.SelectAsync(sessionId, UserId).ConfigureAwait(true);
 
-            var playlistId = importResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
+            var errorImportResults = allImportResults.Where(x => x.Status == ImportStatus.Error).ToArray();
+
+            var notFoundImportResults = allImportResults.Where(x => x.Status == ImportStatus.NotFound).ToArray();
+            var playlistId = notFoundImportResults.Select(x => x.PlaylistId)
+                .FirstOrDefault(x => !x.IsNullOrWhitespace());
 
             var existentTracks = await domainService.GetExistentTracksAsync(UserId, playlistId).ConfigureAwait(true);
             var existentTrackHashes = new HashSet<(string, string)>(existentTracks.Select(x => (x.Id, x.AlbumId)));
 
-            var errors = importResults
+            var errors = notFoundImportResults
                 .Where(x => !existentTrackHashes.Contains((x.CandidateTrackId, x.CandidateAlbumId)))
                 .Select(x => new ReImportTrack
                 {
@@ -353,7 +356,10 @@ namespace Tolltech.MuserUI.Controllers
                 Tracks = errors,
                 SessionId = sessionId,
                 PlaylistId = playlistId,
-                PlaylistUrl = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin, playlistId)
+                PlaylistUrl = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin,
+                    playlistId),
+                Total = allImportResults.Length,
+                Success = allImportResults.Length - notFoundImportResults.Length - errorImportResults.Length
             });
         }
 

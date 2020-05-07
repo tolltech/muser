@@ -26,11 +26,16 @@ namespace Tolltech.MuserUI.Sync
 
         [NotNull]
         [ItemNotNull]
-        public Task<ImportResultDbo[]> SelectAsync(Guid sessionId, Guid userId, ImportStatus[] statuses)
+        public Task<ImportResultDbo[]> SelectAsync(Guid sessionId, Guid userId, params ImportStatus[] statuses)
         {
-            return dataContext.Table
-                .Where(x => x.SessionId == sessionId && x.UserId == userId && statuses.Contains(x.Status))
-                .ToArrayAsync();
+            var query = dataContext.Table.Where(x => x.SessionId == sessionId && x.UserId == userId);
+
+            if (statuses?.Length > 0)
+            {
+                query = query.Where(x => statuses.Contains(x.Status));
+            }
+
+            return query.ToArrayAsync();
         }
 
         [NotNull]

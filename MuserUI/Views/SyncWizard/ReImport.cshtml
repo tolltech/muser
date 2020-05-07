@@ -4,13 +4,22 @@
 
 @model Tolltech.MuserUI.Models.SyncWizard.ReImportModel
 
+<div class="common">
+    <span>
+        <label>Импортировано </label>
+        <label>@Model.Success</label>
+        <label>/</label>
+        <label>@Model.Total</label>
+    </span>
+</div>
+
 <div id="linkToPlaylistDiv">
     @await Html.PartialAsync("LinkToPlaylist", Model.PlaylistUrl)
 </div>
 
 <form id="reImportForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
     <fieldset>
-        <legend>Выберите треки, если мы нашли их верно</legend>
+        <legend>Можно импортировать оставшиеся треки, если соответствие верное</legend>
         <table class="even-odd table-padding" id="reImportTrackTable">
             <tr>
                 <td>Искали</td>
@@ -51,7 +60,7 @@
     <script type="text/javascript">
 
         function GetReImportTrackForm() {
-            var selectedTracks=$('#reImportTrackTable input:checked');
+            var selectedTracks = $('#reImportTrackTable input:checked');
 
             var tracks = [];
             for (var i = 0; i < selectedTracks.length; ++i) {

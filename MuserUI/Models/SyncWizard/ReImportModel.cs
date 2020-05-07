@@ -13,5 +13,7 @@ namespace Tolltech.MuserUI.Models.SyncWizard
         public Guid SessionId { get; set; }
         public string PlaylistId { get; set; }
         public string PlaylistUrl { get; set; }
+        public int Total { get; set; }
+        public int Success { get; set; }
     }
 }
