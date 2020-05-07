@@ -349,14 +349,16 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpPost("reimport")]
-        public async Task<ActionResult> ReImport(ReImportModel reImportModel)
+        public async Task<ActionResult> ReImport(ReImportFormJson reImportModelJson)
         {
+            var reImportModel = jsonSerializer.DeserializeFromString<ReImportForm>(reImportModelJson.ReImportForm);
+
             if (!authorizationSettings.UserAuthorized(UserId))
             {
                 return RedirectToAction("YandexAuthorize", new {sessionId = reImportModel.SessionId});
             }
 
-            var selected = reImportModel?.Tracks?.Where(x => x.Selected).ToArray() ?? Array.Empty<ReImportTrack>();
+            var selected = reImportModel?.Tracks?.ToArray() ?? Array.Empty<ReImportTrackForm>();
             var trackToChange = selected
                 .Select(x => new TrackToChange
                 {

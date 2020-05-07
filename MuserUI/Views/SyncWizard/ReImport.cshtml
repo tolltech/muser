@@ -11,7 +11,7 @@
 <form id="reImportForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
     <fieldset>
         <legend>Выберите треки, если мы нашли их верно</legend>
-        <table class="even-odd table-padding">
+        <table class="even-odd table-padding" id="reImportTrackTable">
             <tr>
                 <td>Искали</td>
                 <td>Нашли</td>
@@ -25,25 +25,60 @@
                     <td>
                         @if (Model.Tracks[i].Disabled)
                         {
-                            @Html.CheckBoxFor(x => x.Tracks[i].Selected, new
-                            {
-                                disabled = "disabled"
-                            })
+                            <input type="checkbox" disabled="disabled" name="@("reimportTrackCheckbox" + i)">
                         }
                         else
                         {
-                            @Html.CheckBoxFor(x => x.Tracks[i].Selected)
+                            <input type="checkbox" name="@("reimportTrackCheckbox" + i)"
+                                   trackid="@Model.Tracks[i].TrackId"
+                                   albumid="@Model.Tracks[i].AlbumId"
+                                   dbid="@Model.Tracks[i].Id">
                         }
-                        <label asp-for="@Model.Tracks[i].Selected">@Model.Tracks[i].Artist - @Model.Tracks[i].Title</label>
-                        @Html.HiddenFor(x => x.Tracks[i].TrackId)
-                        @Html.HiddenFor(x => x.Tracks[i].AlbumId)
-                        @Html.HiddenFor(x => x.Tracks[i].Id)
+                        <label for="@("reimportTrackCheckbox" + i)">@Model.Tracks[i].Artist - @Model.Tracks[i].Title</label>
                     </td>
                 </tr>
             }
         </table>
-        @Html.HiddenFor(x => x.SessionId)
-        @Html.HiddenFor(x => x.PlaylistId)
-        <input type="submit" value="Импортировать" class="btn btn-outline-dark"/>
+        <input type="hidden" name="sessionid" value="@Model.SessionId"/>
+        <input type="hidden" name="playlistid" value="@Model.PlaylistId"/>
+        <input type="hidden" id="reImportInputHidden" name="reImportForm"/>
+        <input id="reimportButton" type="button" value="Импортировать" class="btn btn-outline-dark"/>
     </fieldset>
 </form>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        function GetReImportTrackForm() {
+            var selectedTracks=$('#reImportTrackTable input:checked');
+
+            var tracks = [];
+            for (var i = 0; i < selectedTracks.length; ++i) {
+                var data = {
+                    TrackId: $(selectedTracks[i]).attr('trackid'),
+                    AlbumId: $(selectedTracks[i]).attr('albumid'),
+                    Id: $(selectedTracks[i]).attr('dbid')
+                };
+                tracks.push(data);
+            }
+
+            return {
+                Tracks: tracks,
+                PlaylistId: $('#reImportForm input[name=playlistid]').val(),
+                SessionId: $('#reImportForm input[name=sessionid]').val()
+            };
+        }
+
+        $(document).ready(function() {
+            $('#reimportButton').click(function() {
+                    var form = GetReImportTrackForm();
+                    $('#reImportInputHidden').val(JSON.stringify(form));
+                    $('#reImportForm').submit();
+                }
+            );
+        });
+
+
+    </script>
+}
