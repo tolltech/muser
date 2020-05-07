@@ -11,6 +11,7 @@ using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Authentications;
 using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Models;
+using Tolltech.MuserUI.Sync;
 
 namespace Tolltech.MuserUI.Controllers
 {
@@ -20,11 +21,13 @@ namespace Tolltech.MuserUI.Controllers
     {
         private readonly UserContext db;
         private readonly ICryptoService cryptoService;
+        private readonly ICaptcha captcha;
 
-        public AccountController(UserContext context, ICryptoService cryptoService)
+        public AccountController(UserContext context, ICryptoService cryptoService, ICaptcha captcha)
         {
             db = context;
             this.cryptoService = cryptoService;
+            this.captcha = captcha;
         }
 
         [HttpGet("")]
@@ -53,6 +56,12 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (captcha.IsForbid(Guid.Empty, model.Email))
+                {
+                    ModelState.AddModelError("", "Превышено число попыток, попробуйте позже");
+                    return View(model);
+                }
+
                 var hashPassword = cryptoService.EncryptSHA256(model.Password);
                 var user = await db.Users.FirstOrDefaultAsync(u =>
                     u.Email == model.Email && u.Password == hashPassword);
@@ -65,6 +74,7 @@ namespace Tolltech.MuserUI.Controllers
                         : Redirect(model.ReturnUrl);
                 }
 
+                captcha.IncrementForbid(Guid.Empty, model.Email);
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
 

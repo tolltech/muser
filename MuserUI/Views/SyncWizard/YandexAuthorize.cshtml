@@ -17,6 +17,11 @@
             @Html.LabelFor(m => m.Pass,"Пароль")
             @Html.PasswordFor(m => m.Pass)
         </div>
+        @if(Model.Forbid) {
+            <div>
+                <label style="color: red">Превышено число попыток, попробуйте позже</label>
+            </div>
+        }
         @if(Model.AuthFailed) {
         <div>
             <label style="color: red">Неверные логин или пароль</label>

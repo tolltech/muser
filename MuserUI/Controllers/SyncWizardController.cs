@@ -37,6 +37,7 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IDomainService domainService;
         private readonly IProgressBar progressBar;
         private readonly IImportResultLogger importResultLogger;
+        private readonly ICaptcha captcha;
 
         public SyncWizardController(ITempSessionService tempSessionService, ITrackGetter trackGetter,
             IQueryExecutorFactory queryExecutorFactory,
@@ -45,7 +46,8 @@ namespace Tolltech.MuserUI.Controllers
             IJsonTrackGetter jsonTrackGetter,
             IDomainService domainService,
             IProgressBar progressBar,
-            IImportResultLogger importResultLogger)
+            IImportResultLogger importResultLogger,
+            ICaptcha captcha)
         {
             this.tempSessionService = tempSessionService;
             this.trackGetter = trackGetter;
@@ -57,6 +59,7 @@ namespace Tolltech.MuserUI.Controllers
             this.domainService = domainService;
             this.progressBar = progressBar;
             this.importResultLogger = importResultLogger;
+            this.captcha = captcha;
         }
 
         [HttpGet("")]
@@ -156,6 +159,11 @@ namespace Tolltech.MuserUI.Controllers
         [HttpPost("yaauthorize")]
         public async Task<ActionResult> YandexAuthorize(YandexAuthorizeForm authorizeForm, Guid sessionId)
         {
+            if (captcha.IsForbid(UserId, "Yandex"))
+            {
+                return View("YandexAuthorize", new YandexAuthorizeForm {Login = authorizeForm.Login, Forbid = true});
+            }
+
             var success = await yandexService.CheckCredentialsAsync(authorizeForm.Login, authorizeForm.Pass)
                 .ConfigureAwait(true);
 
@@ -163,6 +171,7 @@ namespace Tolltech.MuserUI.Controllers
 
             if (!success)
             {
+                captcha.IncrementForbid(UserId, "Yandex");
                 return View("YandexAuthorize",
                     new YandexAuthorizeForm {Login = authorizeForm.Login, AuthFailed = true});
             }

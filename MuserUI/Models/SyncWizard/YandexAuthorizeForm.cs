@@ -5,5 +5,6 @@
         public string Login { get; set; }
         public string Pass { get; set; }
         public bool AuthFailed { get; set; }
+        public bool Forbid { get; set; }
     }
 }
