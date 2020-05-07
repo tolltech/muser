@@ -18,7 +18,7 @@
 </div>
 
 <div id="importProgressDiv">
-    @await Html.PartialAsync("ImportProgressPartial",Model.Progress)
+    @await Html.PartialAsync("ImportProgressPartial", Model.Progress)
 </div>
 
 <form asp-action="GetImportProgress" asp-controller="SyncWizard"
@@ -41,12 +41,12 @@
 
         function ProgressIteration() {
             $('#errorDiv').hide();
-            var importLogsSaved=$('#importLogsSavedInput').val();
-            if(importLogsSaved > 0) {
-                setTimeout(() => $('#getProgressForm').submit(), 100);
-            } else {
+            var importLogsSaved = $('#importLogsSavedInput').val();
+            if (importLogsSaved > 0) {
                 $('#playListLinkDiv').show();
                 $('#toReimportButton').click();
+            } else {
+                setTimeout(() => $('#getProgressForm').submit(), 100);
             }
         };
 
