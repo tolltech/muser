@@ -11,18 +11,18 @@
 <form id="reImportForm" asp-action="ReImport" asp-controller="SyncWizard" method="post">
     <fieldset>
         <legend>Выберите треки, если мы нашли их верно</legend>
-        <table class="even-odd table-padding">
-            <tr>
-                <td>Искали</td>
-                <td>Нашли</td>
-            </tr>
+        <ul class="even-odd ul-padding">
+            <li>
+                <span>Искали</span>
+                <span>Нашли</span>
+            </li>
             @for (var i = 0; i < Model.Tracks.Length; i++)
             {
-                <tr>
-                    <td>
+                <li>
+                    <span>
                         <label>@Model.Tracks[i].InputArtist - @Model.Tracks[i].InputTitle</label>
-                    </td>
-                    <td>
+                    </span>
+                    <span>
                         @if (Model.Tracks[i].Disabled)
                         {
                             @Html.CheckBoxFor(x => x.Tracks[i].Selected, new
@@ -38,10 +38,10 @@
                         @Html.HiddenFor(x => x.Tracks[i].TrackId)
                         @Html.HiddenFor(x => x.Tracks[i].AlbumId)
                         @Html.HiddenFor(x => x.Tracks[i].Id)
-                    </td>
-                </tr>
+                    </span>
+                </li>
             }
-        </table>
+        </ul>
         @Html.HiddenFor(x => x.SessionId)
         @Html.HiddenFor(x => x.PlaylistId)
         <input type="submit" value="Импортировать" class="btn btn-outline-dark"/>
