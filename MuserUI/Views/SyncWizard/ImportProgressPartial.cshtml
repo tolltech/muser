@@ -7,7 +7,7 @@
         <label>/</label>
         <label>@Model.Total</label>
     </span>
-    <input type="hidden" value="@Model.Left" id="leftProgressInput">
+    <input type="hidden" value="@(Model.ImportLogsSaved ? 1 : 0)" id="importLogsSavedInput">
 </div>
 
 @if (Model.Errors.Count > 0)

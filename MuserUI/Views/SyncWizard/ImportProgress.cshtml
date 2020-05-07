@@ -41,8 +41,8 @@
 
         function ProgressIteration() {
             $('#errorDiv').hide();
-            var left = $('#leftProgressInput').val();
-            if (left > 0) {
+            var importLogsSaved=$('#importLogsSavedInput').val();
+            if(importLogsSaved > 0) {
                 setTimeout(() => $('#getProgressForm').submit(), 100);
             } else {
                 $('#playListLinkDiv').show();

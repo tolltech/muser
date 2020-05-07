@@ -13,7 +13,7 @@ namespace Tolltech.MuserUI.Models.Sync
         public Guid Id { get; set; }
         public int Total { get; set; }
         public int Processed { get; set; }
-        public int Left => Total - Processed;
+        public bool ImportLogsSaved { get; set; }
         public List<(TrackModel Track, string Message)> Errors { get; set; }
     }
 }

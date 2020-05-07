@@ -301,6 +301,10 @@ namespace Tolltech.MuserUI.Controllers
                 .ConfigureAwait(false);
 
             await importResultLogger.WriteImportLogsAsync(results, userId, sessionId).ConfigureAwait(false);
+
+            var lastProgress = progressBar.FindProgressModel(progressId);
+            lastProgress.ImportLogsSaved = true;
+            progressBar.UpdateProgressModel(lastProgress);
         }
 
         [HttpGet("progress")]
