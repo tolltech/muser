@@ -21,6 +21,9 @@
             <span asp-validation-for="ConfirmPassword" />
         </div>
         <div>
+            <input type="hidden" asp-for="ReturnUrl"/>
+        </div>
+        <div>
             <input type="submit" value="Регистрация" class="btn btn-outline-dark" />
         </div>
     </div>

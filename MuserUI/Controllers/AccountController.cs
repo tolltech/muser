@@ -82,9 +82,9 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("register")]
-        public IActionResult Register()
+        public IActionResult Register(string returnUrl)
         {
-            return View();
+            return View(new RegisterModel {ReturnUrl = returnUrl});
         }
 
         [HttpPost("register")]
@@ -103,7 +103,9 @@ namespace Tolltech.MuserUI.Controllers
 
                     await Authenticate(model.Email, newUser.Id).ConfigureAwait(true);
 
-                    return RedirectToAction("Index", "Home");
+                    return model.ReturnUrl.IsNullOrWhitespace()
+                        ? (IActionResult) RedirectToAction("Index", "Home")
+                        : Redirect(model.ReturnUrl);
                 }
                 else
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
