@@ -11,6 +11,7 @@ namespace Tolltech.MuserUI.Models.Sync
         }
 
         public Guid Id { get; set; }
+        public Guid? SessionId { get; set; }
         public int Total { get; set; }
         public int Processed { get; set; }
         public bool ImportLogsSaved { get; set; }

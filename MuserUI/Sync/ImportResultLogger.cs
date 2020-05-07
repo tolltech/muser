@@ -62,5 +62,12 @@ namespace Tolltech.MuserUI.Sync
 
             await queryExecutor.ExecuteAsync(x => x.UpdateAsync()).ConfigureAwait(false);
         }
+
+        public async Task<int> CountAsync(Guid sessionId, Guid userId)
+        {
+            using var queryExecutor = queryExecutorFactory.Create<ImportResultHandler, ImportResultDbo>();
+            var result = await queryExecutor.ExecuteAsync(x => x.CountAsync(sessionId, userId)).ConfigureAwait(false);
+            return result;
+        }
     }
 }

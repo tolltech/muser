@@ -220,7 +220,7 @@ namespace Tolltech.MuserUI.Controllers
                 {
                     Id = progressId,
                     Processed = tuple.Processed,
-                    Total = tuple.Total
+                    Total = tuple.Total,
                 })).ConfigureAwait(true);
 
             await importResultLogger.WriteImportLogsAsync(results, UserId, null).ConfigureAwait(true);

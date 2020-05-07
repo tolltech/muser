@@ -255,7 +255,7 @@ namespace Tolltech.MuserUI.Controllers
             return View("ImportProgress", new ProgressWithUrlModel
             {
                 Progress = progressBar.FindProgressModel(progressId) ??
-                           new ProgressModel {Id = progressId, Processed = 0, Total = 0},
+                           new ProgressModel {Id = progressId, Processed = 0, Total = 0, SessionId = sessionId},
                 YandexPlaylistUrl = GetPlaylistUrl(yaPlaylists.Login, yaPlayListId),
                 SessionId = sessionId
             });
@@ -277,7 +277,8 @@ namespace Tolltech.MuserUI.Controllers
                 {
                     Id = progressId,
                     Total = tuple.Total,
-                    Processed = tuple.Processed
+                    Processed = tuple.Processed,
+                    SessionId = sessionId
                 };
 
                 currentProgress.Total = tuple.Total;
@@ -308,15 +309,29 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("progress")]
-        public ActionResult GetImportProgress(Guid progressId)
+        public async Task<ActionResult> GetImportProgress(Guid progressId)
         {
             var progressModel = progressBar.FindProgressModel(progressId);
+
+            var logsSaved = false;
+
+            if (progressModel.SessionId.HasValue && progressModel.Total == progressModel.Processed)
+            {
+                var count = await importResultLogger.CountAsync(progressModel.SessionId.Value, UserId).ConfigureAwait(true);
+                if (count >= progressModel.Total)
+                {
+                    logsSaved = true;
+                }
+            }
+
             return PartialView("ImportProgressPartial", new ProgressModel
             {
                 Total = progressModel.Total,
                 Processed = progressModel.Processed,
                 Errors = progressModel.Errors.ToList(),
-                Id = progressModel.Id
+                Id = progressModel.Id,
+                ImportLogsSaved = logsSaved,
+                SessionId = progressModel.SessionId
             });
         }
 

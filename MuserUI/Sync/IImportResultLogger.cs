@@ -16,5 +16,7 @@ namespace Tolltech.MuserUI.Sync
 
         [NotNull]
         Task UpdateManualApprovingAsync([NotNull] Guid[] ids);
+
+        [NotNull] Task<int> CountAsync(Guid sessionId, Guid userId);
     }
 }

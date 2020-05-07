@@ -52,5 +52,13 @@ namespace Tolltech.MuserUI.Sync
         {
             return dataContext.SaveChangesAsync();
         }
+
+        [NotNull]
+        public Task<int> CountAsync(Guid sessionId, Guid userId)
+        {
+            return dataContext.Table
+                .Where(x => x.SessionId == sessionId && x.UserId == userId)
+                .CountAsync();
+        }
     }
 }
