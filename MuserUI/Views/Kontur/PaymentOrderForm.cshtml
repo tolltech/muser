@@ -1,0 +1,27 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <form asp-action="GetPaymentOrder" asp-controller="Kontur" method="post">
+        <div>
+            <label>Закиньте платежку</label>
+        </div>
+        <div>
+            <textarea name="paymentOrderText"></textarea>
+        </div>
+        <div>
+            <input type="submit" value="Загрузить" class="btn btn-outline-dark"/>
+        </div>
+    </form>
+
+</head>
+<body>
+<div>
+
+</div>
+</body>
+</html>
