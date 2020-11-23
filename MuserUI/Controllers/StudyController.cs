@@ -222,7 +222,7 @@ namespace Tolltech.MuserUI.Controllers
         {
             try
             {
-                Request.Body.Seek(0, SeekOrigin.Begin);
+                //Request.Body.Seek(0, SeekOrigin.Begin);
 
                 byte[] body;
                 using (var streamReader = new StreamReader(Request.Body))
