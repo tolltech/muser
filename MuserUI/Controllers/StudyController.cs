@@ -235,9 +235,9 @@ namespace Tolltech.MuserUI.Controllers
                     ? xmlSerializer.Deserialize<T>(body)
                     : jsonSerializer.Deserialize<T>(body);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new HttpException((int)HttpStatusCode.BadRequest, "Wrong parameters.");
+                throw new HttpException((int)HttpStatusCode.BadRequest, $"Wrong parameters. {ex.Message}");
             }
         }
 
