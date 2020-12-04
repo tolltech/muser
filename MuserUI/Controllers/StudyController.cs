@@ -189,6 +189,21 @@ namespace Tolltech.MuserUI.Controllers
             await queryExecutor.ExecuteAsync(h => h.UpdateAsync(existed)).ConfigureAwait(true);
         }
 
+        [HttpPost]
+        public async Task UpdateFromBody()
+        {
+            var keyValue = await GetFromBodyAsync<KeyValue>().ConfigureAwait(true);
+            using var queryExecutor = queryExecutorFactory.Create<KeyValueHandler, KeyValue> ();
+
+            var key = keyValue.Key;
+
+            var existed = await queryExecutor.ExecuteAsync(h => h.FindAsync(key)).ConfigureAwait(true);
+            if (existed == null)
+                throw new HttpException((int)HttpStatusCode.BadRequest, $"Key {key} is not presented in store.");
+            existed.Value = keyValue.Value;
+            await queryExecutor.ExecuteAsync(h => h.UpdateAsync(existed)).ConfigureAwait(true);
+        }
+
         //protected override void OnException(ExceptionContext filterContext)
         //{
         //    log.Error(filterContext.Exception?.Message);
