@@ -75,6 +75,11 @@ namespace Tolltech.MuserUI.Controllers
         private static readonly Random random = new Random();
         private Random Random => random ?? new Random();
 
+        public void Error(int? statusCode)
+        {
+            WriteResponse($"Error, isn't it?", statusCode);
+        }
+        
         public void RandomError(int probability)
         {
             ProcessErrorProbability(probability);
@@ -256,7 +261,7 @@ namespace Tolltech.MuserUI.Controllers
             }
         }
 
-        private Task WriteResponse<T>(T response)
+        private Task WriteResponse<T>(T response, int? statusCode = null)
         {
             var realContentType = Request.GetAcceptHeaders().Contains(xmlContentType)
                 ? xmlContentType
@@ -265,6 +270,12 @@ namespace Tolltech.MuserUI.Controllers
                 ? xmlSerializer.Serialize(response)
                 : jsonSerializer.Serialize(response);
             Response.Headers.Add("Content-Type", realContentType);
+
+            if (statusCode.HasValue)
+            {
+                Response.StatusCode = statusCode.Value;
+            }
+            
             return Response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
     }
