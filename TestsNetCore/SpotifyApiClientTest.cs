@@ -20,12 +20,7 @@ namespace Tolltech.TestsNetCore
         {
             base.SetUp();
 
-            var tokenInfo = new TokenInfo
-            {
-                AccessToken = @"WriteAccessTokenHere"
-            };
-            spotifyApiClient = new SpotifyApiClient(tokenInfo, container.Get<ISpotifyTokenClient>(),
-                container.Get<IJsonSerializer>());
+            spotifyApiClient = new SpotifyApiClient(@"WriteAccessTokenHere", container.Get<IJsonSerializer>());
         }
 
         [Test]

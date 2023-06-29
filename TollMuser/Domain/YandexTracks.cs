@@ -2,7 +2,7 @@
 using System.Linq;
 using JetBrains.Annotations;
 using Tolltech.Muser.Models;
-using Tolltech.YandexClient.ApiModels;
+using Tolltech.SpotifyClient.ApiModels;
 
 namespace Tolltech.Muser.Domain
 {

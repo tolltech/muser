@@ -17,7 +17,7 @@ namespace MusicClientCore
         {
             //todo: reflection cache
             var props = obj.GetType().GetProperties();
-            return props.ToDictionary(x => x.Name, x => x.GetValue(obj).ToString()).ToUriParams();
+            return props.ToDictionary(x => x.Name, x => x.GetValue(obj)?.ToString()).ToUriParams();
         }
 
         public static byte[] ToFormData(this object obj)

@@ -1,33 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using Tolltech.Serialization;
 
 namespace Tolltech.Muser.Settings
 {
     public class AuthorizationSettings : IAuthorizationSettings
     {
-        private readonly IJsonSerializer serializer;
-        private readonly ICryptoService cryptoService;
-
         private static readonly ConcurrentDictionary<Guid, MuserAuthorization> authorizations =
             new ConcurrentDictionary<Guid, MuserAuthorization>();
 
-        public AuthorizationSettings(IJsonSerializer serializer, ICryptoService cryptoService)
+        public void SetMuserAuthorization(MuserAuthorization authorization, Guid userId)
         {
-            this.serializer = serializer;
-            this.cryptoService = cryptoService;
-        }
-
-        public MuserAuthorization SafeGetAndCacheMuserAuthorization(Guid? userId = null)
-        {
-            return authorizations.TryGetValue(userId ?? Guid.Empty, out var authorization) 
-                ? authorization 
-                : null;
-        }
-
-        public void SetMuserAuthorization(MuserAuthorization authorization, Guid? userId = null)
-        {
-            authorizations.AddOrUpdate(userId ?? Guid.Empty, authorization, (guid, muserAuthorization) => authorization);
+            authorizations.AddOrUpdate(userId, authorization, (guid, muserAuthorization) => authorization);
         }
 
         public MuserAuthorization GetCachedMuserAuthorization(Guid userId)

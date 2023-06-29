@@ -14,6 +14,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MusicClientCore\MusicClientCore.csproj" />
       <ProjectReference Include="..\Serialization\Serialization.csproj" />
+      <ProjectReference Include="..\TolltechCore\TolltechCore.csproj" />
     </ItemGroup>
 
 </Project>

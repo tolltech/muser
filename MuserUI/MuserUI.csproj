@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PostgreEF\PostgreEF.csproj" />
     <ProjectReference Include="..\Serialization\Serialization.csproj" />
+    <ProjectReference Include="..\SpotifyClient\SpotifyClient.csproj" />
     <ProjectReference Include="..\TollMuser\Muser.csproj" />
     <ProjectReference Include="..\TolltechCore\TolltechCore.csproj" />
   </ItemGroup>

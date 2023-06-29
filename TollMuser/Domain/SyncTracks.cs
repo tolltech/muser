@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using log4net;
 using Tolltech.Muser.Models;
+using Tolltech.SpotifyClient.ApiModels;
 
 namespace Tolltech.Muser.Domain
 {
@@ -11,7 +12,7 @@ namespace Tolltech.Muser.Domain
         private readonly YandexTracks yandexTracks;
         private static readonly ILog log = LogManager.GetLogger(typeof(SyncTracks));
 
-        public SyncTracks(NormalizedTrack[] normalizedTracks, YandexClient.ApiModels.Track[] yaTracks)
+        public SyncTracks(NormalizedTrack[] normalizedTracks, Track[] yaTracks)
         {
             this.normalizedTracks = normalizedTracks;
             yandexTracks = new YandexTracks(yaTracks);

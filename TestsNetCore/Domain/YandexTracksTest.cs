@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Tolltech.Muser.Domain;
 using Tolltech.Muser.Models;
-using Tolltech.YandexClient.ApiModels;
+using Tolltech.SpotifyClient.ApiModels;
 
 namespace Tolltech.TestsNetCore.Domain
 {

@@ -4,6 +4,8 @@ namespace Tolltech.SpotifyClient
 {
     public interface ISpotifyTokenClient
     {
-        Task<TokenResponse> GetAppToken(string clientId, string clientSecret);
+        Task<TokenResponse> GetAppToken();
+        Task<TokenResponse> ExchangeToken(string authCode);
+        Task<TokenResponse> RefreshToken(string refreshToken);
     }
 }

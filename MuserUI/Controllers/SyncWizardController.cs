@@ -9,17 +9,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicClientCore;
 using Tolltech.Muser.Domain;
 using Tolltech.Muser.Models;
 using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Common;
-using Tolltech.MuserUI.Extensions;
 using Tolltech.MuserUI.Models.Sync;
 using Tolltech.MuserUI.Models.SyncWizard;
+using Tolltech.MuserUI.Spotify;
 using Tolltech.MuserUI.Sync;
 using Tolltech.Serialization;
+using Tolltech.SpotifyClient.ApiModels;
+using Tolltech.SpotifyClient.Integration;
 using Tolltech.SqlEF;
-using Tolltech.YandexClient.ApiModels;
 
 namespace Tolltech.MuserUI.Controllers
 {
@@ -37,7 +39,7 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IDomainService domainService;
         private readonly IProgressBar progressBar;
         private readonly IImportResultLogger importResultLogger;
-        private readonly ICaptcha captcha;
+        private readonly ISpotifyClientConfiguration spotifyClientConfiguration;
 
         public SyncWizardController(ITempSessionService tempSessionService, ITrackGetter trackGetter,
             IQueryExecutorFactory queryExecutorFactory,
@@ -47,7 +49,7 @@ namespace Tolltech.MuserUI.Controllers
             IDomainService domainService,
             IProgressBar progressBar,
             IImportResultLogger importResultLogger,
-            ICaptcha captcha)
+            ISpotifyClientConfiguration spotifyClientConfiguration)
         {
             this.tempSessionService = tempSessionService;
             this.trackGetter = trackGetter;
@@ -59,7 +61,7 @@ namespace Tolltech.MuserUI.Controllers
             this.domainService = domainService;
             this.progressBar = progressBar;
             this.importResultLogger = importResultLogger;
-            this.captcha = captcha;
+            this.spotifyClientConfiguration = spotifyClientConfiguration;
         }
 
         [HttpGet("")]
@@ -149,54 +151,33 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet("yaauthorize")]
         public ActionResult YandexAuthorize(Guid sessionId)
         {
-            var yandexCookie = Request.FindCookies(Constants.YaLoginCookie);
-            return View(new YandexAuthorizeForm
+            var param = new
             {
-                Login = yandexCookie
-            });
+                response_type = "code",
+                client_id = spotifyClientConfiguration.ClientId,
+                scope = "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
+                redirect_uri = Url.ActionLink("Callback", "Spotify"),
+                state = sessionId.ToString()
+            };
+
+            return Redirect(@"https://accounts.spotify.com/authorize?" + param.ToFormDataStr());
         }
 
-        [HttpPost("yaauthorize")]
-        public async Task<ActionResult> YandexAuthorize(YandexAuthorizeForm authorizeForm, Guid sessionId)
+        [HttpGet("spotify_authorize")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
+        public async Task<ActionResult> SpotifyAuthorized(Guid sessionId)
         {
-            if (captcha.IsForbid(UserId, "Yandex"))
-            {
-                return View("YandexAuthorize", new YandexAuthorizeForm {Login = authorizeForm.Login, Forbid = true});
-            }
-
-            var success = await yandexService.CheckCredentialsAsync(authorizeForm.Login, authorizeForm.Pass)
-                .ConfigureAwait(true);
-
-            Response.SetCookies(Constants.YaLoginCookie, authorizeForm.Login ?? string.Empty);
-
-            if (!success)
-            {
-                captcha.IncrementForbid(UserId, "Yandex");
-                return View("YandexAuthorize",
-                    new YandexAuthorizeForm {Login = authorizeForm.Login, AuthFailed = true});
-            }
-
             var authInfo = authorizationSettings.GetCachedMuserAuthorization(UserId);
             if (authInfo == null)
             {
-                authInfo = new MuserAuthorization
-                {
-                    YaLogin = authorizeForm.Login,
-                    YaPassword = authorizeForm.Pass
-                };
+                return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
             }
-            else
-            {
-                authInfo.YaLogin = authorizeForm.Login;
-                authInfo.YaPassword = authorizeForm.Pass;
-            }
-
-            authorizationSettings.SetMuserAuthorization(authInfo, UserId);
 
             return await GetYaPlaylists(sessionId).ConfigureAwait(true);
         }
 
         [HttpGet("yaplaylists")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> GetYaPlaylists(Guid sessionId)
         {
             var client = await yandexService.GetClientAsync(UserId).ConfigureAwait(true);
@@ -213,11 +194,12 @@ namespace Tolltech.MuserUI.Controllers
                     })
                     .ToArray(),
                 SelectedPlaylistId = playlists.FirstOrDefault(x => x.Title.ToLower() == "vk")?.Id,
-                Login = client.Login
+                Login = string.Empty//todo:
             });
         }
 
         [HttpPost("import")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> ImportTracks(YaPlaylistsForm yaPlaylists, Guid sessionId)
         {
             var yaPlayListId = yaPlaylists.SelectedPlaylistId;
@@ -336,6 +318,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpGet("reimport")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> ReImport(Guid sessionId)
         {
             if (!authorizationSettings.UserAuthorized(UserId))
@@ -375,7 +358,7 @@ namespace Tolltech.MuserUI.Controllers
                 Tracks = errors,
                 SessionId = sessionId,
                 PlaylistId = playlistId,
-                PlaylistUrl = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin,
+                PlaylistUrl = GetPlaylistUrl(string.Empty,
                     playlistId),
                 Total = allImportResults.Length,
                 Success = allImportResults.Length - notFoundImportResults.Length - errorImportResults.Length
@@ -383,6 +366,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpPost("reimport")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> ReImport(ReImportFormJson reImportModelJson)
         {
             var reImportModel = jsonSerializer.DeserializeFromString<ReImportForm>(reImportModelJson.ReImportForm);
@@ -405,8 +389,6 @@ namespace Tolltech.MuserUI.Controllers
             await importResultLogger.UpdateManualApprovingAsync(selected.Select(x => x.Id).ToArray())
                 .ConfigureAwait(true);
 
-            var url = GetPlaylistUrl(authorizationSettings.GetCachedMuserAuthorization(UserId)?.YaLogin,
-                reImportModel.PlaylistId);
             return RedirectToAction("ReImport", new {sessionId = reImportModel.SessionId});
         }
     }

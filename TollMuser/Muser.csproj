@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpotifyClient\SpotifyClient.csproj" />
     <ProjectReference Include="..\YandexClient\YandexClient.csproj" />
   </ItemGroup>
 
