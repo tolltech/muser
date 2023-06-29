@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Tolltech.YandexClient
+namespace MusicClientCore
 {
     public static class UriExtensions
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using MusicClientCore;
 using Tolltech.Serialization;
 
 namespace Tolltech.YandexClient.Authorizations
