@@ -48,6 +48,9 @@ namespace Tolltech.MuserUI.Spotify
         {
             using var queryExecutor = queryExecutorFactory.Create<SpotifyTokenHandler, SpotifyTokenDbo>();
             var token = await queryExecutor.ExecuteAsync(x => x.FindAsync(userId)).ConfigureAwait(false);
+
+            if (token == null) return null;
+            
             return new TokenInfo
             {
                 Scope = token.Scope,
