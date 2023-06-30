@@ -157,7 +157,7 @@ namespace Tolltech.MuserUI.Controllers
                 response_type = "code",
                 client_id = spotifyClientConfiguration.ClientId,
                 scope = "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
-                redirect_uri = Url.ActionLink("Callback", "Spotify"),
+                redirect_uri = @"https://tolltech.ru" + Url.Action("Callback", "Spotify"),
                 state = sessionId.ToString()
             };
 
