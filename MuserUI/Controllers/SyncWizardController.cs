@@ -131,6 +131,7 @@ namespace Tolltech.MuserUI.Controllers
         }
 
         [HttpPost("savetracks")]
+        [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> SaveTracks(InputTracksSessionForm tracksSessionForm)
         {
             var tracksModel = jsonSerializer.DeserializeFromString<TracksWizardModel>(tracksSessionForm.TracksJson);
@@ -194,9 +195,15 @@ namespace Tolltech.MuserUI.Controllers
                     })
                     .ToArray(),
                 SelectedPlaylistId = playlists.FirstOrDefault(x => x.Title.ToLower() == "vk")?.Id,
-                Login = string.Empty//todo:
             });
         }
+
+        // [HttpGet("import")]
+        // [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
+        // public async Task<ActionResult> ImportTracks(Guid sessionId)
+        // {
+        //     
+        // }
 
         [HttpPost("import")]
         [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
@@ -238,16 +245,14 @@ namespace Tolltech.MuserUI.Controllers
             {
                 Progress = progressBar.FindProgressModel(progressId) ??
                            new ProgressModel {Id = progressId, Processed = 0, Total = 0, SessionId = sessionId},
-                YandexPlaylistUrl = GetPlaylistUrl(yaPlaylists.Login, yaPlayListId),
+                YandexPlaylistUrl = GetPlaylistUrl(yaPlayListId),
                 SessionId = sessionId
             });
         }
 
-        private static string GetPlaylistUrl([CanBeNull] string yandexEmail, string yaPlaylistId)
+        private static string GetPlaylistUrl(string yaPlaylistId)
         {
-            var loginChars = yandexEmail?.TakeWhile(c => c != '@').ToArray();
-            var yaPlaylistsLogin = new string(loginChars ?? Array.Empty<char>());
-            return $"https://music.yandex.ru/users/{yaPlaylistsLogin}/playlists/{yaPlaylistId}";
+            return $"https://open.spotify.com/playlist/{yaPlaylistId}";
         }
 
         private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
@@ -331,8 +336,21 @@ namespace Tolltech.MuserUI.Controllers
             var errorImportResults = allImportResults.Where(x => x.Status == ImportStatus.Error).ToArray();
 
             var notFoundImportResults = allImportResults.Where(x => x.Status == ImportStatus.NotFound).ToArray();
+            
             var playlistId = notFoundImportResults.Select(x => x.PlaylistId)
-                .FirstOrDefault(x => !x.IsNullOrWhitespace());
+                                 .FirstOrDefault(x => !x.IsNullOrWhitespace())
+                             ?? allImportResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
+            
+            // if (notFoundImportResults.Length == 0)
+            // {
+            //     return View("ImportProgress", new ProgressWithUrlModel
+            //     {
+            //         Progress = progressBar.FindProgressModelBySessionId(sessionId) ??
+            //                    new ProgressModel {Id = Guid.NewGuid(), Processed = 0, Total = 0, SessionId = sessionId},
+            //         YandexPlaylistUrl = GetPlaylistUrl(yaPlayListId),
+            //         SessionId = sessionId
+            //     });
+            // }
 
             var existentTracks = await domainService.GetExistentTracksAsync(UserId, playlistId).ConfigureAwait(true);
             var existentTrackHashes = new HashSet<(string, string)>(existentTracks.Select(x => (x.Id, x.AlbumId)));
@@ -358,8 +376,7 @@ namespace Tolltech.MuserUI.Controllers
                 Tracks = errors,
                 SessionId = sessionId,
                 PlaylistId = playlistId,
-                PlaylistUrl = GetPlaylistUrl(string.Empty,
-                    playlistId),
+                PlaylistUrl = GetPlaylistUrl(playlistId),
                 Total = allImportResults.Length,
                 Success = allImportResults.Length - notFoundImportResults.Length - errorImportResults.Length
             });

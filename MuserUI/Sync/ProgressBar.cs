@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using Tolltech.MuserUI.Models.Sync;
 
 namespace Tolltech.MuserUI.Sync
@@ -21,6 +22,11 @@ namespace Tolltech.MuserUI.Sync
         public void UpdateProgressModel(ProgressModel progress)
         {
             progressDict.AddOrUpdate(progress.Id, progress, (guid, model) => progress);
+        }
+
+        public ProgressModel FindProgressModelBySessionId(Guid sessionId)
+        {
+            return progressDict.Values.FirstOrDefault(x => x.SessionId == sessionId);
         }
     }
 }

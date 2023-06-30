@@ -1,31 +1,30 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Ninject;
 using NUnit.Framework;
 using Tolltech.Serialization;
+using Tolltech.SpotifyClient;
+using Tolltech.SpotifyClient.ApiModels;
 using Tolltech.YandexClient;
-using Tolltech.YandexClient.ApiModels;
-using Tolltech.YandexClient.Authorizations;
 
 namespace Tolltech.TestsNetCore
 {
-    public class YandexMusicClientTest : TestBase
+    public class SpotifyClientTest : TestBase
     {
-        private IYandexMusicClient yandexMusicClient;
+        private ISpotifyApiClient spotifyApiClient;
 
         protected override void SetUp()
         {
             base.SetUp();
 
-            container.Rebind<IYandexCredentials>().ToConstant(new YandexCredentials(container.Get<IJsonSerializer>(), "alexandrovpe2@yandex.ru", "tc_123456"));
-            yandexMusicClient = container.Get<IYandexMusicClient>();
+            var accessToken = @"";
+            spotifyApiClient = new SpotifyApiClient(accessToken, container.Get<IJsonSerializer>());
         }
 
         [Test]
         public async Task TestGetPlaylists()
         {
-            var actuals = await yandexMusicClient.GetPlaylistsAsync().ConfigureAwait(false);
+            var actuals = await spotifyApiClient.GetPlaylistsAsync().ConfigureAwait(false);
             Assert.IsNotEmpty(actuals);
             Assert.IsNotEmpty(actuals.First().Revision);
             Assert.IsNotEmpty(actuals.First().Id);
@@ -33,26 +32,9 @@ namespace Tolltech.TestsNetCore
         }
 
         [Test]
-        public async Task TestCreateAndDeletePlaylist()
-        {
-            var title = Guid.NewGuid().ToString();
-            var actual = await yandexMusicClient.CreatePlaylistAsync(title).ConfigureAwait(false);
-            Assert.IsNotEmpty(actual.Id);
-            Assert.AreEqual(title, actual.Title);
-
-            var playlists = await yandexMusicClient.GetPlaylistsAsync().ConfigureAwait(false);
-            Assert.IsTrue(playlists.Any(x => x.Id == actual.Id && x.Title == actual.Title));
-
-            await yandexMusicClient.DeletePlaylistAsync(actual.Id).ConfigureAwait(false);
-
-            playlists = await yandexMusicClient.GetPlaylistsAsync().ConfigureAwait(false);
-            Assert.IsFalse(playlists.Any(x => x.Id == actual.Id && x.Title == actual.Title));
-        }
-
-        [Test]
         public async Task TestGetPlaylistTracks()
         {
-            var actuals = await yandexMusicClient.GetTracksAsync("1008").ConfigureAwait(false);
+            var actuals = await spotifyApiClient.GetTracksAsync("75rQBJIASDsGBNrtqHxSvL").ConfigureAwait(false);
             Assert.IsNotEmpty(actuals);
             Assert.IsNotEmpty(actuals.First().Id);
             Assert.IsNotEmpty(actuals.First().Albums);
@@ -67,15 +49,15 @@ namespace Tolltech.TestsNetCore
         [Test]
         public async Task TestChangePlaylistTracks()
         {
-            var playlists = await yandexMusicClient.GetPlaylistsAsync().ConfigureAwait(false);
-            var playlist = playlists.FirstOrDefault(x => x.Id == "1008" || x.Title == "Test2");
+            var playlists = await spotifyApiClient.GetPlaylistsAsync().ConfigureAwait(false);
+            var playlist = playlists.FirstOrDefault(x => x.Id == "75rQBJIASDsGBNrtqHxSvL" || x.Title == "Test2");
 
             Assert.IsNotNull(playlist);
 
             var playlistId = playlist.Id;
             var revision = playlist.Revision;
 
-            var actuals = await yandexMusicClient.GetTracksAsync(playlistId).ConfigureAwait(false);
+            var actuals = await spotifyApiClient.GetTracksAsync(playlistId).ConfigureAwait(false);
             Assert.IsNotEmpty(actuals);
 
             var trackId = actuals.First().Id;
@@ -96,10 +78,10 @@ namespace Tolltech.TestsNetCore
                 AlbumId = albumId
             };
 
-            await yandexMusicClient.RemoveTracksToPlaylistAsync(playlistId, revision, new[] {trackToChange})
+            await spotifyApiClient.RemoveTracksToPlaylistAsync(playlistId, revision, new[] {trackToChange})
                 .ConfigureAwait(false);
 
-            playlists = await yandexMusicClient.GetPlaylistsAsync().ConfigureAwait(false);
+            playlists = await spotifyApiClient.GetPlaylistsAsync().ConfigureAwait(false);
             playlist = playlists.FirstOrDefault(x => x.Id == playlistId);
 
             Assert.IsNotNull(playlist);
@@ -107,20 +89,20 @@ namespace Tolltech.TestsNetCore
 
             revision = playlist.Revision;
 
-            actuals = await yandexMusicClient.GetTracksAsync(playlistId).ConfigureAwait(false);
+            actuals = await spotifyApiClient.GetTracksAsync(playlistId).ConfigureAwait(false);
             Assert.IsFalse(actuals.Any(x => x.Id == trackId && x.Albums.Any(y => y.Id == albumId)));
 
-            await yandexMusicClient.AddTracksToPlaylistAsync(playlistId, revision, new[] { trackToChange })
+            await spotifyApiClient.AddTracksToPlaylistAsync(playlistId, revision, new[] { trackToChange })
                 .ConfigureAwait(false);
 
-            actuals = await yandexMusicClient.GetTracksAsync(playlistId).ConfigureAwait(false);
+            actuals = await spotifyApiClient.GetTracksAsync(playlistId).ConfigureAwait(false);
             Assert.IsTrue(actuals.Any(x => x.Id == trackId && x.Albums.Any(y => y.Id == albumId)));
         }
 
         [Test]
         public async Task TestSearch()
         {
-            var actuals = await yandexMusicClient.SearchAsync("Король и шут камнем по голове").ConfigureAwait(false);
+            var actuals = await spotifyApiClient.SearchAsync("Король и шут камнем по голове").ConfigureAwait(false);
             Assert.IsNotEmpty(actuals);
             Assert.IsNotEmpty(actuals.First().Id);
             Assert.IsNotEmpty(actuals.First().Albums);
@@ -136,7 +118,7 @@ namespace Tolltech.TestsNetCore
         [Test]
         public void TestSearchWithBadSymbols()
         {
-            Assert.Throws<YandexApiException>(() => yandexMusicClient.SearchAsync("The Rasmus - Living In A World Without You #").GetAwaiter().GetResult());
+            Assert.Throws<YandexApiException>(() => spotifyApiClient.SearchAsync("The Rasmus - Living In A World Without You #").GetAwaiter().GetResult());
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Tolltech.SpotifyClient
 
         [ItemNotNull]
         [NotNull]
-        Task<Playlist[]> GetPlaylistsAsync([CanBeNull] string userId = null);
+        Task<Playlist[]> GetPlaylistsAsync();
         
         [ItemNotNull]
         [NotNull]
@@ -22,5 +22,7 @@ namespace Tolltech.SpotifyClient
         [ItemNotNull]
         [NotNull]
         Task<Track[]> SearchAsync(string query);
+
+        Task RemoveTracksToPlaylistAsync(string playlistId, string revision, TrackToChange[] trackToChanges);
     }
 }

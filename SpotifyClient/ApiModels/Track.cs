@@ -9,27 +9,25 @@ namespace Tolltech.SpotifyClient.ApiModels
         public Track()
         {
             Artists = Array.Empty<Artist>();
-            Albums = Array.Empty<Album>();
         }
 
         [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("name")]
         public string Title { get; set; }
-
-        [JsonProperty("storageDir")]
-        public string StorageDir { get; set; }
 
         [JsonProperty("artists")]
         public Artist[] Artists { get; set; }
 
-        [JsonProperty("albums")]
-        public Album[] Albums { get; set; }
+        [JsonProperty("album")]
+        public Album Album { get; set; }
 
         public string ArtistsStr
         {
             get { return string.Join(", ", Artists?.Select(x => x.Name).ToArray() ?? Array.Empty<string>()); }
         }
+
+        public Album[] Albums => new[] { Album };
     }
 }

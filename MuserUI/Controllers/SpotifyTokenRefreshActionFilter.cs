@@ -33,7 +33,15 @@ namespace Tolltech.MuserUI.Controllers
             if (existentToken == null) return;
 
             var utcNow = DateTime.UtcNow;
-            if (existentToken.ExpiresUtc < utcNow) return;
+            if (existentToken.ExpiresUtc > utcNow)
+            {
+                authorizationSettings.SetMuserAuthorization(new MuserAuthorization
+                            {
+                                SpotifyAccessToken = existentToken.AccessToken,
+                                SpotifyAccessTokenExpiresDate = existentToken.ExpiresUtc
+                            }, userId.Value);
+                return;
+            }
 
             var newToken = spotifyTokenClient.RefreshToken(existentToken.RefreshToken).GetAwaiter().GetResult();
             existentToken.AccessToken = newToken.AccessToken;

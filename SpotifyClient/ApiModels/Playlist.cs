@@ -1,31 +1,16 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Tolltech.SpotifyClient.ApiModels
 {
     public class Playlist
     {
-        public Playlist()
-        {
-            Tracks = Array.Empty<PlaylistTrack>();
-        }
-
-        [JsonProperty("title")]
+        [JsonProperty("name")]
         public string Title { get; set; }
 
-        [JsonProperty("kind")]
+        [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("revision")]
+        [JsonProperty("snapshot_id")]
         public string Revision { get; set; }
-
-        [JsonProperty("modified")]
-        public DateTime ModifyDate { get; set; }
-
-        [JsonProperty("created")]
-        public DateTime CreateDate { get; set; }
-
-        [JsonProperty("tracks")]
-        public PlaylistTrack[] Tracks { get; set; }
     }
 }
