@@ -26,13 +26,13 @@ namespace Tolltech.Muser.Domain
             this.serializer = serializer;
         }
 
-        public Task<ISpotifyApiClient> GetClientAsync(Guid userId)
+        public ISpotifyApiClient GetClientAsync(Guid userId)
         {
             return InnerGetClientAsync(userId);
         }
 
         [ItemNotNull]
-        private async Task<ISpotifyApiClient> InnerGetClientAsync(string accessToken)
+        private ISpotifyApiClient InnerGetClientAsync(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -50,7 +50,7 @@ namespace Tolltech.Muser.Domain
         }
         
         [ItemNotNull]
-        private Task<ISpotifyApiClient> InnerGetClientAsync(Guid userId)
+        private ISpotifyApiClient InnerGetClientAsync(Guid userId)
         {
             var accessToken = authorizationSettings.GetCachedMuserAuthorization(userId)?.SpotifyAccessToken;
 

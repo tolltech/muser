@@ -23,7 +23,7 @@ namespace Tolltech.Muser.Domain
 
         public async Task<NormalizedTrack[]> GetNewTracksAsync(string yaPlaylistId, Guid userId, SourceTrack[] inputTracks)
         {
-            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+            var yandexApi = yandexService.GetClientAsync(userId);
             var normalizedTracks = normalizedTrackService.GetNormalizedTracks(inputTracks);
             var yaTracks = await yandexApi.GetTracksAsync(yaPlaylistId).ConfigureAwait(false);
 
@@ -37,7 +37,7 @@ namespace Tolltech.Muser.Domain
             Guid userId,
             Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
         {
-            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+            var yandexApi = yandexService.GetClientAsync(userId);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
 
             var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
@@ -169,7 +169,7 @@ namespace Tolltech.Muser.Domain
 
         public async Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid userId)
         {
-            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+            var yandexApi = yandexService.GetClientAsync(userId);
 
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
 
@@ -192,7 +192,7 @@ namespace Tolltech.Muser.Domain
 
         public async Task<YandexTrack[]> GetExistentTracksAsync(Guid userId, string playlistId)
         {
-            var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
+            var yandexApi = yandexService.GetClientAsync(userId);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
             return existentTracks.SelectMany(track => track.Albums.Select(album => new YandexTrack
             {

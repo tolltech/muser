@@ -181,7 +181,7 @@ namespace Tolltech.MuserUI.Controllers
         [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> GetYaPlaylists(Guid sessionId)
         {
-            var client = await yandexService.GetClientAsync(UserId).ConfigureAwait(true);
+            var client = yandexService.GetClientAsync(UserId);
 
             var playlists = await client.GetPlaylistsAsync().ConfigureAwait(true);
 

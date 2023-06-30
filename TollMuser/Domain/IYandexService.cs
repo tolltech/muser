@@ -7,6 +7,6 @@ namespace Tolltech.Muser.Domain
 {
     public interface IYandexService
     {
-        Task<ISpotifyApiClient> GetClientAsync(Guid userId);
+        ISpotifyApiClient GetClientAsync(Guid userId);
     }
 }
