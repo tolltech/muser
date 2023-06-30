@@ -53,3 +53,12 @@ ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS approvedmanual boolean defaul
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatealbumid varchar NULL;
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS candidatetrackid varchar NULL;
 ALTER TABLE ImportResults ADD COLUMN IF NOT EXISTS playlistid varchar NULL;
+
+CREATE TABLE IF NOT EXISTS spotify_tokens(
+                                             user_id uuid PRIMARY KEY NOT NULL,
+                                             access_token varchar NOT NULL,
+                                             token_type varchar NOT NULL,
+                                             scope varchar NOT NULL,
+                                             expires_utc timestamp NULL,
+                                             refresh_token varchar NOT NULL
+)

@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Tolltech.Muser.Domain;
 using Tolltech.Muser.Models;
-using Tolltech.YandexClient.ApiModels;
+using Tolltech.SpotifyClient.ApiModels;
 
 namespace Tolltech.TestsNetCore.Domain
 {
@@ -52,8 +52,8 @@ namespace Tolltech.TestsNetCore.Domain
 
         static Track CreateYaTrack(string title, params string[] artists) => new Track
         {
-            Artists = artists.Select(artist => new Artist {Name = artist}).ToArray(), Title = title,
-            Albums = new[] {new Album()}
+            Artists = artists.Select(artist => new Artist { Name = artist }).ToArray(), Title = title,
+            Album = new Album()
         };
     }
 }

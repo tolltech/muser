@@ -12,5 +12,4 @@ namespace Tolltech.MuserUI.Models.SyncWizard
 
         public YaPlaylist[] Playlists { get; set; }
         public string SelectedPlaylistId { get; set; }
-        public string Login { get; set; }
     }}

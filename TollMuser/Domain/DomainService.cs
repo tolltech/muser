@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using log4net;
 using Tolltech.Muser.Models;
+using Tolltech.SpotifyClient.ApiModels;
 using Tolltech.YandexClient;
-using Tolltech.YandexClient.ApiModels;
 
 namespace Tolltech.Muser.Domain
 {
@@ -21,8 +21,7 @@ namespace Tolltech.Muser.Domain
             this.normalizedTrackService = normalizedTrackService;
         }
 
-        public async Task<NormalizedTrack[]> GetNewTracksAsync(string yaPlaylistId, Guid? userId,
-            SourceTrack[] inputTracks)
+        public async Task<NormalizedTrack[]> GetNewTracksAsync(string yaPlaylistId, Guid userId, SourceTrack[] inputTracks)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
             var normalizedTracks = normalizedTrackService.GetNormalizedTracks(inputTracks);
@@ -35,7 +34,7 @@ namespace Tolltech.Muser.Domain
         }
 
         public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId,
-            Guid? userId,
+            Guid userId,
             Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
@@ -168,7 +167,7 @@ namespace Tolltech.Muser.Domain
             return result.ToArray();
         }
 
-        public async Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid? userId)
+        public async Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid userId)
         {
             var yandexApi = await yandexService.GetClientAsync(userId).ConfigureAwait(false);
 

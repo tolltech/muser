@@ -21,3 +21,7 @@
 /.idea/*
 /MuserUI/node_modules/*
 /node_modules/*
+/MusicClientCore/bin/*
+/MusicClientCore/obj/*
+/SpotifyClient/bin/*
+/SpotifyClient/obj/*

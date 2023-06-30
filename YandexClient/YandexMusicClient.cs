@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using MusicClientCore;
 using Tolltech.Serialization;
 using Tolltech.YandexClient.ApiModels;
 using Tolltech.YandexClient.Authorizations;

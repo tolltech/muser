@@ -6,8 +6,7 @@ using log4net;
 using Tolltech.Muser.Settings;
 using Tolltech.Musync.Domain;
 using Tolltech.Serialization;
-using Tolltech.YandexClient;
-using Tolltech.YandexClient.Authorizations;
+using Tolltech.SpotifyClient;
 
 namespace Tolltech.Muser.Domain
 {
@@ -18,8 +17,8 @@ namespace Tolltech.Muser.Domain
         private readonly IAuthorizationSettings authorizationSettings;
         private readonly IJsonSerializer serializer;
 
-        private static readonly ConcurrentDictionary<(string, string), Task<IYandexMusicClient>> yaClients =
-            new ConcurrentDictionary<(string, string), Task<IYandexMusicClient>>();
+        private static readonly ConcurrentDictionary<string, ISpotifyApiClient> yaClients =
+            new ConcurrentDictionary<string, ISpotifyApiClient>();
 
         public YandexService(IAuthorizationSettings authorizationSettings, IJsonSerializer serializer)
         {
@@ -27,34 +26,20 @@ namespace Tolltech.Muser.Domain
             this.serializer = serializer;
         }
 
-        public async Task<bool> CheckCredentialsAsync(string login, string password)
+        public Task<ISpotifyApiClient> GetClientAsync(Guid userId)
         {
-            try
-            {
-                await InnerGetClientAsync(login, password).ConfigureAwait(false);
-            }
-            catch (YaAuthorizeException)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public Task<IYandexMusicClient> GetClientAsync(Guid? userId = null)
-        {
-            return InnerGetClientAsync(userId ?? Guid.Empty);
+            return InnerGetClientAsync(userId);
         }
 
         [ItemNotNull]
-        private async Task<IYandexMusicClient> InnerGetClientAsync(string login, string password)
+        private async Task<ISpotifyApiClient> InnerGetClientAsync(string accessToken)
         {
-            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new YaAuthorizeException();
             }
 
-            var client =  await yaClients.GetOrAdd((login, password), tuple => CreateClientAsync(tuple.Item1, tuple.Item2));
+            var client = yaClients.GetOrAdd(accessToken, CreateClientAsync);
 
             if (client == null)
             {
@@ -65,30 +50,18 @@ namespace Tolltech.Muser.Domain
         }
         
         [ItemNotNull]
-        private Task<IYandexMusicClient> InnerGetClientAsync(Guid userId)
+        private Task<ISpotifyApiClient> InnerGetClientAsync(Guid userId)
         {
-            var login = authorizationSettings.GetCachedMuserAuthorization(userId)?.YaLogin;
-            var password = authorizationSettings.GetCachedMuserAuthorization(userId)?.YaPassword;
+            var accessToken = authorizationSettings.GetCachedMuserAuthorization(userId)?.SpotifyAccessToken;
 
-            log.Info($"Try to create yandex client for user {userId} and login {login}");
+            log.Info($"Try to create yandex client for user {userId}");
 
-            return InnerGetClientAsync(login, password);
+            return InnerGetClientAsync(accessToken);
         }
 
-        [ItemCanBeNull]
-        private async Task<IYandexMusicClient> CreateClientAsync(string login, string password)
+        private ISpotifyApiClient CreateClientAsync(string accessToken)
         {
-            var yandexCredentials = new YandexCredentials(serializer, login, password);
-            try
-            {
-                var authorizationInfo = await yandexCredentials.GetAuthorizationInfoAsync().ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-
-            return new YandexMusicClient(yandexCredentials, serializer);
+            return new SpotifyApiClient(accessToken, serializer);
         }
     }
 }

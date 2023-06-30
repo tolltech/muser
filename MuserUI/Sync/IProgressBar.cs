@@ -9,5 +9,7 @@ namespace Tolltech.MuserUI.Sync
         [CanBeNull]
         ProgressModel FindProgressModel(Guid progressId);
         void UpdateProgressModel([NotNull]ProgressModel progress);
+        
+        [CanBeNull] ProgressModel FindProgressModelBySessionId(Guid sessionId);
     }
 }

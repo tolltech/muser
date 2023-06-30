@@ -2,7 +2,8 @@
 using System.Linq;
 using JetBrains.Annotations;
 using Tolltech.Muser.Models;
-using Tolltech.YandexClient.ApiModels;
+using Tolltech.SpotifyClient.ApiModels;
+using WebApp.Infrastructure;
 
 namespace Tolltech.Muser.Domain
 {
@@ -26,7 +27,9 @@ namespace Tolltech.Muser.Domain
                     var yLower = y.Name.ToLowerInvariant();
                     var vLower = v.ToLowerInvariant();
                     return OneContainsAnother(vLower, yLower) ||
-                           OneContainsAnother(BrutteNormalize(vLower), BrutteNormalize(yLower));
+                           OneContainsAnother(BrutteNormalize(vLower), BrutteNormalize(yLower)) ||
+                           OneContainsAnother(BrutteTransliterationNormalize(vLower), BrutteTransliterationNormalize(yLower))
+                        ;
                 })));
         }
 
@@ -40,6 +43,11 @@ namespace Tolltech.Muser.Domain
             return left.Contains(right) || right.Contains(left);
         }
 
+        private static string BrutteTransliterationNormalize(string src)
+        {
+            return Transliteration.Front(src.NormalizeTrackInfo().ToOnlyLetterString());
+        }
+        
         private static string BrutteNormalize(string src)
         {
             return src.NormalizeTrackInfo().ToOnlyLetterString().ReplacePossibleErrorChars();

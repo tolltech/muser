@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Tolltech.Muser.Domain;
 using Tolltech.MuserUI.Authentications;
 using Tolltech.MuserUI.Common;
+using Tolltech.SpotifyClient;
 using Tolltech.YandexClient;
 using Tolltech.YandexClient.Authorizations;
 using TolltechCore;
@@ -26,6 +27,7 @@ namespace Tolltech.MuserUI.UICore
                 typeof(IYandexMusicClient),
                 typeof(IYandexCredentials),
                 typeof(ISpecialTrackGetter),
+                typeof(ISpotifyApiClient),
             };
 
             IoCResolver.Resolve((x, y) => serviceCollection.AddSingleton(x, y), ignoreTypes, "Tolltech");
