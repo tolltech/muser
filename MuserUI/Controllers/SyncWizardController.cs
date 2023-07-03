@@ -95,6 +95,7 @@ namespace Tolltech.MuserUI.Controllers
                 .ConfigureAwait(true);
 
             var url = Url.Action("Index", new {sessionId = sessionId});
+
             return Json(new {Url = url});
         }
 
