@@ -54,7 +54,7 @@ namespace Tolltech.MuserUI.UICore
                 options.AddPolicy(Constants.MuserCorsPolicy,
                     builder =>
                     {
-                        builder.WithOrigins("https://vk.com",
+                        builder.WithOrigins("https://music.yandex.ru/",
                             "https://www.shazam.com/")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
