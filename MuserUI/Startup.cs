@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.UICore;
 
 namespace Tolltech.MuserUI
@@ -50,7 +51,7 @@ namespace Tolltech.MuserUI
 
                         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                         var error = exceptionHandlerPathFeature?.Error;
-                        log.Error($"ControllerException {error?.Message}\r\n{error?.StackTrace}");
+                        log.Error($"ControllerException {error?.Message}\r\n{error?.StackTrace}. {context.User.FindFirst(x => x.Type == Constants.UserIdClaim)?.Value.SafeToGuid()}");
                     });
                 });
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
