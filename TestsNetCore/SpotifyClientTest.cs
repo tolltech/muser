@@ -118,7 +118,7 @@ namespace Tolltech.TestsNetCore
         [Test]
         public void TestSearchWithBadSymbols()
         {
-            Assert.Throws<YandexApiException>(() => spotifyApiClient.SearchAsync("The Rasmus - Living In A World Without You #").GetAwaiter().GetResult());
+            Assert.Throws<SpotifyApiException>(() => spotifyApiClient.SearchAsync("The Rasmus - Living In A World Without You #").GetAwaiter().GetResult());
         }
     }
 }

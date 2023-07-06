@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -38,52 +40,100 @@ namespace Tolltech.SpotifyClient
 
         private async Task<T> DoGet<T>(string uri, object param = null)
         {
-            using (var webClient = new WebClient())
+            try
             {
-                var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
+                using (var webClient = new WebClient())
+                {
+                    var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
 
-                webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
-                var response = await webClient
-                    .DownloadDataTaskAsync($@"https://api.spotify.com/v1/{formed}")
-                    .ConfigureAwait(false);
+                    webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
+                    var response = await webClient
+                        .DownloadDataTaskAsync($@"https://api.spotify.com/v1/{formed}")
+                        .ConfigureAwait(false);
 
-                return serializer.Deserialize<T>(response);
+                    return serializer.Deserialize<T>(response);
+                }
+            }
+            catch (WebException e)
+            {
+                var responseStream = e.Response?.GetResponseStream();
+                if (responseStream == null)
+                {
+                    throw new SpotifyApiException($"YandexApi Error {e.Status} {e.Message}");
+                }
+
+                using (var reader = new StreamReader(responseStream))
+                {
+                    throw new SpotifyApiException($"YandexApi Error {await reader.ReadToEndAsync().ConfigureAwait(false)}");
+                }
             }
         }
 
         private async Task<TResponse> DoPost<TResponse, TBody>(string uri, TBody body = null, object param = null) where TBody : class
         {
-            using (var webClient = new WebClient())
+            try
             {
-                var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
+                using (var webClient = new WebClient())
+                {
+                    var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
 
-                webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
-                webClient.Headers.Set("Content-Type", $@"application/json");
-                var response = await webClient
-                    .UploadDataTaskAsync($@"https://api.spotify.com/v1/{formed}", serializer.Serialize(body))
-                    .ConfigureAwait(false);
+                    webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
+                    webClient.Headers.Set("Content-Type", $@"application/json");
+                    var response = await webClient
+                        .UploadDataTaskAsync($@"https://api.spotify.com/v1/{formed}", serializer.Serialize(body))
+                        .ConfigureAwait(false);
 
-                return serializer.Deserialize<TResponse>(response);
+                    return serializer.Deserialize<TResponse>(response);
+                }
+            }
+            catch (WebException e)
+            {
+                var responseStream = e.Response?.GetResponseStream();
+                if (responseStream == null)
+                {
+                    throw new SpotifyApiException($"YandexApi Error {e.Status} {e.Message}");
+                }
+
+                using (var reader = new StreamReader(responseStream))
+                {
+                    throw new SpotifyApiException($"YandexApi Error {await reader.ReadToEndAsync().ConfigureAwait(false)}");
+                }
             }
         }
         
         private async Task<TResponse> DoDelete<TResponse, TBody>(string uri, TBody body = null, object param = null) where TBody : class
         {
-            var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
-            using(var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete,  $@"https://api.spotify.com/v1/{formed}"))
+            try
             {
-                httpRequestMessage.Headers.Add("Authorization", $@"Bearer  {accessToken}");
+                var formed = param == null ? uri : $"{uri}?{param.ToFormDataStr()}";
+                using(var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete,  $@"https://api.spotify.com/v1/{formed}"))
+                {
+                    httpRequestMessage.Headers.Add("Authorization", $@"Bearer  {accessToken}");
 
-                httpRequestMessage.Content =
-                    new StringContent(serializer.SerializeToString(body), Encoding.UTF8, "application/json");
+                    httpRequestMessage.Content =
+                        new StringContent(serializer.SerializeToString(body), Encoding.UTF8, "application/json");
 
-                var response = await client
-                    .SendAsync(httpRequestMessage)
-                    .ConfigureAwait(false);
+                    var response = await client
+                        .SendAsync(httpRequestMessage)
+                        .ConfigureAwait(false);
 
-                var responseStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var responseStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                return serializer.DeserializeFromString<TResponse>(responseStr);
+                    return serializer.DeserializeFromString<TResponse>(responseStr);
+                }
+            }
+            catch (WebException e)
+            {
+                var responseStream = e.Response?.GetResponseStream();
+                if (responseStream == null)
+                {
+                    throw new SpotifyApiException($"YandexApi Error {e.Status} {e.Message}");
+                }
+
+                using (var reader = new StreamReader(responseStream))
+                {
+                    throw new SpotifyApiException($"YandexApi Error {await reader.ReadToEndAsync().ConfigureAwait(false)}");
+                }
             }
         }
 

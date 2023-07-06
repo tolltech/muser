@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tolltech.Muser.Models;
+using Tolltech.SpotifyClient;
 using Tolltech.SpotifyClient.ApiModels;
-using Tolltech.YandexClient;
 using Vostok.Logging.Abstractions;
 
 namespace Tolltech.Muser.Domain
@@ -145,7 +145,7 @@ namespace Tolltech.Muser.Domain
 
                     importResult.ImportStatus = ImportStatus.Ok;
                 }
-                catch (YandexApiException ex)
+                catch (SpotifyApiException ex)
                 {
                     log.Info($"ERROR YandexApiError {ex.Message}");
                     importResult.ImportStatus = ImportStatus.Error;
