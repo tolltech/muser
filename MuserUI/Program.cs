@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -19,13 +20,14 @@ namespace Tolltech.MuserUI
             var consoleLog = new SynchronousConsoleLog();
             var fileLog = new FileLog(new FileLogSettings
             {
-                FilePath = @"./etc/muserapp/log",
+                FilePath = @"logs/log",
                 RollingStrategy = new RollingStrategyOptions
                 {
                     Period = RollingPeriod.Day,
                     Type = RollingStrategyType.ByTime,
                     MaxFiles = 7,
-                }
+                },
+                FileShare = FileShare.ReadWrite
             });
             var compositeLog = new CompositeLog(consoleLog, fileLog);
 
