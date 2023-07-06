@@ -19,7 +19,7 @@ namespace Tolltech.MuserUI
             var consoleLog = new SynchronousConsoleLog();
             var fileLog = new FileLog(new FileLogSettings
             {
-                FilePath = @"loggs/logg",
+                FilePath = @"./etc/muserapp/log",
                 RollingStrategy = new RollingStrategyOptions
                 {
                     Period = RollingPeriod.Day,
