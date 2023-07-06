@@ -20,6 +20,7 @@ using Tolltech.Serialization;
 using Tolltech.SpotifyClient.ApiModels;
 using Tolltech.SpotifyClient.Integration;
 using Tolltech.SqlEF;
+using TolltechCore;
 using Vostok.Logging.Abstractions;
 
 namespace Tolltech.MuserUI.Controllers
@@ -302,7 +303,7 @@ namespace Tolltech.MuserUI.Controllers
             }
             catch (Exception e)
             {
-                log.Error($"ERROR in BackgroundImport", e);
+                log.Error($"ERROR in BackgroundImport. {e.Dump()}");
                 throw;
             }
         }
