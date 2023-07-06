@@ -1,12 +1,9 @@
 using System;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
-using Vostok.Logging.File;
-using Vostok.Logging.File.Configuration;
 using Vostok.Logging.Microsoft;
 
 namespace Tolltech.MuserUI
@@ -18,20 +15,20 @@ namespace Tolltech.MuserUI
             Console.WriteLine($"Start muser with args {string.Join(", ", args)}");
 
             var consoleLog = new SynchronousConsoleLog();
-            var fileLog = new FileLog(new FileLogSettings
-            {
-                FilePath = @"logs/log",
-                RollingStrategy = new RollingStrategyOptions
-                {
-                    Period = RollingPeriod.Day,
-                    Type = RollingStrategyType.ByTime,
-                    MaxFiles = 7,
-                },
-                FileShare = FileShare.ReadWrite
-            });
-            var compositeLog = new CompositeLog(consoleLog, fileLog);
+            // var fileLog = new FileLog(new FileLogSettings
+            // {
+            //     FilePath = @"logs/log",
+            //     RollingStrategy = new RollingStrategyOptions
+            //     {
+            //         Period = RollingPeriod.Day,
+            //         Type = RollingStrategyType.ByTime,
+            //         MaxFiles = 7,
+            //     },
+            //     FileShare = FileShare.ReadWrite
+            // });
+            // var compositeLog = new CompositeLog(consoleLog, fileLog);
 
-            LogProvider.Configure(compositeLog);
+            LogProvider.Configure(consoleLog);
             CreateHostBuilder(args)
                 .Build()
                 .Run();
