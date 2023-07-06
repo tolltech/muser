@@ -23,12 +23,12 @@ namespace Tolltech.MuserUI
             var consoleLog = new SynchronousConsoleLog();
             var fileLog = new FileLog(new FileLogSettings
             {
-                FilePath = @"logs/log",
+                FilePath = @"logs/logg",
                 RollingStrategy = new RollingStrategyOptions
                 {
                     Period = RollingPeriod.Day,
                     Type = RollingStrategyType.ByTime,
-                    MaxFiles = 7
+                    MaxFiles = 7,
                 }
             });
             var compositeLog = new CompositeLog(consoleLog, fileLog);
