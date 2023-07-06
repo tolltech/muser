@@ -4,12 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MusicClientCore;
 using Tolltech.Muser.Domain;
 using Tolltech.Muser.Models;
@@ -17,7 +15,6 @@ using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Models.Sync;
 using Tolltech.MuserUI.Models.SyncWizard;
-using Tolltech.MuserUI.Spotify;
 using Tolltech.MuserUI.Sync;
 using Tolltech.Serialization;
 using Tolltech.SpotifyClient.ApiModels;
@@ -41,7 +38,6 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IProgressBar progressBar;
         private readonly IImportResultLogger importResultLogger;
         private readonly ISpotifyClientConfiguration spotifyClientConfiguration;
-        private readonly ILogger<SyncWizardController> logger;
 
         public SyncWizardController(ITempSessionService tempSessionService, ITrackGetter trackGetter,
             IQueryExecutorFactory queryExecutorFactory,
@@ -51,8 +47,7 @@ namespace Tolltech.MuserUI.Controllers
             IDomainService domainService,
             IProgressBar progressBar,
             IImportResultLogger importResultLogger,
-            ISpotifyClientConfiguration spotifyClientConfiguration,
-            ILogger<SyncWizardController> logger)
+            ISpotifyClientConfiguration spotifyClientConfiguration)
         {
             this.tempSessionService = tempSessionService;
             this.trackGetter = trackGetter;
@@ -65,7 +60,6 @@ namespace Tolltech.MuserUI.Controllers
             this.progressBar = progressBar;
             this.importResultLogger = importResultLogger;
             this.spotifyClientConfiguration = spotifyClientConfiguration;
-            this.logger = logger;
         }
 
         [HttpGet("")]
@@ -186,10 +180,6 @@ namespace Tolltech.MuserUI.Controllers
         [TypeFilter(typeof(SpotifyTokenRefreshActionFilter))]
         public async Task<ActionResult> GetYaPlaylists(Guid sessionId)
         {
-            var settings = authorizationSettings.GetCachedMuserAuthorization(UserId);
-            logger.LogInformation(
-                $"Try get spotify for user {UserId} and token {settings?.SpotifyAccessTokenExpiresDate} {settings?.SpotifyAccessToken}");
-
             var client = yandexService.GetClientAsync(UserId);
 
             var playlists = await client.GetPlaylistsAsync().ConfigureAwait(true);

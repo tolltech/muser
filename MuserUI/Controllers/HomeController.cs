@@ -11,12 +11,10 @@ namespace Tolltech.MuserUI.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IGuidFactory guidFactory;
 
         public HomeController(ILogger<HomeController> logger, IGuidFactory guidFactory)
         {
-            _logger = logger;
             this.guidFactory = guidFactory;
         }
 

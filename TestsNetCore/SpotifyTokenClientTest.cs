@@ -1,15 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Ninject;
 using NUnit.Framework;
-using Tolltech.Serialization;
 using Tolltech.SpotifyClient;
 using Tolltech.SpotifyClient.Integration;
-using Tolltech.YandexClient;
-using Tolltech.YandexClient.ApiModels;
-using Tolltech.YandexClient.Authorizations;
 
 namespace Tolltech.TestsNetCore
 {
