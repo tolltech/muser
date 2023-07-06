@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -300,6 +301,22 @@ namespace Tolltech.MuserUI.Controllers
                 var lastProgress = progressBar.FindProgressModel(progressId);
                 lastProgress.ImportLogsSaved = true;
                 progressBar.UpdateProgressModel(lastProgress);
+            }
+            catch (WebException e)
+            {
+                log.Error($"ERROR WEB in BackgroundImport. {e.Dump()}");
+
+                var stream = e.Response.GetResponseStream();
+                var responseBody = string.Empty;
+                if (stream != null)
+                {
+                    using var streamReader = new StreamReader(stream);
+                    responseBody = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+                }
+
+                var headersStr = string.Join("\r\n", e.Response.Headers.AllKeys.Select(x => e.Response.Headers.Get(x)));
+                log.Error($"{e.Status} {e.Message}\r\n{responseBody}\r\n{headersStr}");
+                throw;
             }
             catch (Exception e)
             {
