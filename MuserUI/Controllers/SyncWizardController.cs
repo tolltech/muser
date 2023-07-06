@@ -265,22 +265,24 @@ namespace Tolltech.MuserUI.Controllers
         {
             try
             {
-                void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
+                void UpdateProgress((int Processed, int Total, ImportResult importResult, bool submitted) tuple)
                 {
                     var currentProgress = progressBar.FindProgressModel(progressId) ?? new ProgressModel
                     {
                         Id = progressId,
                         Total = tuple.Total,
                         Processed = tuple.Processed,
-                        SessionId = sessionId
+                        SessionId = sessionId,
+                        Submitted = tuple.submitted
                     };
 
                     currentProgress.Total = tuple.Total;
                     currentProgress.Processed = tuple.Processed;
 
                     var importResult = tuple.importResult;
-                    if (importResult.ImportStatus == ImportStatus.Error ||
-                        importResult.ImportStatus == ImportStatus.NotFound)
+                    if (importResult != null &&
+                        (importResult.ImportStatus == ImportStatus.Error ||
+                        importResult.ImportStatus == ImportStatus.NotFound))
                     {
                         currentProgress.Errors.Add((new TrackModel
                             {
@@ -314,7 +316,7 @@ namespace Tolltech.MuserUI.Controllers
                     responseBody = await streamReader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
-                var headersStr = string.Join("\r\n", e.Response.Headers.AllKeys.Select(x => e.Response.Headers.Get(x)));
+                var headersStr = string.Join("\r\n", e.Response.Headers.AllKeys.Select(x => $"{x} - {e.Response.Headers.Get(x)}"));
                 log.Error($"{e.Status} {e.Message}\r\n{responseBody}\r\n{headersStr}");
                 throw;
             }
@@ -349,7 +351,8 @@ namespace Tolltech.MuserUI.Controllers
                 Errors = progressModel.Errors.ToList(),
                 Id = progressModel.Id,
                 ImportLogsSaved = logsSaved,
-                SessionId = progressModel.SessionId
+                SessionId = progressModel.SessionId,
+                Submitted = progressModel.Submitted
             });
         }
 

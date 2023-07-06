@@ -9,7 +9,7 @@ namespace Tolltech.Muser.Domain
     public interface IDomainService
     {
         Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId, Guid userId,
-            Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null);
+            Action<(int Processed, int Total, ImportResult importResult, bool submitted)> percentsComplete = null);
 
         [NotNull]
         Task ImportTracksAsync(TrackToChange[] trackToImport, string playlistId, Guid userId);

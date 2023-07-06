@@ -35,7 +35,7 @@ namespace Tolltech.Muser.Domain
 
         public async Task<ImportResult[]> ImportTracksAsync(NormalizedTrack[] trackToImport, string playlistId,
             Guid userId,
-            Action<(int Processed, int Total, ImportResult importResult)> percentsComplete = null)
+            Action<(int Processed, int Total, ImportResult importResult, bool submitted)> percentsComplete = null)
         {
             var yandexApi = yandexService.GetClientAsync(userId);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
@@ -64,6 +64,7 @@ namespace Tolltech.Muser.Domain
             var notFoundCount = 0;
             var completeCount = alreadyExistentTracks.Length;
 
+            var tracksToChange = new List<TrackToChange>(newTracks.Length);
             foreach (var track in newTracks)
             {
                 log.Info($"START process {track.Artist} - {track.Title}");
@@ -140,11 +141,7 @@ namespace Tolltech.Muser.Domain
                         foundTracks.Add(trackHash);
                     }
 
-                    var playlists = await yandexApi.GetPlaylistsAsync().ConfigureAwait(false);
-                    var revision = playlists.FirstOrDefault(x => x.Id == playlistId)?.Revision;
-
-                    var trackToChange = new TrackToChange {Id = trackHash.Id, AlbumId = trackHash.AlbumId};
-                    await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, trackToChange).ConfigureAwait(false);
+                    tracksToChange.Add(new TrackToChange {Id = trackHash.Id, AlbumId = trackHash.AlbumId});
 
                     importResult.ImportStatus = ImportStatus.Ok;
                 }
@@ -157,9 +154,24 @@ namespace Tolltech.Muser.Domain
                 finally
                 {
                     result.Add(importResult);
-                    percentsComplete?.Invoke((++completeCount, totalCount, importResult));
+                    percentsComplete?.Invoke((++completeCount, totalCount, importResult, false));
                     log.Info($"PROCESSED {completeCount}/{totalCount} tracks. NotFound {notFoundCount}");
                 }
+            }
+
+            try
+            {
+                var playlists = await yandexApi.GetPlaylistsAsync().ConfigureAwait(false);
+                var revision = playlists.FirstOrDefault(x => x.Id == playlistId)?.Revision;
+                
+                await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, tracksToChange.ToArray()).ConfigureAwait(false);
+                
+                percentsComplete?.Invoke((completeCount, totalCount, null, true));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
 
             return result.ToArray();

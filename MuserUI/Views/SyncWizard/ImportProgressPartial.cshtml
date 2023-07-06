@@ -2,7 +2,14 @@
 
 <div class="common">
     <span>
-        <label>Импортировано </label>
+        @if (Model.Submitted)
+        {
+            <label>Импортировано </label>
+        }
+        else
+        {
+            <label>Готово к импорту </label>
+        }
         <label>@Model.Processed</label>
         <label>/</label>
         <label>@Model.Total</label>
@@ -13,7 +20,7 @@
 @if (Model.Errors.Count > 0)
 {
     <div class="common">
-        <label style="color: red">Не удалось импортировать</label>
+        <label style="color: red">Не удалось найти</label>
     </div>
 
     <select multiple class="track-list">

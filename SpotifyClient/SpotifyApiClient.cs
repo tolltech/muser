@@ -121,6 +121,7 @@ namespace Tolltech.SpotifyClient
                 };
                 var page = await DoGet<ItemsResponse<TrackWrapper>>($@"playlists/{playlistId}/tracks", param)
                     .ConfigureAwait(false);
+                await Task.Delay(100).ConfigureAwait(false);
                 result.AddRange(page.Items.Select(x => x.Track).ToArray());
 
                 if (page.Items.Length == 0) break;
@@ -157,6 +158,7 @@ namespace Tolltech.SpotifyClient
                     Uris = tracks.Select(x=> $"spotify:track:{x.Id}").ToArray()
                 };
                 await DoPost<AddTracksResponse, AddTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);
+                await Task.Delay(200).ConfigureAwait(false);
 
                 offset += page.Length;
             } while (true);
@@ -204,6 +206,7 @@ namespace Tolltech.SpotifyClient
                 };
 
                 await DoDelete<AddTracksResponse, RemoveTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);
+                await Task.Delay(200).ConfigureAwait(false);
 
                 offset += page.Length;
             } while (true);
