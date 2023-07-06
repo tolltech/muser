@@ -20,6 +20,7 @@ using Tolltech.Serialization;
 using Tolltech.SpotifyClient.ApiModels;
 using Tolltech.SpotifyClient.Integration;
 using Tolltech.SqlEF;
+using Vostok.Logging.Abstractions;
 
 namespace Tolltech.MuserUI.Controllers
 {
@@ -92,9 +93,9 @@ namespace Tolltech.MuserUI.Controllers
             await tempSessionService.SaveTempSessionAsync(sessionId, SafeUserId, inputTracks?.Text ?? string.Empty)
                 .ConfigureAwait(true);
 
-            var url = Url.Action("Index", new {sessionId = sessionId});
+            var url = Url.Action("Index", new { sessionId = sessionId });
 
-            return Json(new {Url = url});
+            return Json(new { Url = url });
         }
 
         [HttpPost("inputtracks")]
@@ -142,10 +143,10 @@ namespace Tolltech.MuserUI.Controllers
 
             if (authorizationSettings.UserAuthorized(UserId))
             {
-                return RedirectToAction("GetYaPlaylists", new {sessionId = sessionId});
+                return RedirectToAction("GetYaPlaylists", new { sessionId = sessionId });
             }
 
-            return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
+            return RedirectToAction("YandexAuthorize", new { sessionId = sessionId });
         }
 
         [HttpGet("yaauthorize")]
@@ -155,7 +156,8 @@ namespace Tolltech.MuserUI.Controllers
             {
                 response_type = "code",
                 client_id = spotifyClientConfiguration.ClientId,
-                scope = "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
+                scope =
+                    "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
                 redirect_uri = @"https://tolltech.ru" + Url.Action("Callback", "Spotify"),
                 state = sessionId.ToString()
             };
@@ -170,7 +172,7 @@ namespace Tolltech.MuserUI.Controllers
             var authInfo = authorizationSettings.GetCachedMuserAuthorization(UserId);
             if (authInfo == null)
             {
-                return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
+                return RedirectToAction("YandexAuthorize", new { sessionId = sessionId });
             }
 
             return await GetYaPlaylists(sessionId).ConfigureAwait(true);
@@ -212,7 +214,7 @@ namespace Tolltech.MuserUI.Controllers
 
             if (yaPlayListId.IsNullOrWhitespace())
             {
-                return RedirectToAction("GetYaPlaylists", new {sessionId = sessionId});
+                return RedirectToAction("GetYaPlaylists", new { sessionId = sessionId });
             }
 
             var tracksText = await tempSessionService.FindSessionTextAsync(sessionId, UserId).ConfigureAwait(true);
@@ -243,7 +245,7 @@ namespace Tolltech.MuserUI.Controllers
             return View("ImportProgress", new ProgressWithUrlModel
             {
                 Progress = progressBar.FindProgressModel(progressId) ??
-                           new ProgressModel {Id = progressId, Processed = 0, Total = 0, SessionId = sessionId},
+                           new ProgressModel { Id = progressId, Processed = 0, Total = 0, SessionId = sessionId },
                 YandexPlaylistUrl = GetPlaylistUrl(yaPlayListId),
                 SessionId = sessionId
             });
@@ -254,44 +256,55 @@ namespace Tolltech.MuserUI.Controllers
             return $"https://open.spotify.com/playlist/{yaPlaylistId}";
         }
 
+        private static readonly ILog log = LogProvider.Get();
+        
         private async Task RunImport(Guid progressId, NormalizedTrack[] trackToImport, string yaPlayListId,
             Guid sessionId, Guid userId)
         {
-            void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
+            try
             {
-                var currentProgress = progressBar.FindProgressModel(progressId) ?? new ProgressModel
+                void UpdateProgress((int Processed, int Total, ImportResult importResult) tuple)
                 {
-                    Id = progressId,
-                    Total = tuple.Total,
-                    Processed = tuple.Processed,
-                    SessionId = sessionId
-                };
-
-                currentProgress.Total = tuple.Total;
-                currentProgress.Processed = tuple.Processed;
-
-                var importResult = tuple.importResult;
-                if (importResult.ImportStatus == ImportStatus.Error ||
-                    importResult.ImportStatus == ImportStatus.NotFound)
-                {
-                    currentProgress.Errors.Add((new TrackModel
+                    var currentProgress = progressBar.FindProgressModel(progressId) ?? new ProgressModel
                     {
-                        Title = importResult.ImportingTrack?.Title ?? string.Empty,
-                        Artist = importResult.ImportingTrack?.Artist ?? string.Empty
-                    }, $"{jsonSerializer.SerializeToString(new {importResult.ImportStatus, importResult.Message})}"));
+                        Id = progressId,
+                        Total = tuple.Total,
+                        Processed = tuple.Processed,
+                        SessionId = sessionId
+                    };
+
+                    currentProgress.Total = tuple.Total;
+                    currentProgress.Processed = tuple.Processed;
+
+                    var importResult = tuple.importResult;
+                    if (importResult.ImportStatus == ImportStatus.Error ||
+                        importResult.ImportStatus == ImportStatus.NotFound)
+                    {
+                        currentProgress.Errors.Add((new TrackModel
+                            {
+                                Title = importResult.ImportingTrack?.Title ?? string.Empty,
+                                Artist = importResult.ImportingTrack?.Artist ?? string.Empty
+                            },
+                            $"{jsonSerializer.SerializeToString(new { importResult.ImportStatus, importResult.Message })}"));
+                    }
+
+                    progressBar.UpdateProgressModel(currentProgress);
                 }
 
-                progressBar.UpdateProgressModel(currentProgress);
+                var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, userId, UpdateProgress)
+                    .ConfigureAwait(false);
+
+                await importResultLogger.WriteImportLogsAsync(results, userId, sessionId).ConfigureAwait(false);
+
+                var lastProgress = progressBar.FindProgressModel(progressId);
+                lastProgress.ImportLogsSaved = true;
+                progressBar.UpdateProgressModel(lastProgress);
             }
-
-            var results = await domainService.ImportTracksAsync(trackToImport, yaPlayListId, userId, UpdateProgress)
-                .ConfigureAwait(false);
-
-            await importResultLogger.WriteImportLogsAsync(results, userId, sessionId).ConfigureAwait(false);
-
-            var lastProgress = progressBar.FindProgressModel(progressId);
-            lastProgress.ImportLogsSaved = true;
-            progressBar.UpdateProgressModel(lastProgress);
+            catch (Exception e)
+            {
+                log.Error($"ERROR in BackgroundImport", e);
+                throw;
+            }
         }
 
         [HttpGet("progress")]
@@ -303,7 +316,8 @@ namespace Tolltech.MuserUI.Controllers
 
             if (progressModel.SessionId.HasValue && progressModel.Total == progressModel.Processed)
             {
-                var count = await importResultLogger.CountAsync(progressModel.SessionId.Value, UserId).ConfigureAwait(true);
+                var count = await importResultLogger.CountAsync(progressModel.SessionId.Value, UserId)
+                    .ConfigureAwait(true);
                 if (count >= progressModel.Total)
                 {
                     logsSaved = true;
@@ -327,7 +341,7 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (!authorizationSettings.UserAuthorized(UserId))
             {
-                return RedirectToAction("YandexAuthorize", new {sessionId = sessionId});
+                return RedirectToAction("YandexAuthorize", new { sessionId = sessionId });
             }
 
             var allImportResults = await importResultLogger.SelectAsync(sessionId, UserId).ConfigureAwait(true);
@@ -335,11 +349,11 @@ namespace Tolltech.MuserUI.Controllers
             var errorImportResults = allImportResults.Where(x => x.Status == ImportStatus.Error).ToArray();
 
             var notFoundImportResults = allImportResults.Where(x => x.Status == ImportStatus.NotFound).ToArray();
-            
+
             var playlistId = notFoundImportResults.Select(x => x.PlaylistId)
                                  .FirstOrDefault(x => !x.IsNullOrWhitespace())
                              ?? allImportResults.Select(x => x.PlaylistId).FirstOrDefault(x => !x.IsNullOrWhitespace());
-            
+
             // if (notFoundImportResults.Length == 0)
             // {
             //     return View("ImportProgress", new ProgressWithUrlModel
@@ -389,7 +403,7 @@ namespace Tolltech.MuserUI.Controllers
 
             if (!authorizationSettings.UserAuthorized(UserId))
             {
-                return RedirectToAction("YandexAuthorize", new {sessionId = reImportModel.SessionId});
+                return RedirectToAction("YandexAuthorize", new { sessionId = reImportModel.SessionId });
             }
 
             var selected = reImportModel?.Tracks?.ToArray() ?? Array.Empty<ReImportTrackForm>();
@@ -405,7 +419,7 @@ namespace Tolltech.MuserUI.Controllers
             await importResultLogger.UpdateManualApprovingAsync(selected.Select(x => x.Id).ToArray())
                 .ConfigureAwait(true);
 
-            return RedirectToAction("ReImport", new {sessionId = reImportModel.SessionId});
+            return RedirectToAction("ReImport", new { sessionId = reImportModel.SessionId });
         }
     }
 }
