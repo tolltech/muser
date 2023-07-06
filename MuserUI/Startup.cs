@@ -1,4 +1,3 @@
-using log4net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -7,12 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.UICore;
+using Vostok.Logging.Abstractions;
 
 namespace Tolltech.MuserUI
 {
     public class Startup
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Startup));
+        private static readonly ILog log = LogProvider.Get();
 
         public Startup(IConfiguration configuration)
         {
@@ -57,7 +57,7 @@ namespace Tolltech.MuserUI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

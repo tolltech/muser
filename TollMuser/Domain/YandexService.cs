@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using log4net;
 using Tolltech.Muser.Settings;
 using Tolltech.Musync.Domain;
 using Tolltech.Serialization;
 using Tolltech.SpotifyClient;
+using Vostok.Logging.Abstractions;
 
 namespace Tolltech.Muser.Domain
 {
     public class YandexService : IYandexService
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(YandexService));
+        private static readonly ILog log = LogProvider.Get();
 
         private readonly IAuthorizationSettings authorizationSettings;
         private readonly IJsonSerializer serializer;

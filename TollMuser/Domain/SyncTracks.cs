@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using log4net;
 using Tolltech.Muser.Models;
 using Tolltech.SpotifyClient.ApiModels;
+using Vostok.Logging.Abstractions;
 
 namespace Tolltech.Muser.Domain
 {
@@ -10,7 +10,7 @@ namespace Tolltech.Muser.Domain
         private readonly NormalizedTrack[] normalizedTracks;
 
         private readonly YandexTracks yandexTracks;
-        private static readonly ILog log = LogManager.GetLogger(typeof(SyncTracks));
+        private static readonly ILog log = LogProvider.Get();
 
         public SyncTracks(NormalizedTrack[] normalizedTracks, Track[] yaTracks)
         {

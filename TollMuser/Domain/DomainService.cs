@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using log4net;
 using Tolltech.Muser.Models;
 using Tolltech.SpotifyClient.ApiModels;
 using Tolltech.YandexClient;
+using Vostok.Logging.Abstractions;
 
 namespace Tolltech.Muser.Domain
 {
@@ -13,7 +13,7 @@ namespace Tolltech.Muser.Domain
     {
         private readonly IYandexService yandexService;
         private readonly INormalizedTrackService normalizedTrackService;
-        private static readonly ILog log = LogManager.GetLogger(typeof(DomainService));
+        private static readonly ILog log = LogProvider.Get();
 
         public DomainService(IYandexService yandexService, INormalizedTrackService normalizedTrackService)
         {
@@ -147,8 +147,6 @@ namespace Tolltech.Muser.Domain
                     await yandexApi.AddTracksToPlaylistAsync(playlistId, revision, trackToChange).ConfigureAwait(false);
 
                     importResult.ImportStatus = ImportStatus.Ok;
-
-                    await Task.Delay(200).ConfigureAwait(false);
                 }
                 catch (YandexApiException ex)
                 {
