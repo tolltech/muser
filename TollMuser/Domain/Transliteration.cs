@@ -99,7 +99,7 @@ namespace WebApp.Infrastructure
             gost.Add("г", "g");
             gost.Add("д", "d");
             gost.Add("е", "e");
-            gost.Add("ё", "jo");
+            gost.Add("ё", "e");
             gost.Add("ж", "zh");
             gost.Add("з", "z");
             gost.Add("и", "i");
@@ -137,7 +137,7 @@ namespace WebApp.Infrastructure
             iso.Add("Ѓ", "G");
             iso.Add("і", "i");
             iso.Add("№", "#");
-            iso.Add("є", "ye");
+            iso.Add("є", "e");
             iso.Add("ѓ", "g");
             iso.Add("А", "A");
             iso.Add("Б", "B");
@@ -145,7 +145,7 @@ namespace WebApp.Infrastructure
             iso.Add("Г", "G");
             iso.Add("Д", "D");
             iso.Add("Е", "E");
-            iso.Add("Ё", "YO");
+            iso.Add("Ё", "E");
             iso.Add("Ж", "ZH");
             iso.Add("З", "Z");
             iso.Add("И", "I");
@@ -163,9 +163,9 @@ namespace WebApp.Infrastructure
             iso.Add("Ф", "F");
             iso.Add("Х", "H");
             iso.Add("Ц", "C");
-            iso.Add("Ч", "CH");
-            iso.Add("Ш", "SH");
-            iso.Add("Щ", "SHH");
+            iso.Add("Ч", "C");
+            iso.Add("Ш", "S");
+            iso.Add("Щ", "S");
             iso.Add("Ъ", "");
             iso.Add("Ы", "Y");
             iso.Add("Ь", "");
@@ -178,7 +178,7 @@ namespace WebApp.Infrastructure
             iso.Add("г", "g");
             iso.Add("д", "d");
             iso.Add("е", "e");
-            iso.Add("ё", "yo");
+            iso.Add("ё", "e");
             iso.Add("ж", "zh");
             iso.Add("з", "z");
             iso.Add("и", "i");
@@ -196,9 +196,9 @@ namespace WebApp.Infrastructure
             iso.Add("ф", "f");
             iso.Add("х", "h");
             iso.Add("ц", "c");
-            iso.Add("ч", "ch");
-            iso.Add("ш", "sh");
-            iso.Add("щ", "shh");
+            iso.Add("ч", "c");
+            iso.Add("ш", "s");
+            iso.Add("щ", "s");
             iso.Add("ъ", "");
             iso.Add("ы", "y");
             iso.Add("ь", "");

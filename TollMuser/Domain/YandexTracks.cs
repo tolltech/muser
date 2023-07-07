@@ -48,12 +48,12 @@ namespace Tolltech.Muser.Domain
 
         private static string BrutteTransliterationNormalize(string src)
         {
-            return Transliteration.Front(src.NormalizeTrackInfo().ToOnlyLetterString());
+            return Transliteration.Front(src.NormalizeTrackInfo().ToOnlyLetterStringWithAmpersandReplacing());
         }
         
         private static string BrutteNormalize(string src)
         {
-            return src.NormalizeTrackInfo().ToOnlyLetterString().ReplacePossibleErrorChars();
+            return src.NormalizeTrackInfo().ToOnlyLetterStringWithAmpersandReplacing().ReplacePossibleErrorChars();
         }
 
         private static bool BrutteEquals(string left, string right)

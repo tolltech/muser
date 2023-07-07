@@ -40,9 +40,9 @@ namespace Tolltech.Muser.Domain
         }
 
         [CanBeNull]
-        public static string ToOnlyLetterString([CanBeNull] this string src)
+        public static string ToOnlyLetterStringWithAmpersandReplacing([CanBeNull] this string src)
         {
-            return src == null ? null : new string(src.Where(char.IsLetter).ToArray());
+            return src == null ? null : new string(src.Replace("&amp;", "i").Replace("&", "i").Where(char.IsLetter).ToArray());
         }
 
         [CanBeNull]
@@ -50,8 +50,9 @@ namespace Tolltech.Muser.Domain
         {
             return src?.Replace('ё', 'е')
                     .Replace("ll", "l")
+                    .Replace("лл", "л")
+                    .Replace("nn", "n")
                     .Replace("нн", "н")
-                    .Replace("&amp;", string.Empty)
                     .Replace("zz", "z")
                     .Replace("дж", "j")
                     .Replace("dzh", "j")
@@ -65,9 +66,13 @@ namespace Tolltech.Muser.Domain
                     .Replace("ts", "c")
                     .Replace("oo", "u")
                     .Replace("x", "ks")
+                    .Replace("ch", "c")
+                    .Replace("sh", "s")
+                    .Replace("shh", "s")
                     .Replace(russianCChar, englishCChar)
                     .Replace('s', englishCChar)
                     .Replace("cc", "c")
+                    .Replace("ch", "c")
                     .Replace('y', 'i')
                     .Replace('q', 'k')
                     
