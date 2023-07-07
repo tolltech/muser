@@ -20,7 +20,7 @@ namespace Tolltech.Muser.Domain
         public Track FindEqualTrack(NormalizedTrack normalizedTrack)
         {
             return tracks.FirstOrDefault(yaTrack =>
-                yaTrack.Albums.Length > 0
+                yaTrack.Albums?.Length > 0
                 && 
                 (BrutteEquals(yaTrack.Title, normalizedTrack.Title)
                 || (((yaTrack.Title?.Contains(' ') ?? false) || (normalizedTrack.Title?.Contains(' ') ?? false)) &&  OneContainsAnother(BrutteNormalize(yaTrack.Title), BrutteNormalize(normalizedTrack.Title))))

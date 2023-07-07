@@ -237,7 +237,7 @@ namespace Tolltech.SpotifyClient
                 q = query, 
                 type = "track"
             };
-            return (await DoGet<TracksWrapper>("search", o).ConfigureAwait(false)).Tracks.Items;
+            return (await DoGet<TracksWrapper>("search", o).ConfigureAwait(false)).Tracks.Items ?? Array.Empty<Track>();
         }
 
         class RemoveTrack
