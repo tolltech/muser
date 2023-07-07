@@ -40,8 +40,8 @@ namespace Tolltech.Muser.Domain
             var yandexApi = yandexService.GetClientAsync(userId);
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
 
-            var existentTracksHash = existentTracks.Select(x => (Id: x.Id, AlbumId: x.Albums.FirstOrDefault()?.Id));
-            var foundTracks = new HashSet<(string Id, string AlbumId)>(existentTracksHash);
+            var existentTracksHash = existentTracks.Select(x => x.Id);
+            var foundTracks = new HashSet<string>(existentTracksHash);
 
             var totalCount = trackToImport.Length;
 
@@ -129,7 +129,7 @@ namespace Tolltech.Muser.Domain
                     importResult.CandidateTrackId = yaTrack.Id;
                     importResult.CandidateAlbumId = yaTrack.Albums?.FirstOrDefault()?.Id;
 
-                    var trackHash = (Id: yaTrack.Id, AlbumId: yaTrack.Albums.First().Id);
+                    var trackHash = yaTrack.Id;
                     if (foundTracks.Contains(trackHash))
                     {
                         importResult.ImportStatus = ImportStatus.AlreadyExists;
@@ -141,7 +141,7 @@ namespace Tolltech.Muser.Domain
                         foundTracks.Add(trackHash);
                     }
 
-                    tracksToChange.Add(new TrackToChange {Id = trackHash.Id, AlbumId = trackHash.AlbumId});
+                    tracksToChange.Add(new TrackToChange {Id = trackHash });
 
                     importResult.ImportStatus = ImportStatus.Ok;
                 }
@@ -183,12 +183,9 @@ namespace Tolltech.Muser.Domain
 
             var existentTracks = await yandexApi.GetTracksAsync(playlistId).ConfigureAwait(false);
 
-            var existentTrackHashes = new HashSet<(string, string)>(existentTracks
-                .SelectMany(track =>
-                    track.Albums
-                        .Select(album => (track.Id, album.Id))));
+            var existentTrackHashes = new HashSet<string>(existentTracks.Select(track => track.Id));
 
-            var newTracks = trackToImport.Where(x => !existentTrackHashes.Contains((x.Id, x.AlbumId))).ToArray();
+            var newTracks = trackToImport.Where(x => !existentTrackHashes.Contains(x.Id)).ToArray();
 
             if (newTracks.Length == 0)
             {

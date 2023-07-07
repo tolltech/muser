@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Tolltech.Serialization;
 using Tolltech.SpotifyClient;
 using Tolltech.SpotifyClient.ApiModels;
-using Tolltech.YandexClient;
 
 namespace Tolltech.TestsNetCore
 {
@@ -74,8 +73,7 @@ namespace Tolltech.TestsNetCore
 
             var trackToChange = new TrackToChange
             {
-                Id = trackId,
-                AlbumId = albumId
+                Id = trackId
             };
 
             await spotifyApiClient.RemoveTracksToPlaylistAsync(playlistId, revision, new[] {trackToChange})

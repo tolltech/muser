@@ -6,8 +6,5 @@ namespace Tolltech.SpotifyClient.ApiModels
     {
         [JsonProperty("id")]
         public string Id { get; set; }
-
-        [JsonProperty("albumId")]
-        public string AlbumId { get; set; }
     }
 }

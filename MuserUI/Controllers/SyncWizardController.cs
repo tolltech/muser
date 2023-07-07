@@ -228,7 +228,8 @@ namespace Tolltech.MuserUI.Controllers
                     Artist = x.Artist,
                     Title = x.Title,
                 })
-                .Reverse()
+                .GroupBy(x => (x.Artist, x.Title))
+                .Select(x => x.First())
                 .ToArray();
 
             var progressId = Guid.NewGuid();
@@ -431,7 +432,6 @@ namespace Tolltech.MuserUI.Controllers
             var trackToChange = selected
                 .Select(x => new TrackToChange
                 {
-                    AlbumId = x.AlbumId,
                     Id = x.TrackId
                 })
                 .ToArray();
