@@ -216,11 +216,22 @@ namespace Tolltech.SpotifyClient
                     Uris = page.Select(x=> $"spotify:track:{x.Id}").ToArray()
                 };
                 await DoPost<AddTracksResponse, AddTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);
-                await Task.Delay(1000).ConfigureAwait(false);
 
-                var playList = await GetPlaylistAsync(playlistId).ConfigureAwait(false);
-                log.Info($"Revision {playList.Title} {playList.Id} change from {lastRevision} to {playList.Revision}");
-                lastRevision = playList.Revision;
+                var waitRevisionCnt = 10;
+                while (waitRevisionCnt > 0)
+                {
+                    var playList = await GetPlaylistAsync(playlistId).ConfigureAwait(false);
+                    log.Info($"Revision {playList.Title} {playList.Id} change from {lastRevision} to {playList.Revision}");
+
+                    if (lastRevision != playList.Revision)
+                    {
+                        lastRevision = playList.Revision;
+                        break;
+                    }
+
+                    waitRevisionCnt--;
+                    await Task.Delay(1000).ConfigureAwait(false);
+                }
 
                 offset += page.Length;
             } while (true);
