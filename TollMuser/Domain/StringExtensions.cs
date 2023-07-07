@@ -49,12 +49,23 @@ namespace Tolltech.Muser.Domain
         public static string ReplacePossibleErrorChars([CanBeNull] this string src)
         {
             return src?.Replace('ё', 'е')
-                    .Replace(russianCChar, englishCChar)
-                    .Replace('s', englishCChar)
-                    .Replace('i', 'y')
                     .Replace("ll", "l")
                     .Replace("нн", "н")
+                    .Replace("zz", "z")
+                    .Replace("дж", "j")
+                    .Replace("dzh", "j")
+                    .Replace("ea", "i")
+                    .Replace("yy", "i")
+                    .Replace("iy", "i")
+                    .Replace("yi", "i")
+                    .Replace("ii", "i")
+                    .Replace("ya", "a")
+                    .Replace("ts", "c")
+                    .Replace(russianCChar, englishCChar)
+                    .Replace('s', englishCChar)
                     .Replace("cc", "c")
+                    .Replace('y', 'i')
+                    
                 ;
         }
     }

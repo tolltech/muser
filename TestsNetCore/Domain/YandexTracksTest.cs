@@ -50,6 +50,13 @@ namespace Tolltech.TestsNetCore.Domain
             new object[] {CreateVkTrack("title", "найк борзов"), CreateYaTrack("title", "Naik Borzov"), true, "18"},
             new object[] {CreateVkTrack("title", "найк борзов"), CreateYaTrack("title", "Nayk Borzov"), true, "19"},
             new object[] {CreateVkTrack("title", "найк борзов"), CreateYaTrack("title", "Najk Borzov"), false, "20"},
+            new object[] {CreateVkTrack("title", "Animal ДжаZ"), CreateYaTrack("title", "Animal Jazz"), true, "21"},
+            new object[] {CreateVkTrack("title", "Ляпис Трубецкой"), CreateYaTrack("title", "Lyapis Trubetskoy"), true, "22"},
+            new object[] {CreateVkTrack("Спокойной ночи", "Найк Борзов"), CreateYaTrack("Spokoynoy nochi", "Naik Borzov"), false, "23"},
+            new object[] {CreateVkTrack("title", "Северный флот"), CreateYaTrack("title", "Severny Flot"), true, "24"},
+            new object[] {CreateVkTrack("title", "Сплин"), CreateYaTrack("title", "Splean"), true, "25"},
+            new object[] {CreateVkTrack("title", "Нейромонах Феофан"), CreateYaTrack("title", "Neuromonakh Feofan"), false, "25"},
+            new object[] {CreateVkTrack("Не танцуй", "artis"), CreateYaTrack("Не танцуй - Аффинаж cover", "artist"), true, "26"},
         };
 
         static NormalizedTrack CreateVkTrack(string title, string artist) => new NormalizedTrack {Artist = artist, Title = title};
