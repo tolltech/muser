@@ -14,6 +14,10 @@ namespace Tolltech.SpotifyClient
         
         [ItemNotNull]
         [NotNull]
+        Task<Playlist> GetPlaylistAsync(string playListId);
+        
+        [ItemNotNull]
+        [NotNull]
         Task<Track[]> GetTracksAsync(string playlistId);
         
         [NotNull]

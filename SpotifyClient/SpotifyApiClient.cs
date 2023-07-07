@@ -9,6 +9,7 @@ using MusicClientCore;
 using Newtonsoft.Json;
 using Tolltech.Serialization;
 using Tolltech.SpotifyClient.ApiModels;
+using Vostok.Logging.Abstractions;
 using Array = System.Array;
 
 namespace Tolltech.SpotifyClient
@@ -17,6 +18,8 @@ namespace Tolltech.SpotifyClient
     {
         private readonly string accessToken;
         private readonly IJsonSerializer serializer;
+
+        private static readonly ILog log = LogProvider.Get();
 
         public SpotifyApiClient(string accessToken, IJsonSerializer serializer)
         {
@@ -151,6 +154,11 @@ namespace Tolltech.SpotifyClient
             return (await DoGet<ItemsResponse<Playlist>>(@"me/playlists").ConfigureAwait(false)).Items;
         }
 
+        public Task<Playlist> GetPlaylistAsync(string playListId)
+        {
+            return DoGet<Playlist>($@"playlists/{playListId}");
+        }
+
         class TrackWrapper
         {
             [JsonProperty("track")] public Track Track { get; set; }
@@ -195,6 +203,7 @@ namespace Tolltech.SpotifyClient
         public async Task AddTracksToPlaylistAsync(string playlistId, string playlistRevision, params TrackToChange[] tracks)
         {
             var offset = 0;
+            var lastRevision = playlistRevision;
             do
             {
                 var page = tracks.Skip(offset).Take(100).ToArray();
@@ -207,7 +216,11 @@ namespace Tolltech.SpotifyClient
                     Uris = page.Select(x=> $"spotify:track:{x.Id}").ToArray()
                 };
                 await DoPost<AddTracksResponse, AddTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);
-                await Task.Delay(200).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false);
+
+                var playList = await GetPlaylistAsync(playlistId).ConfigureAwait(false);
+                log.Info($"Revision {playList.Title} {playList.Id} change from {lastRevision} to {playList.Revision}");
+                lastRevision = playList.Revision;
 
                 offset += page.Length;
             } while (true);
