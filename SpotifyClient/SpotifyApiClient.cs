@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -205,7 +204,7 @@ namespace Tolltech.SpotifyClient
                 var body = new AddTracksBody
                 {
                     Position = offset,
-                    Uris = tracks.Select(x=> $"spotify:track:{x.Id}").ToArray()
+                    Uris = page.Select(x=> $"spotify:track:{x.Id}").ToArray()
                 };
                 await DoPost<AddTracksResponse, AddTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);
                 await Task.Delay(200).ConfigureAwait(false);
@@ -252,7 +251,7 @@ namespace Tolltech.SpotifyClient
                 var body = new RemoveTracksBody
                 {
                     Revision = revision,
-                    Tracks = trackToChanges.Select(x => new RemoveTrack { Uri = $"spotify:track:{x.Id}" }).ToArray()
+                    Tracks = page.Select(x => new RemoveTrack { Uri = $"spotify:track:{x.Id}" }).ToArray()
                 };
 
                 await DoDelete<AddTracksResponse, RemoveTracksBody>($@"playlists/{playlistId}/tracks", body).ConfigureAwait(false);

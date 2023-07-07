@@ -149,7 +149,7 @@ namespace WebApp.Infrastructure
             iso.Add("Ж", "ZH");
             iso.Add("З", "Z");
             iso.Add("И", "I");
-            iso.Add("Й", "J");
+            iso.Add("Й", "Y");
             iso.Add("К", "K");
             iso.Add("Л", "L");
             iso.Add("М", "M");
@@ -182,7 +182,7 @@ namespace WebApp.Infrastructure
             iso.Add("ж", "zh");
             iso.Add("з", "z");
             iso.Add("и", "i");
-            iso.Add("й", "j");
+            iso.Add("й", "y");
             iso.Add("к", "k");
             iso.Add("л", "l");
             iso.Add("м", "m");

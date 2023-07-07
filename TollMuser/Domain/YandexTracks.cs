@@ -28,7 +28,8 @@ namespace Tolltech.Muser.Domain
                     var vLower = v.ToLowerInvariant();
                     return OneContainsAnother(vLower, yLower) ||
                            OneContainsAnother(BrutteNormalize(vLower), BrutteNormalize(yLower)) ||
-                           OneContainsAnother(BrutteTransliterationNormalize(vLower), BrutteTransliterationNormalize(yLower))
+                           OneContainsAnother(BrutteTransliterationNormalize(vLower), BrutteTransliterationNormalize(yLower)) || 
+                           OneContainsAnother(BrutteNormalize(BrutteTransliterationNormalize(vLower)), BrutteNormalize(BrutteTransliterationNormalize(yLower)))
                         ;
                 })));
         }

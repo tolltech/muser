@@ -8,9 +8,9 @@ namespace Tolltech.TestsNetCore.Domain
     {
         [Test]
         [TestCase(@"абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
-                  @"abvgdeyozhzijklmnoprstufhcchshshhyeyuya")]
+                  @"abvgdeyozhziyklmnoprstufhcchshshhyeyuya")]
         [TestCase(@"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
-                  @"ABVGDEYOZHZIJKLMNOPRSTUFHCCHSHSHHYEYUYA")]
+                  @"ABVGDEYOZHZIYKLMNOPRSTUFHCCHSHSHHYEYUYA")]
         public void TestTransliterate(string input, string expected)
         {
             Transliteration.Front(input).Should().Be(expected);
