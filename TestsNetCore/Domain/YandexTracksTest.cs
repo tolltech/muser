@@ -57,6 +57,11 @@ namespace Tolltech.TestsNetCore.Domain
             new object[] {CreateVkTrack("title", "Сплин"), CreateYaTrack("title", "Splean"), true, "25"},
             new object[] {CreateVkTrack("title", "Нейромонах Феофан"), CreateYaTrack("title", "Neuromonakh Feofan"), false, "25"},
             new object[] {CreateVkTrack("Не танцуй", "artis"), CreateYaTrack("Не танцуй - Аффинаж cover", "artist"), true, "26"},
+            new object[] {CreateVkTrack("Вахтёрам", "Бумбокс"), CreateYaTrack("Вахтерам", "Boombox"), true, "27"},
+            new object[] {CreateVkTrack("title", "Дельфин"), CreateYaTrack("title", "Dolphin"), false, "28"},
+            new object[] {CreateVkTrack("LUV  PAIN", "artist"), CreateYaTrack("LUV & PAIN", "artist"), true, "29"},
+            new object[] {CreateVkTrack("title", "Блондинка КсЮ"), CreateYaTrack("title", "Blondinka KsU"), true, "30"},
+            new object[] {CreateVkTrack("title", "Аквариум"), CreateYaTrack("title", "Aquarium"), true, "31"},
         };
 
         static NormalizedTrack CreateVkTrack(string title, string artist) => new NormalizedTrack {Artist = artist, Title = title};

@@ -36,7 +36,7 @@ namespace Tolltech.Muser.Domain
         [CanBeNull]
         public static string NormalizeForYandex([CanBeNull] this string src)
         {
-            return src?.Replace("#", string.Empty);
+            return src?.Replace("#", string.Empty).Replace("&amp;", string.Empty);
         }
 
         [CanBeNull]
@@ -51,9 +51,11 @@ namespace Tolltech.Muser.Domain
             return src?.Replace('ё', 'е')
                     .Replace("ll", "l")
                     .Replace("нн", "н")
+                    .Replace("&amp;", string.Empty)
                     .Replace("zz", "z")
                     .Replace("дж", "j")
                     .Replace("dzh", "j")
+                    .Replace("qu", "kv")
                     .Replace("ea", "i")
                     .Replace("yy", "i")
                     .Replace("iy", "i")
@@ -61,10 +63,13 @@ namespace Tolltech.Muser.Domain
                     .Replace("ii", "i")
                     .Replace("ya", "a")
                     .Replace("ts", "c")
+                    .Replace("oo", "u")
+                    .Replace("x", "ks")
                     .Replace(russianCChar, englishCChar)
                     .Replace('s', englishCChar)
                     .Replace("cc", "c")
                     .Replace('y', 'i')
+                    .Replace('q', 'k')
                     
                 ;
         }
