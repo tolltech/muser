@@ -23,7 +23,12 @@ namespace Tolltech.Muser.Domain
                 yaTrack.Albums?.Length > 0
                 && 
                 (BrutteEquals(yaTrack.Title, normalizedTrack.Title)
-                || (((yaTrack.Title?.Contains(' ') ?? false) || (normalizedTrack.Title?.Contains(' ') ?? false)) &&  OneContainsAnother(BrutteNormalize(yaTrack.Title), BrutteNormalize(normalizedTrack.Title))))
+                || (
+                    (
+                        (yaTrack.Title?.Contains(' ') ?? false) || (normalizedTrack.Title?.Contains(' ') ?? false)
+                    ) 
+                    && OneContainsAnother(BrutteNormalize(yaTrack.Title), BrutteNormalize(normalizedTrack.Title)))
+                )
                 && yaTrack.Artists.Any(y => normalizedTrack.AllArtists.Any(v =>
                 {
                     var yLower = y.Name.ToLowerInvariant();

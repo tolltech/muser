@@ -8,10 +8,16 @@
 
   <ItemGroup>
     <None Remove="convertDb.sql" />
+    <None Update="spotify-icons-logos\spotify-icons-logos\logos\01_RGB\02_PNG\Spotify_Logo_RGB_Black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="convertDb.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Spotify_Logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
