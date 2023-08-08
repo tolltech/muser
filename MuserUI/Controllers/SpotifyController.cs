@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.Muser.Settings;
 using Tolltech.MuserUI.Common;
+using Tolltech.MuserUI.Models.Spotify;
 using Tolltech.MuserUI.Spotify;
 using Tolltech.SpotifyClient;
 
@@ -22,6 +23,34 @@ namespace Tolltech.MuserUI.Controllers
             this.spotifyTokenClient = spotifyTokenClient;
             this.spotifyTokenService = spotifyTokenService;
             this.authorizationSettings = authorizationSettings;
+        }
+
+        [HttpGet("loginfo")]
+        public async Task<ActionResult> LogInfo()
+        {
+            var tokenInfo = await spotifyTokenService.Find(UserId);
+
+            if (tokenInfo == null)
+            {
+                return View(new SpotifyTokenModel());
+            }
+
+            return View(new SpotifyTokenModel
+            {
+                ExpiresUtc = tokenInfo.ExpiresUtc,
+                TokenType = tokenInfo.TokenType,
+                Scope = tokenInfo.Scope,
+                LoggedIn = true
+            });
+        }
+        
+        [HttpPost("logout")]
+        public async Task<ActionResult> Logout()
+        {
+            authorizationSettings.DeleteMuserAuthorization(UserId);
+            await spotifyTokenService.Delete(UserId).ConfigureAwait(true);
+
+            return RedirectToAction("LogInfo");
         }
         
         [HttpGet("callback")]

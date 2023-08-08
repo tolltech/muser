@@ -60,5 +60,14 @@ namespace Tolltech.MuserUI.Spotify
                 AccessToken = token.AccessToken
             };
         }
+
+        public async Task Delete(Guid userId)
+        {
+            using var queryExecutor = queryExecutorFactory.Create<SpotifyTokenHandler, SpotifyTokenDbo>();
+            var result = await queryExecutor.ExecuteAsync(x => x.FindAsync(userId)).ConfigureAwait(false);
+            if (result == null) return;
+            
+            await queryExecutor.ExecuteAsync(x => x.DeleteAsync(result)).ConfigureAwait(false);
+        }
     }
 }

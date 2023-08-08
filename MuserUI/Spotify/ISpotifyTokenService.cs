@@ -9,5 +9,6 @@ namespace Tolltech.MuserUI.Spotify
     {
         Task CreateOrUpdate([NotNull] TokenInfo token, Guid userId);
         [ItemCanBeNull] [NotNull] Task<TokenInfo> Find(Guid userId);
+        [NotNull] Task Delete(Guid userId);
     }
 }

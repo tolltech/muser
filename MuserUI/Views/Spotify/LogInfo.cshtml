@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Tolltech.MuserUI.Models.Spotify.SpotifyTokenModel
+
+<h2>Информация о пользователе</h2>
+
+@if (Model.LoggedIn)
+{
+    <div>@Model.Scope</div>
+    <div>@Model.TokenType</div>
+    <div>@Model.ExpiresUtc</div>
+
+    <form id="logoutFormId" asp-controller="Spotify" asp-action="Logout" method="post" role="form">
+        <div>
+            <button type="submit" class="btn btn-outline-dark">Разлогиниться в Spotify</button>
+        </div>
+    </form>    
+}
+else
+{
+    <div>Вы не залогинены, залогиньтесь в процессе импорта</div>
+}
+

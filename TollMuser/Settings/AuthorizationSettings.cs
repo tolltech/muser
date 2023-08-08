@@ -13,6 +13,11 @@ namespace Tolltech.Muser.Settings
             authorizations.AddOrUpdate(userId, authorization, (guid, muserAuthorization) => authorization);
         }
 
+        public void DeleteMuserAuthorization(Guid userId)
+        {
+            authorizations.TryRemove(userId, out _);
+        }
+
         public MuserAuthorization GetCachedMuserAuthorization(Guid userId)
         {
             return authorizations.TryGetValue(userId, out var auth) ? auth : null;

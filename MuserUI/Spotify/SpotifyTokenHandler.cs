@@ -34,5 +34,11 @@ namespace Tolltech.MuserUI.Sync
         {
             return dataContext.SaveChangesAsync();
         }
+        
+        [NotNull]
+        public Task DeleteAsync(SpotifyTokenDbo token)
+        {
+            return dataContext.DeleteAsync(token);
+        }
     }
 }
