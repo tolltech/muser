@@ -57,6 +57,7 @@ namespace Tolltech.MuserUI.UICore
                         builder.WithOrigins("https://music.yandex.ru/",
                             "https://www.shazam.com/",
                             "chrome-extension://enfnbgckehleomocfbehndiiabgapllc",
+                            "chrome-extension://jgkkcflamkpnpicbppkniglehjnhaepc",
                             "chrome-extension://negkagllfmojaljamkilibkgpganefkm"
                             )
                             .AllowAnyHeader()
