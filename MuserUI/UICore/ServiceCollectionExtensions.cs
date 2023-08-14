@@ -58,6 +58,7 @@ namespace Tolltech.MuserUI.UICore
                             "https://www.shazam.com/",
                             "chrome-extension://enfnbgckehleomocfbehndiiabgapllc",
                             "chrome-extension://jgkkcflamkpnpicbppkniglehjnhaepc",
+                            "chrome-extension://pijfcgjdoncfooelnbacmbpahdebmmpg",
                             "chrome-extension://negkagllfmojaljamkilibkgpganefkm"
                             )
                             .AllowAnyHeader()
