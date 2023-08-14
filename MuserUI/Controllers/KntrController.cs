@@ -48,14 +48,14 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (long.TryParse(input, out var l))
             {
-                return Json(new DateTime(l).ToString("s"));
+                return Json(new DateTime(l).ToString("O"));
             }
             else if (DateTime.TryParse(input, out var d))
             {
                 return Json(d.Ticks);                
             }
 
-            return Json(input);
+            return Json($"Input {input} is not long or DateTime");
         }
         
         public void Ping()
