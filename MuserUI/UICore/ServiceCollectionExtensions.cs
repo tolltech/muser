@@ -54,8 +54,13 @@ namespace Tolltech.MuserUI.UICore
                 options.AddPolicy(Constants.MuserCorsPolicy,
                     builder =>
                     {
-                        builder.WithOrigins("https://music.yandex.ru/",
+                        builder
+                            .SetIsOriginAllowedToAllowWildcardSubdomains()
+                            .WithOrigins("https://music.yandex.ru/",
                             "https://www.shazam.com/",
+                            "https://*.skbkontur.ru/",
+                            "https://*.kontur.ru/",
+                            "https://*.testkontur.ru/",
                             "chrome-extension://enfnbgckehleomocfbehndiiabgapllc",
                             "chrome-extension://jgkkcflamkpnpicbppkniglehjnhaepc",
                             "chrome-extension://pijfcgjdoncfooelnbacmbpahdebmmpg",
