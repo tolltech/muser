@@ -52,7 +52,7 @@ namespace Tolltech.MuserUI.Controllers
             }
             else if (DateTime.TryParse(input, out var d))
             {
-                return Json(d.Ticks);                
+                return Json(d.Ticks.ToString());                
             }
 
             return Json($"Input {input} is not long or DateTime");
