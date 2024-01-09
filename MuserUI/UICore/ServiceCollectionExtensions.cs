@@ -61,6 +61,7 @@ namespace Tolltech.MuserUI.UICore
                             "https://*.skbkontur.ru/",
                             "https://*.kontur.ru/",
                             "https://*.testkontur.ru/",
+                            "https://*.kontur.host/",
                             "chrome-extension://enfnbgckehleomocfbehndiiabgapllc",
                             "chrome-extension://jgkkcflamkpnpicbppkniglehjnhaepc",
                             "chrome-extension://pijfcgjdoncfooelnbacmbpahdebmmpg",
