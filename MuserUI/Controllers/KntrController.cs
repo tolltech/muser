@@ -58,6 +58,12 @@ namespace Tolltech.MuserUI.Controllers
             return Json($"Input {input} is not long or DateTime");
         }
         
+        [HttpGet("randomtext/{input}")]
+        public JsonResult GetRandomText(string input)
+        {
+            return Json(Guid.NewGuid().ToString().Substring(0, 8));
+        }
+        
         public void Ping()
         {
         }
