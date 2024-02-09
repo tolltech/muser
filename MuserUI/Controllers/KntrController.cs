@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.MuserUI.Common;
+using Tolltech.MuserUI.Kontur.RandomText;
 using Tolltech.MuserUI.Study;
 using Tolltech.MuserUI.UICore;
 using Tolltech.Serialization;
@@ -24,15 +25,18 @@ namespace Tolltech.MuserUI.Controllers
         private readonly IQueryExecutorFactory queryExecutorFactory;
         private readonly IXmlSerializer xmlSerializer;
         private readonly IJsonSerializer jsonSerializer;
+        private readonly IRandomTexter randomTexter;
 
         private const string xmlContentType = "application/xml";
         private const string jsonContentType = "application/json";
 
-        public KntrController(IQueryExecutorFactory queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer)
+        public KntrController(IQueryExecutorFactory queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer,
+            IRandomTexter randomTexter)
         {
             this.queryExecutorFactory = queryExecutorFactory;
             this.xmlSerializer = xmlSerializer;
             this.jsonSerializer = jsonSerializer;
+            this.randomTexter = randomTexter;
         }
 
         private static readonly Random random = new Random();
@@ -61,7 +65,7 @@ namespace Tolltech.MuserUI.Controllers
         [HttpGet("randomtext/{input}")]
         public JsonResult GetRandomText(string input)
         {
-            return Json(Guid.NewGuid().ToString().Substring(0, 8));
+            return Json(randomTexter.GetRandomString());
         }
         
         public void Ping()

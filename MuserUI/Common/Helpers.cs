@@ -111,5 +111,12 @@ namespace Tolltech.MuserUI.Common
                     })
                 .ToArray() ?? Array.Empty<SourceTrack>();
         }
+
+        private static readonly Random random = new Random();
+
+        public static T GetRandomItem<T>(this T[] items)
+        {
+            return items[random.Next(items.Length)];
+        }
     }
 }
