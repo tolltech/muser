@@ -62,3 +62,8 @@ CREATE TABLE IF NOT EXISTS spotify_tokens(
                                              expires_utc timestamp NULL,
                                              refresh_token varchar NOT NULL
 )
+
+ALTER TABLE spotify_tokens ALTER expires_utc TYPE timestamptz USING expires_utc AT TIME ZONE 'UTC';
+ALTER TABLE tempsessions ALTER Date TYPE timestamptz USING Date AT TIME ZONE 'UTC';
+ALTER TABLE playlists ALTER Date TYPE timestamptz USING Date AT TIME ZONE 'UTC';
+ALTER TABLE ImportResults ALTER Date TYPE timestamptz USING Date AT TIME ZONE 'UTC';
