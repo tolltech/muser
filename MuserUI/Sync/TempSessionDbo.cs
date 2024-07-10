@@ -14,7 +14,7 @@ namespace Tolltech.MuserUI.Sync
         public string Text { get; set; }
 
         [Column("date", TypeName = "timestamp"), Required]
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
 
         [Column("userid", TypeName = "uuid"), ConcurrencyCheck]
         public Guid? UserId { get; set; }
