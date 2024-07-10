@@ -21,7 +21,7 @@ namespace Tolltech.MuserUI.Sync
         public ImportStatus Status { get; set; }
 
         [Column("date", TypeName = "timestamp"), Required]
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
 
         [Column("title", TypeName = "varchar"), Required]
         public string Title { get; set; }
