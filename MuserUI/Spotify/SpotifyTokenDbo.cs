@@ -19,8 +19,8 @@ namespace Tolltech.MuserUI.Spotify
         [Column("scope", TypeName = "varchar"), ConcurrencyCheck, Required(AllowEmptyStrings = true)]
         public string Scope { get; set; }
 
-        [Column("expires_utc", TypeName = "timestamptz"), ConcurrencyCheck]
-        public DateTime ExpiresUtc { get; set; }
+        [Column("expires_utc"), ConcurrencyCheck]
+        public DateTimeOffset ExpiresUtc { get; set; }
 
         [Column("refresh_token", TypeName = "varchar"), ConcurrencyCheck, Required(AllowEmptyStrings = true)]
         public string RefreshToken { get; set; }

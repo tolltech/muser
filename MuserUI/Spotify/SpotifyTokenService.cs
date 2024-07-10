@@ -55,7 +55,7 @@ namespace Tolltech.MuserUI.Spotify
             {
                 Scope = token.Scope,
                 TokenType = token.TokenType,
-                ExpiresUtc = token.ExpiresUtc,
+                ExpiresUtc = token.ExpiresUtc.DateTime,
                 RefreshToken = token.RefreshToken,
                 AccessToken = token.AccessToken
             };
