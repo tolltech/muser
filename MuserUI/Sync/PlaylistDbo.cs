@@ -22,7 +22,7 @@ namespace Tolltech.MuserUI.Sync
         [Column("extension", TypeName = "varchar"), Required(AllowEmptyStrings = true)]
         public string Extension { get; set; }
 
-        [Column("date", TypeName = "timestamp"), Required]
-        public DateTime Date { get; set; }
+        [Column("date"), Required]
+        public DateTimeOffset Date { get; set; }
     }
 }

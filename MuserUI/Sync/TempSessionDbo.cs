@@ -13,8 +13,8 @@ namespace Tolltech.MuserUI.Sync
         [Column("text", TypeName = "varchar"), ConcurrencyCheck, Required(AllowEmptyStrings = true)]
         public string Text { get; set; }
 
-        [Column("date", TypeName = "timestamp"), Required]
-        public DateTime Date { get; set; }
+        [Column("date"), Required]
+        public DateTimeOffset Date { get; set; }
 
         [Column("userid", TypeName = "uuid"), ConcurrencyCheck]
         public Guid? UserId { get; set; }
