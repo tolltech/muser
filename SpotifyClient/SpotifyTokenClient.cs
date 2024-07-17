@@ -50,6 +50,7 @@ namespace Tolltech.SpotifyClient
                 webClient.Headers.Set("Content-Type", @"application/x-www-form-urlencoded");
                 webClient.Headers.Set("Authorization", $@"Basic {$"{ClientId}:{ClientSecret}".ToBase64()}");
                 webClient.Headers.SetAllowedHeader("Authorization");
+                webClient.Headers.SetDomainHeader("accounts.spotify.com");
                 var body = new
                 {
                     code = authCode,
@@ -71,6 +72,7 @@ namespace Tolltech.SpotifyClient
                 webClient.Headers.Set("Content-Type", @"application/x-www-form-urlencoded");
                 webClient.Headers.Set("Authorization", $@"Basic {$"{ClientId}:{ClientSecret}".ToBase64()}");
                 webClient.Headers.SetAllowedHeader("Authorization");
+                webClient.Headers.SetDomainHeader("accounts.spotify.com");
                 var body = new
                 {
                     grant_type = "refresh_token",

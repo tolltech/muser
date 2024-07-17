@@ -37,6 +37,7 @@ namespace Tolltech.SpotifyClient
             {
                 webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
                 webClient.Headers.SetAllowedHeader("Authorization");
+                webClient.Headers.SetDomainHeader("api.spotify.com");
                 var response = await webClient
                     .DownloadDataTaskAsync($@"{domain}/v1/artists/{artistId}")
                     .ConfigureAwait(false);
@@ -55,6 +56,7 @@ namespace Tolltech.SpotifyClient
 
                     webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
                     webClient.Headers.SetAllowedHeader("Authorization");
+                    webClient.Headers.SetDomainHeader("api.spotify.com");
                     var response = await webClient
                         .DownloadDataTaskAsync($@"{domain}/v1/{formed}")
                         .ConfigureAwait(false);
@@ -88,6 +90,7 @@ namespace Tolltech.SpotifyClient
                     webClient.Headers.Set("Authorization", $@"Bearer  {accessToken}");
                     webClient.Headers.Set("Content-Type", $@"application/json");
                     webClient.Headers.SetAllowedHeader("Authorization");
+                    webClient.Headers.SetDomainHeader("api.spotify.com");
                     var response = await webClient
                         .UploadDataTaskAsync($@"{domain}/v1/{formed}", serializer.Serialize(body))
                         .ConfigureAwait(false);
@@ -118,6 +121,7 @@ namespace Tolltech.SpotifyClient
                 using(var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete,  $@"{domain}/v1/{formed}"))
                 {
                     httpRequestMessage.Headers.AddAllowedHeader("Authorization");
+                    httpRequestMessage.Headers.AddDomainHeader("api.spotify.com");
                     httpRequestMessage.Headers.Add("Authorization", $@"Bearer  {accessToken}");
 
                     httpRequestMessage.Content =
