@@ -21,6 +21,9 @@ namespace Tolltech.SpotifyClient
             this.spotifyClientConfiguration = spotifyClientConfiguration;
         }
         
+        //private static readonly string domain = "https://accounts.spotify.com";
+        private static readonly string domain = "http://10.7.0.1:5000";
+        
         public async Task<TokenResponse> GetAppToken()
         {
             using (var webClient = new WebClient())
@@ -33,7 +36,7 @@ namespace Tolltech.SpotifyClient
                     client_secret = ClientSecret
                 };
                 var response = await webClient
-                    .UploadDataTaskAsync(@"https://accounts.spotify.com/api/token", body.ToFormData())
+                    .UploadDataTaskAsync($@"{domain}/api/token", body.ToFormData())
                     .ConfigureAwait(false);
 
                 return serializer.Deserialize<TokenResponse>(response);
@@ -46,6 +49,7 @@ namespace Tolltech.SpotifyClient
             {
                 webClient.Headers.Set("Content-Type", @"application/x-www-form-urlencoded");
                 webClient.Headers.Set("Authorization", $@"Basic {$"{ClientId}:{ClientSecret}".ToBase64()}");
+                webClient.Headers.SetAllowedHeader("Authorization");
                 var body = new
                 {
                     code = authCode,
@@ -53,7 +57,7 @@ namespace Tolltech.SpotifyClient
                     grant_type = "authorization_code"
                 };
                 var response = await webClient
-                    .UploadDataTaskAsync(@"https://accounts.spotify.com/api/token", body.ToFormData())
+                    .UploadDataTaskAsync($@"{domain}/api/token", body.ToFormData())
                     .ConfigureAwait(false);
 
                 return serializer.Deserialize<TokenResponse>(response);
@@ -66,13 +70,14 @@ namespace Tolltech.SpotifyClient
             {
                 webClient.Headers.Set("Content-Type", @"application/x-www-form-urlencoded");
                 webClient.Headers.Set("Authorization", $@"Basic {$"{ClientId}:{ClientSecret}".ToBase64()}");
+                webClient.Headers.SetAllowedHeader("Authorization");
                 var body = new
                 {
                     grant_type = "refresh_token",
                     refresh_token = refreshToken
                 };
                 var response = await webClient
-                    .UploadDataTaskAsync(@"https://accounts.spotify.com/api/token", body.ToFormData())
+                    .UploadDataTaskAsync($@"{domain}/api/token", body.ToFormData())
                     .ConfigureAwait(false);
 
                 return serializer.Deserialize<TokenResponse>(response);
