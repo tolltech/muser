@@ -52,11 +52,16 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (long.TryParse(input, out var l))
             {
-                return Json(new DateTime(l).ToString("O"));
+                return Json($"dotnet " + new DateTime(l).ToString("O") + Environment.NewLine
+                            + "UNIX ms " + DateTimeOffset.FromUnixTimeMilliseconds(l) + Environment.NewLine
+                            + "UNIX s " + DateTimeOffset.FromUnixTimeSeconds(l));
             }
             else if (DateTime.TryParse(input, out var d))
             {
-                return Json(d.Ticks.ToString());                
+                return Json("dotnet " + d.Ticks + Environment.NewLine
+                            + "UNIX ms " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeMilliseconds() +
+                            Environment.NewLine
+                            + "UNIX s " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds());
             }
 
             return Json($"Input {input} is not long or DateTime");
