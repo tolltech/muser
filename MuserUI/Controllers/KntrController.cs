@@ -30,7 +30,8 @@ namespace Tolltech.MuserUI.Controllers
         private const string xmlContentType = "application/xml";
         private const string jsonContentType = "application/json";
 
-        public KntrController(IQueryExecutorFactory queryExecutorFactory, IXmlSerializer xmlSerializer, IJsonSerializer jsonSerializer,
+        public KntrController(IQueryExecutorFactory queryExecutorFactory, IXmlSerializer xmlSerializer,
+            IJsonSerializer jsonSerializer,
             IRandomTexter randomTexter)
         {
             this.queryExecutorFactory = queryExecutorFactory;
@@ -56,18 +57,38 @@ namespace Tolltech.MuserUI.Controllers
             }
             else if (DateTime.TryParse(input, out var d))
             {
-                return Json(d.Ticks.ToString());                
+                return Json(d.Ticks.ToString());
             }
 
             return Json($"Input {input} is not long or DateTime");
         }
-        
+
+        [HttpGet("dateticksext/{input}")]
+        public ContentResult ConvertDateTicksExt(string input)
+        {
+            if (long.TryParse(input, out var l))
+            {
+                return Content($"dotnet " + new DateTime(l).ToString("O") + "<br/>"
+                               + "UNIX ms " + DateTimeOffset.FromUnixTimeMilliseconds(l) + "<br/>"
+                               + "UNIX s " + DateTimeOffset.FromUnixTimeSeconds(l), "text/html");
+            }
+            else if (DateTime.TryParse(input, out var d))
+            {
+                return Content("dotnet " + d.Ticks + "<br/>"
+                               + "UNIX ms " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeMilliseconds() +
+                               "<br/>"
+                               + "UNIX s " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(), "text/html");
+            }
+
+            return Content($"Input {input} is not long or DateTime", "text/html");
+        }
+
         [HttpGet("randomtext/{input}")]
         public JsonResult GetRandomText(string input)
         {
             return Json(randomTexter.GetRandomString());
         }
-        
+
         public void Ping()
         {
         }
@@ -109,7 +130,7 @@ namespace Tolltech.MuserUI.Controllers
             {
                 Response.StatusCode = statusCode.Value;
             }
-            
+
             return Response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
     }
