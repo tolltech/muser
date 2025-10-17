@@ -68,16 +68,16 @@ namespace Tolltech.MuserUI.Controllers
         {
             if (long.TryParse(input, out var l))
             {
-                return Content($"dotnet " + new DateTime(l).ToString("O") + "<br/>"
-                               + "UNIX ms " + DateTimeOffset.FromUnixTimeMilliseconds(l) + "<br/>"
-                               + "UNIX s " + DateTimeOffset.FromUnixTimeSeconds(l), "text/html");
+                return Content($"dotnet <br/>" + new DateTime(l).ToString("O") + "<br/>"
+                               + "UNIX ms <br/>" + DateTimeOffset.FromUnixTimeMilliseconds(l) + "<br/>"
+                               + "UNIX s <br/>" + DateTimeOffset.FromUnixTimeSeconds(l), "text/html");
             }
             else if (DateTime.TryParse(input, out var d))
             {
-                return Content("dotnet " + d.Ticks + "<br/>"
-                               + "UNIX ms " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeMilliseconds() +
+                return Content("dotnet <br/>" + d.Ticks + "<br/>"
+                               + "UNIX ms <br/>" + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeMilliseconds() +
                                "<br/>"
-                               + "UNIX s " + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(), "text/html");
+                               + "UNIX s <br/>" + new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(), "text/html");
             }
 
             return Content($"Input {input} is not long or DateTime", "text/html");
