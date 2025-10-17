@@ -69,8 +69,8 @@ namespace Tolltech.MuserUI.Controllers
             if (long.TryParse(input, out var l))
             {
                 return Content($"dotnet <br/>" + new DateTime(l).ToString("O") + "<br/>"
-                               + "UNIX ms <br/>" + DateTimeOffset.FromUnixTimeMilliseconds(l) + "<br/>"
-                               + "UNIX s <br/>" + DateTimeOffset.FromUnixTimeSeconds(l), "text/html");
+                               + "UNIX ms <br/>" + DateTimeOffset.FromUnixTimeMilliseconds(l).ToString("O") + "<br/>"
+                               + "UNIX s <br/>" + DateTimeOffset.FromUnixTimeSeconds(l).ToString("O"), "text/html");
             }
             else if (DateTime.TryParse(input, out var d))
             {
