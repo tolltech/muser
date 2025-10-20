@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Tolltech.MuserUI.Common;
 using Tolltech.MuserUI.Kontur.RandomText;
-using Tolltech.MuserUI.Study;
 using Tolltech.MuserUI.UICore;
 using Tolltech.Serialization;
 using Tolltech.SqlEF;
@@ -69,8 +67,8 @@ namespace Tolltech.MuserUI.Controllers
             if (long.TryParse(input, out var l))
             {
                 return Content($"dotnet <br/>" + new DateTime(l).ToString("O") + "<br/>"
-                               + "UNIX ms <br/>" + DateTimeOffset.FromUnixTimeMilliseconds(l).ToString("O") + "<br/>"
-                               + "UNIX s <br/>" + DateTimeOffset.FromUnixTimeSeconds(l).ToString("O"), "text/html");
+                               + "UNIX ms <br/>" + (SafeConvert(l, DateTimeOffset.FromUnixTimeMilliseconds)?.ToString("O") ?? "NaN") + "<br/>"
+                               + "UNIX s <br/>" + (SafeConvert(l, DateTimeOffset.FromUnixTimeSeconds)?.ToString("O") ?? "NaN"), "text/html");
             }
             else if (DateTime.TryParse(input, out var d))
             {
@@ -82,6 +80,19 @@ namespace Tolltech.MuserUI.Controllers
 
             return Content($"Input {input} is not long or DateTime", "text/html");
         }
+
+        private static DateTimeOffset? SafeConvert(long src, Func<long, DateTimeOffset> convert)
+        {
+            try
+            {
+                return convert(src);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+        
 
         [HttpGet("randomtext/{input}")]
         public JsonResult GetRandomText(string input)
